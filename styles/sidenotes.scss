@@ -1,0 +1,32 @@
+// SIDENOTES
+article {
+    margin: auto;
+    max-width: 900px;
+    padding: 0 10px;
+    position: relative;
+    --sidenoteAnchorColor: #463406; //F8E4B1
+    --sidenoteAnchorColorHover: #684c06; //F7CF69B6
+    --sidenoteAnchorColorSelected: #715307; //F5C955
+}
+
+.base {
+    background-color: #181a1b; //181a1b
+    // color: #000000;
+    padding: 50px;
+}
+
+.sidenotes.l {
+    right: 0;
+    left: -320px;
+
+    .sidenote {
+        left: -10px;
+    }
+    .sidenote.selected {
+        left: 10px;
+    }
+}
+
+.sidenote {
+    background-color: fuchsia; //testing
+}

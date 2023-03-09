@@ -1,81 +1,14 @@
 //GENERAL
 body {
-  background-color: #181a1b;
+  background-color: #101212;
   color: #ffffff;
 }
 
-// SIDENOTES
-article {
-  margin: auto;
-  max-width: 900px;
-  padding: 0 10px;
-  position: relative;
-  --sidenoteAnchorColor: #F8E4B1;
-  --sidenoteAnchorColorHover: #F7CF69B6;
-  --sidenoteAnchorColorSelected: #F5C955;
+textarea {
+  width: 100%;
+  height: 100%;
 }
 
-.red { color: red; }
-.green { color: green; }
-.greenBase {
-  background-color: #ffffff;
-  color: #000000;
-  padding: 10px;
-}
-.blue { color: blue; }
-
-// BIBLE
 * {
   font-family: ArialMT,Helvetica Neue,Arial,Liberation Sans,FreeSans,sans-serif;
-}
-
-.s {
-  font-size: 1.1em;
-  font-weight: 700;
-  line-height: 2em;
-  margin: 0 0 0.5em;
-}
-
-.label {
-  position: relative;
-  top: -0.6em;
-  margin-right: 5px;
-  font-size: 14px;
-}
-
-.p {
-  text-indent: 1em;
-  line-height: 2em;
-}
-
-.note::before {
-  background-image: url("https://www.bible.com/static-assets/footnote.png");
-}
-
-.note:before {
-  // background-image: url(/static-assets/footnote.png);
-  background-repeat: no-repeat;
-  // background-size: contain;
-  background-size: 12px;
-  content: "";
-  cursor: context-menu;
-  display: inline-block;
-  height: 12px;
-  margin: 5px;
-  opacity: .6;
-  width: 12px;
-}
-
-.note .label {
-  display: none;
-}
-
-.note .body {
-  display: none;
-}
-
-.notice {
-  color: #9c9386;
-  font-size: .875rem;
-  text-align: center;
 }

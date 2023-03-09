@@ -1,9 +1,11 @@
 import React from 'react';
-import { setup, Store, Sidenote, InlineAnchor, AnchorBase, actions } from 'sidenotes';
+import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 
 import 'sidenotes/dist/sidenotes.css';
+import '../styles/sidenotes.scss';
+import '../styles/bible.scss'
 
 var store: Store;
 
@@ -11,7 +13,6 @@ const docId = 'article';
 const baseAnchor = 'anchor';
 const blue = 'blue';
 const red = 'red';
-const green = 'green';
 
 type Test = {
     title: string
@@ -24,11 +25,10 @@ function App({ title }: Test) {
 
     return (
         <>
-
             <article id={docId} onClick={deselect}>
                 <h1>Genesis 1</h1>
 
-                <AnchorBase anchor={baseAnchor} className="greenBase">
+                <AnchorBase anchor={baseAnchor} className="base">
                     <div className="chapter ch1 frag0" data-usfm="GEN.1">
                         <div className="s"><span className="heading">The History of Creation</span></div>
                         <div className="p"><span className="verse v1" data-usfm="GEN.1.1"><span className="label">1</span><span className="content">In the </span><span className="note x"><span className="label">#</span><span className=" body">Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)</span></span><span className="content">beginning </span><span className="note x"><span className="label">#</span><span className=" body">Gen. 2:4; (Ps. 8:3; 89:11; 90:2); Is. 44:24; Acts 17:24; Rom. 1:20; (Heb. 1:2; 11:3); Rev. 4:11</span></span><span className="content">God created the heavens and the earth. </span></span><span className="verse v2" data-usfm="GEN.1.2"><span className="label">2</span><span className="content">The earth was </span><span className="note x"><span className="label">#</span><span className=" body">Jer. 4:23</span></span><span className="content">without form, and void; and darkness </span><span className="it"><span className="content">was</span></span><span className="content"> on the face of the deep. </span><span className="note x"><span className="label">#</span><span className=" body">(Gen. 6:3); Job 26:13; Ps. 33:6; 104:30; Is. 40:13, 14</span></span><span className="content">And the Spirit of God was hovering over the face of the waters.</span></span></div>
@@ -48,16 +48,19 @@ function App({ title }: Test) {
 
                 <div className="sidenotes">
                     <Sidenote sidenote={blue} base={baseAnchor}>
-                        <div style={{ width: 280, height: 150, backgroundColor: 'blue' }} />
+                        <div style={{ width: 280, height: 150}}>
+                            <textarea>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem.</textarea>
+                        </div>
                     </Sidenote>
                     <Sidenote sidenote={red} base={baseAnchor}>
-                        <div style={{ width: 280, height: 100, backgroundColor: 'red' }} />
+                        <div style={{ width: 280, height: 100}} />
                     </Sidenote>
-                    {/* <Sidenote sidenote={green} base={baseAnchor}>
-                        <div style={{ width: 280, height: 100, backgroundColor: 'green' }}>
-                            Attached to sidenote base.
-                        </div>
-                    </Sidenote> */}
+                </div>
+
+                <div className="sidenotes l">
+                    <Sidenote sidenote={blue} base={baseAnchor}>
+                        <div style={{ width: 280, height: 100}}></div>
+                    </Sidenote>
                 </div>
 
             </article>
