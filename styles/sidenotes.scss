@@ -17,16 +17,17 @@ article {
 
 .sidenotes.l {
     right: 0;
-    left: -320px;
+    left: -300px;
 
     .sidenote {
         left: -10px;
     }
     .sidenote.selected {
-        left: 10px;
+        left: 1px;
     }
 }
 
 .sidenote {
     background-color: fuchsia; //testing
+    border-radius: 4px;
 }
