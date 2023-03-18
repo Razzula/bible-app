@@ -169,7 +169,7 @@ def yvesDir2HTML(yvesfile, yvesDir):
             # f.write('</div>\n')
             # f.write( '</body></html>\n')
             #break #useful for just INTROs
-        break #just Genesis
+        #break #just Genesis
 
     return 'done'
 

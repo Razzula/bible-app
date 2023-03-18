@@ -7,15 +7,12 @@
 }
 
 .label {
-    
     position: relative;
     top: -0.6em;
     margin-right: 5px;
     font-size: 12px;
 }
-
-.label.prime {
-    
+.label.prime { 
     top: 0em;
     bottom: -0.1em;
     font-size: 24px;
@@ -27,15 +24,27 @@
     line-height: 2em;
     margin-top: 16px;
 }
+.q1 {
+    line-height: 2em;
+    padding-left: 2em;
+    text-indent: -2em;
+}
+.q2 {
+    line-height: 2em;
+    padding-left: 2em;
+    text-indent: -1em;
+}
 
 .it {
     font-style: italic;
+}
+.sc {
+    font-variant: small-caps;
 }
 
 .note::before {
     background-image: url("https://www.bible.com/static-assets/footnote.png");
 }
-
 .note:before {
     // background-image: url(/static-assets/footnote.png);
     background-repeat: no-repeat;
@@ -51,11 +60,9 @@
 }
 
 .note {
-
     .label {
         display: none;
     }
-
     .body {
         width: auto;
         background-color: #222426;

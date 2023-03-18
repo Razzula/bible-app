@@ -8,7 +8,6 @@ def htmlToPlain(dir, file):
 
     #STRIP HTML, MAINTAINING PARAGRAPH STRUCTURE
     text = ''
-    footnotes = []
 
     for i in range(2, len(data)-1):
         cleantext = data[i].strip()
@@ -17,17 +16,19 @@ def htmlToPlain(dir, file):
         note = re.search(re.compile('<span class="note x"><span class="label">#<\/span><span class=" body">([^#]+?)<\/span><\/span>'), cleantext)
         while (note):
             noteContent = cleantext[note.regs[1][0]:note.regs[1][1]]
-            cleantext = re.sub(re.compile('<span class="note x"><span class="label">#<\/span><span class=" body">([^#]+?)<\/span><\/span>'), f'[note]{noteContent}[/note]', cleantext) #remove footnotes
+            cleantext = re.sub(re.compile('<span class="note x"><span class="label">#<\/span><span class=" body">([^#]+?)<\/span><\/span>'), f'[note]{noteContent}[/note]', cleantext, 1) #remove footnotes
 
             note = re.search(re.compile('<span class="note x"><span class="label">#<\/span><span class=" body">([^#]+?)<\/span><\/span>'), cleantext)
 
         #div
-        # cleantext = re.sub(re.compile('<div class="[^>]+">'), '', cleantext)
-        para = re.match(re.compile('<div class="[^>]+"><span class="verse v\d+" data-usfm="GEN\.\d+\.\d+"><span class="label">\d+<\/span>'), cleantext)
+        para = re.match(re.compile('<div class="([^>]+)"><span class="verse v\d+" data-usfm="GEN\.\d+\.\d+"><span class="label">\d+<\/span>'), cleantext)
+        if (not para):
+           para = re.match(re.compile('<div class="([^>]+)"><span class="verse v\d+" data-usfm="GEN\.\d+\.\d+">'), cleantext) 
         if (not para): #heading
-            continue
+            continue #TODO
         p = para.regs[0][1]
-        cleantext = re.sub(re.compile('<\/div>'), '', cleantext[15:p] + f'[{cleantext[12]}]' + cleantext[p:])
+        cleantext = re.sub(re.compile('<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1)
+        cleantext = re.sub(re.compile('<\/div>'), '', cleantext)
 
         #content tags
         cleantext = re.sub(re.compile('<span class="content">'), '', cleantext)
@@ -45,7 +46,7 @@ def htmlToPlain(dir, file):
 
     #formatting
     for i in range(1,len(verses)):
-        verse = verses[i]
+        verse = re.sub(re.compile('<span class="verse v\d+" data-usfm="GEN\.\d+\.\d+">'), '', verses[i])
 
         tags = []
         tag = re.search(re.compile('<span class="(.+?)">(.+?)<\/span>'), verse)
@@ -69,7 +70,7 @@ def htmlToPlain(dir, file):
     #OUT
     with open(f'{dir}/json/{file}','w') as f:
 
-        out = {}
+        out = []
         # f.write('{')
         
         for v in range(1, len(verses)):
@@ -95,7 +96,7 @@ def htmlToPlain(dir, file):
                 inner.append({'type': format, 'content': section})
                 i += 1
 
-            out[f'{v}'] = inner
+            out.append(inner)
 
         # f.write('\n}')
 
@@ -111,6 +112,7 @@ def htmlToPlain(dir, file):
     with open(f'{dir}/json/{file}','w') as f:
         f.write(temp)
 
-for i in range(1, 3):
-    htmlToPlain("NKJV", f"GEN.{i}")
+htmlToPlain('NKJV', 'GEN.1')
+htmlToPlain('NKJV', 'GEN.2')
+htmlToPlain('NKJV', 'MAT.5')
 print('done')
