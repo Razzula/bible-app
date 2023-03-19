@@ -88,7 +88,7 @@ def htmlToPlain(dir, book, chapter):
             verse = verses[v]
             inner = []
 
-            temp = verse.split('[')
+            temp = verse.split('[') # TODO; handle nested tags, i.e <wj>A <it>B</it> C</wj> =/> <wj>A</wj> <it>B</it> <wj>C</wj>
             i = 1
             for section in temp:
                 if (section == ''): #[p]

@@ -17,7 +17,7 @@ ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>
 
-        <App title="Hello world"/>
+        <App/>
 
     </React.StrictMode>
   </Provider>,
