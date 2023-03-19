@@ -89,9 +89,6 @@ def readString(arrayOfByte, i=3):
         return b
     return a
 
-def loadJson(string):
-    return json.loads(string)
-
 def yvesDir2HTML(yvesfile, yvesDir):
 
     global current
@@ -102,7 +99,7 @@ def yvesDir2HTML(yvesfile, yvesDir):
         with open(yvesfile, 'rb') as json_file:
             bibleMetaData = json.load(json_file)
     except:
-        bibleMetaData = loadJson(readFile(yvesfile))
+        bibleMetaData = json.loads(readFile(yvesfile))
 
     bibleName = bibleMetaData['abbreviation'] + ".html"
 

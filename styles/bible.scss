@@ -1,10 +1,4 @@
 // BIBLE
-.s {
-    font-size: 1.1em;
-    font-weight: 700;
-    line-height: 2em;
-    margin: 0 0 0.5em;
-}
 
 .label {
     position: relative;
@@ -12,36 +6,47 @@
     margin-right: 5px;
     font-size: 12px;
 }
-.label.prime { 
+.label.chapter { 
     top: 0em;
     bottom: -0.1em;
     font-size: 24px;
     font-weight: 700;
 }
 
-.p {
+//paragraphs
+div.s { //header
+    font-weight: 700;
+    line-height: 1em;
+    margin: 2em 0 0 0;
+}
+div.p { //regular paragraph: indent first line
     text-indent: 1em;
     line-height: 2em;
     margin-top: 16px;
 }
-.q1 {
+div.q1 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: -2em;
 }
-.q2 {
+div.q2 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: -1em;
 }
 
-.it {
+//text types
+.it { //additional words required in English for clarification: italicised
     font-style: italic;
 }
-.sc {
+.sc { //covenant name of God: capitalised
     font-variant: small-caps;
 }
+.wj { //words spoken by Jesus: 'red letter'
+    color: #ff3344;
+}
 
+//footnotes
 .note::before {
     background-image: url("https://www.bible.com/static-assets/footnote.png");
 }

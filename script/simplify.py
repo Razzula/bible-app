@@ -1,13 +1,16 @@
 import re
 import json
 
-def htmlToPlain(dir, file):
+def htmlToPlain(dir, book, chapter):
 
+    file = f'{book}.{chapter}'
     with open(f'{dir}/html/{file}', 'r') as f:
         data = f.readlines() #separated by paragraph
 
     #STRIP HTML, MAINTAINING PARAGRAPH STRUCTURE
     text = ''
+    headers = []
+    header = ''
 
     for i in range(2, len(data)-1):
         cleantext = data[i].strip()
@@ -21,13 +24,16 @@ def htmlToPlain(dir, file):
             note = re.search(re.compile('<span class="note x"><span class="label">#<\/span><span class=" body">([^#]+?)<\/span><\/span>'), cleantext)
 
         #div
-        para = re.match(re.compile('<div class="([^>]+)"><span class="verse v\d+" data-usfm="GEN\.\d+\.\d+"><span class="label">\d+<\/span>'), cleantext)
+        para = re.match(re.compile(f'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+<\/span>'), cleantext)
         if (not para):
-           para = re.match(re.compile('<div class="([^>]+)"><span class="verse v\d+" data-usfm="GEN\.\d+\.\d+">'), cleantext) 
+           para = re.match(re.compile(f'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), cleantext) 
         if (not para): #heading
+            header = '~'
+            headers.append(re.sub(re.compile('<[^>]+>'), '', cleantext))
             continue #TODO
+
         p = para.regs[0][1]
-        cleantext = re.sub(re.compile('<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1)
+        cleantext = re.sub(re.compile('<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + header + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1) #<div class='p'><...>1</>... ==> <...>1</>[p]...
         cleantext = re.sub(re.compile('<\/div>'), '', cleantext)
 
         #content tags
@@ -38,15 +44,17 @@ def htmlToPlain(dir, file):
         # if (cleantext == ''):
         #     continue
 
+        if (header):
+            header = ''
         if (cleantext != ''):
             text += cleantext
 
     #SPLIT INTO VERSES
-    verses = re.split(re.compile('<span class="verse v\d+" data-usfm="GEN\.\d+\.\d+"><span class="label">\d+<\/span>'), text)
+    verses = re.split(re.compile(f'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+<\/span>'), text)
 
     #formatting
     for i in range(1,len(verses)):
-        verse = re.sub(re.compile('<span class="verse v\d+" data-usfm="GEN\.\d+\.\d+">'), '', verses[i])
+        verse = re.sub(re.compile(f'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), '', verses[i])
 
         tags = []
         tag = re.search(re.compile('<span class="(.+?)">(.+?)<\/span>'), verse)
@@ -68,6 +76,7 @@ def htmlToPlain(dir, file):
         verses[i] = verse
 
     #OUT
+    header = None
     with open(f'{dir}/json/{file}','w') as f:
 
         out = []
@@ -84,6 +93,10 @@ def htmlToPlain(dir, file):
             for section in temp:
                 if (section == ''): #[p]
                     continue
+                if (section == '~'):
+                    header = headers[0]
+                    headers = headers[1:]
+                    continue
 
                 section = re.sub(re.compile('/.+?]'), '', section)
                 formatted = re.match(re.compile('.+?]'), section)
@@ -93,7 +106,11 @@ def htmlToPlain(dir, file):
                 else:
                     format = 'text'
 
-                inner.append({'type': format, 'content': section})
+                if (not header):
+                    inner.append({'type': format, 'content': section})
+                else:
+                    inner.append({'type': format, 'content': section, 'header': header})
+                    header = None
                 i += 1
 
             out.append(inner)
@@ -112,7 +129,7 @@ def htmlToPlain(dir, file):
     with open(f'{dir}/json/{file}','w') as f:
         f.write(temp)
 
-htmlToPlain('NKJV', 'GEN.1')
-htmlToPlain('NKJV', 'GEN.2')
-htmlToPlain('NKJV', 'MAT.5')
+htmlToPlain('NKJV', 'GEN', '1')
+htmlToPlain('NKJV', 'GEN', '2')
+htmlToPlain('NKJV', 'MAT', '5')
 print('done')
