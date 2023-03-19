@@ -46,6 +46,13 @@ div.q2 {
     color: #ff3344;
 }
 
+.ref.internal {
+    color: #ff3344;
+}
+.ref.external {
+    color: #dd33dd;
+}
+
 //footnotes
 .note::before {
     background-image: url("https://www.bible.com/static-assets/footnote.png");

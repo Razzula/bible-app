@@ -18,3 +18,9 @@ body {
 .popover {
     --bs-popover-bg: #2d3133;
 }
+
+.alert-danger {
+    background-color: #430c11;
+    border: 2px solid #bc1e2e;
+    color: #df7a83;
+}
