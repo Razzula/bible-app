@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
+import { OverlayTrigger, Button, Popover } from 'react-bootstrap';
 
 import 'sidenotes/dist/sidenotes.css';
+import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
 import '../styles/bible.scss'
 
@@ -69,12 +71,21 @@ function Scripture({ contents }: Scripture) {
 
         // format contents of paragraph
         const paraContent = paragraph.map((item) => {
-            //footnotes //TODO; bootstrap popovers
+            //footnotes
             if (item.type == 'note') {
+
+                const popover = (
+                    <Popover id="popover-basic">
+                        <Popover.Body>
+                            {item.content}
+                        </Popover.Body>
+                    </Popover>
+                );
+                
                 return (
-                    <span className="note">
-                        <span className=" body"> {item.content}</span>
-                    </span>
+                    <OverlayTrigger trigger="click" rootClose placement="top" overlay={popover}>
+                        <span className="note"/>
+                    </OverlayTrigger>
                 );
             }
     
@@ -126,7 +137,7 @@ function App() {
         }
     }
 
-    function handleChange(event: React.FormEvent<HTMLInputElement>) {
+    function handleChange(event: React.ChangeEvent<any>) {
         setPassageName(event.currentTarget.value);
     }
 
@@ -134,9 +145,11 @@ function App() {
         <>
             <article id={docId} onClick={deselect}>
                 
-                {/* TODO; bootstrap */}
-                <input defaultValue='GEN1' onChange={handleChange}/>
-                <button onClick={handleClick}>Load</button>
+                {/* BANNER */}
+                <div className="input-group">
+                    <input type="text" className="form-control" onChange={handleChange} defaultValue="GEN1"/>
+                    <button className='btn btn-default' onClick={handleClick}>Load</button>
+                </div>
 
                 {/* BIBLE */}
                 <AnchorBase anchor={baseAnchor} className="base">

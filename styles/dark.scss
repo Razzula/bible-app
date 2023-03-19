@@ -1,0 +1,20 @@
+body {
+    background-color: #101212;
+    color: #ffffff;
+}
+
+.input-group {
+    margin: 2em 0 1em 0;
+}
+
+.form-control, .btn, .popover, .popover-body, input[type]:focus{
+    background-color: #161819;
+    border-color: #464c4e;
+    color: #ffffff;
+    border-width: 1px;
+    border-radius: 4px;
+}
+
+.popover {
+    --bs-popover-bg: #2d3133;
+}

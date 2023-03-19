@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom';
 import { Store, setup } from 'sidenotes';
 import rootReducer from './reducers';
 
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 
 import App from "./App";
