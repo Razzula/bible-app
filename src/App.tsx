@@ -74,10 +74,49 @@ function Scripture({ contents }: Scripture) {
             //footnotes
             if (item.type == 'note') {
 
+                //detect references
+                const pattern = RegExp(/(?:[123]+ )?[A-z]+\.? ?\d+(?:: ?\d+ ?)?/g);
+                let match;
+                let matches = new Array();
+
+                while ((match = pattern.exec(item.content)) !== null) { //get positions of references
+                    matches.push([match.index, pattern.lastIndex]);
+                }
+
+                let data = new Array();
+
+                //extract references
+                let i;
+
+                if (matches[0][0] != 0) { //prevent pushing ''  
+                    data.push([item.content.slice(0, matches[0][0]), false]);
+                }
+                for (i= 0; i < matches.length; i++) {
+
+                    data.push([item.content.slice(matches[i][0], matches[i][1]), true]); //reference
+
+                    if (i < matches.length-1) { 
+                        data.push([item.content.slice(matches[i][1], matches[i+1][0]), false]); //post-reference
+                    }
+                    
+                }
+                if (matches[i-1][1] != item.content.length) { //prevent pushing ''  
+                    data.push([item.content.slice(matches[i-1][1], item.content.length), false]);
+                }
+
+                //format references
+                const references = data.map((ref) => {
+                    if (ref[1]) {
+                        return <span className='wj'>{ref}</span>;
+                    }
+                    return ref;
+                });
+
+                //create popover
                 const popover = (
                     <Popover id="popover-basic">
                         <Popover.Body>
-                            {item.content}
+                            {references}
                         </Popover.Body>
                     </Popover>
                 );
@@ -147,7 +186,7 @@ function App() {
                 
                 {/* BANNER */}
                 <div className="input-group">
-                    <input type="text" className="form-control" onChange={handleChange} defaultValue="GEN1"/>
+                    <input type="text" className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()} defaultValue="GEN1"/>
                     <button className='btn btn-default' onClick={handleClick}>Load</button>
                 </div>
 
