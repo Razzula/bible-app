@@ -7,24 +7,15 @@ import { OverlayTrigger, Alert, Popover } from 'react-bootstrap';
 import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
-import '../styles/bible.scss'
+import '../styles/bible.scss';
 
-// const fs = require('fs');
-// const pathModule = require('path');
-// const { app } = require('@electron/remote');
+const books = require('./books.json');
 
 declare global {
     interface Window {
         [index: string]: any;
     }
 }
-
-// async function test() {
-//     console.log('here');
-//     const filePath = await window.electronAPI.openFile();
-//     console.log(filePath);
-// }
-// test();
 
 var store: Store;
 
@@ -186,14 +177,37 @@ function App() {
     //TODO; better initial values (currently an error)
     const [passageName, setPassageName] = useState('');
     const [passageContents, setPassageContents]: [any, any] = useState(null);
+    var currentFileName: string;
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
     async function handleClick() {
+
+        const match = passageName.toUpperCase().match(/((?:[123]+\s)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+))?/);
+
+        if (!match || match.length < 3) { //invalid format
+            setPassageContents(null);
+            return;
+        }
+
+        let book;
+        if (books[match[1]]) { //full
+            book = books[match[1]];
+        }
+        else if (Object.values(books).includes(match[1])) { //usfm
+            book = match[1];
+        }
+
+        let fileName = book + '.'  + match[2];
+        if (fileName == currentFileName) { //prevent multiple reads of same file
+            return;
+        }
+        currentFileName = fileName;
+
         // load contents externally from files
-        //TODO; better comprehension (Genesis 3 ==> GEN.3), allow chapter-spanning and verse specification
-        const passageContents = await window.electronAPI.openFile(passageName);
+        //TODO; allow chapter-spanning and verse specification
+        const passageContents = await window.electronAPI.openFile(fileName);
         setPassageContents(passageContents);
     }
 
