@@ -46,6 +46,9 @@ div.q2 {
     color: #ff3344;
 }
 
+.ref {
+    cursor: pointer;
+}
 .ref.internal {
     color: #ff3344;
 }
@@ -94,6 +97,11 @@ div.q2 {
         visibility: visible;
         z-index: 1;
     }
+}
+
+.popover {
+    max-width: 800px;
+    padding: 0;
 }
 
 .notice {

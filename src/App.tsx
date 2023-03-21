@@ -26,9 +26,11 @@ const red = 'red';
 
 type Scripture = {
     contents: any;
+    ignoreFootnotes?: boolean;
+    loadPassage?: any
 }
 
-function Scripture({ contents }: Scripture) {
+function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
 
     //presence check
     if (contents == null) {
@@ -73,6 +75,7 @@ function Scripture({ contents }: Scripture) {
             //verse numbers
             if (ii == 0) {
                 if (i == 0) {
+                    //TODO; use chapter number instead of verse
                     temp.push({"type":"label chapter", "content":i+1});
                 }
                 else {
@@ -92,59 +95,12 @@ function Scripture({ contents }: Scripture) {
         const paraContent = paragraph.map((item) => {
             //footnotes
             if (item.type == 'note') {
-
-                //detect references
-                const pattern = RegExp(/(?:[123]+ )?[A-z]+\.? ?\d+(?:: ?\d+ ?)?/g);
-                let match;
-                let matches = new Array();
-
-                while ((match = pattern.exec(item.content)) !== null) { //get positions of references
-                    matches.push([match.index, pattern.lastIndex]);
+                if (ignoreFootnotes) {
+                    return;
                 }
 
-                let data = new Array();
-
-                //extract references
-                let i;
-
-                if (matches[0][0] != 0) { //prevent pushing ''  
-                    data.push([item.content.slice(0, matches[0][0]), false]);
-                }
-                for (i= 0; i < matches.length; i++) {
-
-                    data.push([item.content.slice(matches[i][0], matches[i][1]), true]); //reference
-
-                    if (i < matches.length-1) { 
-                        data.push([item.content.slice(matches[i][1], matches[i+1][0]), false]); //post-reference
-                    }
-                    
-                }
-                if (matches[i-1][1] != item.content.length) { //prevent pushing ''  
-                    data.push([item.content.slice(matches[i-1][1], item.content.length), false]);
-                }
-
-                //format references
-                //TODO; popver with passage
-                const references = data.map((ref) => {
-                    if (ref[1]) {
-                        return <span className='ref external'>{ref}</span>;
-                    }
-                    return ref;
-                });
-
-                //create popover
-                const popover = (
-                    <Popover id="popover-basic">
-                        <Popover.Body>
-                            {references}
-                        </Popover.Body>
-                    </Popover>
-                );
-                
                 return (
-                    <OverlayTrigger trigger="click" rootClose placement="top" overlay={popover}>
-                        <span className="note"/>
-                    </OverlayTrigger>
+                    <Note contents={item.content} loadPassage={loadPassage} />
                 );
             }
     
@@ -173,6 +129,93 @@ function Scripture({ contents }: Scripture) {
     return (<>{content}</>);
 }
 
+type Note = {
+    contents: string;
+    loadPassage: any;
+}
+
+function Note({ contents, loadPassage }: Note) {
+    const [noteContents, setNoteContents]  = useState();
+
+    //detect references
+    const pattern = RegExp(/(?:[123]+ )?[A-z]+\.? ?\d+(?:: ?\d+ ?)?/g);
+    let match;
+    let matches = new Array();
+
+    while ((match = pattern.exec(contents)) !== null) { //get positions of references
+        matches.push([match.index, pattern.lastIndex]);
+    }
+
+    let data = new Array();
+
+    //extract references
+    let i;
+
+    if (matches[0][0] != 0) { //prevent pushing ''  
+        data.push([contents.slice(0, matches[0][0]), false]);
+    }
+    for (i= 0; i < matches.length; i++) {
+
+        data.push([contents.slice(matches[i][0], matches[i][1]), true]); //reference
+
+        if (i < matches.length-1) { 
+            data.push([contents.slice(matches[i][1], matches[i+1][0]), false]); //post-reference
+        }
+        
+    }
+    if (matches[i-1][1] != contents.length) { //prevent pushing ''  
+        data.push([contents.slice(matches[i-1][1], contents.length), false]);
+    }
+
+    //popver with passage
+    const innerPopover = (
+        <Popover id="popover-basic">
+            <Popover.Body>
+                {/* {ref[0]} */}
+                <Scripture contents={noteContents} ignoreFootnotes />
+            </Popover.Body>
+        </Popover>
+    );
+    //format references
+    const references = data.map((ref) => {
+        if (ref[1]) {
+
+            //contents of footnote popover
+            return (
+                <>
+                <OverlayTrigger trigger={['hover', 'focus']} placement="right" overlay={innerPopover}>
+                    <span className='ref external' onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[0])}>{ref[0]}</span>
+                </OverlayTrigger>
+                </>
+            );
+
+            async function updatePopoverContents() {
+                //TODO; prevent multiple reads of same file
+                const passageContents = await window.electronAPI.openFile(getUSFM(ref[0]));
+                setNoteContents(passageContents);
+            }
+        }
+        return ref;
+    });
+
+    //popover with footnote contents
+    const footnotePopover = (
+        <Popover id="popover-basic">
+            <Popover.Body>
+                {references}
+            </Popover.Body>
+        </Popover>
+    );
+    
+    //footnote
+    return (
+        <OverlayTrigger trigger="click" rootClose placement="top" overlay={footnotePopover}>
+            <span className="note"/>
+        </OverlayTrigger>
+    );
+
+}
+
 function App() {
     //TODO; better initial values (currently an error)
     const [passageName, setPassageName] = useState('');
@@ -182,37 +225,32 @@ function App() {
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
-    async function handleClick() {
-
-        const match = passageName.toUpperCase().match(/((?:[123]+\s)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+))?/);
-
-        if (!match || match.length < 3) { //invalid format
-            setPassageContents(null);
-            return;
-        }
-
-        let book;
-        if (books[match[1]]) { //full
-            book = books[match[1]];
-        }
-        else if (Object.values(books).includes(match[1])) { //usfm
-            book = match[1];
-        }
-
-        let fileName = book + '.'  + match[2];
-        if (fileName == currentFileName) { //prevent multiple reads of same file
-            return;
-        }
-        currentFileName = fileName;
-
-        // load contents externally from files
-        //TODO; allow chapter-spanning and verse specification
-        const passageContents = await window.electronAPI.openFile(fileName);
-        setPassageContents(passageContents);
+    function handleClick() {
+        loadPassage(passageName);
     }
 
     function handleChange(event: React.ChangeEvent<any>) {
         setPassageName(event.currentTarget.value);
+    }
+
+    async function loadPassage(passageName: string) {
+        
+        let fileName = getUSFM(passageName);
+        
+        if (!fileName) { //invalid
+            setPassageContents(null);
+            return;
+        }
+        if (fileName == currentFileName) { //prevent multiple reads of current file
+            return;
+        }
+        currentFileName = fileName;
+        
+        // load contents externally from files
+        //TODO; allow chapter-spanning and verse specification
+        const passageContents = await window.electronAPI.openFile(fileName);
+        setPassageContents(passageContents);
+        setPassageName(passageName);
     }
 
     return (
@@ -221,7 +259,7 @@ function App() {
                 
                 {/* BANNER */}
                 <div className="input-group">
-                    <input type="text" className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()}/>
+                    <input type="text" value={passageName} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()}/>
                     <button className='btn btn-default' onClick={handleClick}>Load</button>
                 </div>
 
@@ -229,7 +267,7 @@ function App() {
                 <AnchorBase anchor={baseAnchor} className="base">
 
                     {/*content /* autofill from JSON */}
-                    <Scripture contents={passageContents}></Scripture>
+                    <Scripture contents={passageContents} loadPassage={loadPassage}></Scripture>
 
                 </AnchorBase>
                 <p className="notice">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</p>
@@ -255,6 +293,25 @@ function App() {
             </article>
         </>
     );
+}
+
+function getUSFM(reference: string) {
+
+    const match = reference.toUpperCase().match(/((?:[123]+\s)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+))?/);
+
+        if (!match || match.length < 3) { //invalid format
+            return null;
+        }
+
+        let book;
+        if (books[match[1]]) { //full
+            book = books[match[1]];
+        }
+        else if (Object.values(books).includes(match[1])) { //usfm
+            book = match[1];
+        }
+
+        return book + '.'  + match[2];
 }
 
 export default App;
