@@ -93,4 +93,13 @@ div.q2 {
     font-size: .875rem;
     text-align: center;
     padding-top: 1em;
+}   
+
+.blink {
+    animation: blinker 1.8s linear 1;
+}
+@keyframes blinker {
+    50% {
+        color: yellow;
+    }
 }

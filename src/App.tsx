@@ -87,13 +87,14 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                 }   
             }
             
+            section['test'] = ' v'+(v+i); //TODO; rename 'verse'->'initialVerse', 'test'->'verse'
             temp.push(section);
         };
     }
     paragraphs.push(temp);
 
     // format paragraphs
-    const content = paragraphs.map((paragraph: Array<{type:string, content:string}>) => {
+    const content = paragraphs.map((paragraph: Array<{type:string, content:string, test:string}>) => {
 
         // format contents of paragraph
         const paraContent = paragraph.map((item) => {
@@ -107,10 +108,17 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                     <Note contents={item.content} loadPassage={loadPassage} />
                 );
             }
+
+            //labels
+            if (item.type == 'label') {
+                return (
+                    <span className={item.type} id={'v'+item.content}>{item.content}</span> //can use scrollIntoView() to jump to verse
+                );
+            }
     
             //other formatting
             return (
-                <span className={item.type}>{item.content}</span>
+                <span className={item.type+' '+item.test}>{item.content}</span>
             );
         });
 
@@ -283,15 +291,22 @@ function App() {
         //TODO; allow chapter-spanning
         const passageContents = await window.electronAPI.openFile(fileName);
 
-        // if (usfm['verse']) {
-        //     setPassageContents([passageContents[usfm['verse']-1]]);
-        // }
-        // else {
-        //     setPassageContents(passageContents);
-        // }
-
         setPassageContents(passageContents);
         setPassageName(passageName);
+        
+        //scroll to verse if specified
+        if (usfm['initialVerse']) { //might need to move into state
+            const element = document.getElementById('v'+usfm['initialVerse']); //TEMP; -1 prevents verse going all the way to top
+            if (element) {
+                element.scrollIntoView();
+            }
+
+            let elements = document.getElementsByClassName('v'+usfm['initialVerse']);
+            for(let i = 0; i < elements.length; i++) {
+                elements[i].classList.remove('blink'); //TODO; allow repetition
+                elements[i].classList.add('blink');
+            }
+        }
     }
 
     return (
@@ -363,5 +378,7 @@ function getUSFM(reference: string) {
 
     return usfm;
 }
+
+//TODO; back and forward functions
 
 export default App;
