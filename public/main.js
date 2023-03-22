@@ -58,7 +58,7 @@ async function handleFileOpen(fileName) {
         return null;
     }
 
-    obj[0][0]['initial'] = fileName.split('.')[1];
+    obj[0][0]['chapter'] = fileName.split('.')[1];
 
     return obj;
 }
