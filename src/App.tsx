@@ -74,9 +74,9 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
             
             //verse numbers
             if (ii == 0) {
-                if (i == 0) {
+                if (section['initial']) {
                     //TODO; use chapter number instead of verse
-                    temp.push({"type":"label chapter", "content":i+1});
+                    temp.push({"type":"label chapter", "content":section['initial']});
                 }
                 else {
                     temp.push({"type":"label", "content":i+1});
@@ -135,7 +135,7 @@ type Note = {
 }
 
 function Note({ contents, loadPassage }: Note) {
-    const [noteContents, setNoteContents]  = useState();
+    const [noteContents, setNoteContents]: [any, any]  = useState();
 
     //detect references
     const pattern = RegExp(/(?:[123]+ )?[A-z]+\.? ?\d+(?:: ?\d+ ?)?/g);
@@ -191,8 +191,16 @@ function Note({ contents, loadPassage }: Note) {
 
             async function updatePopoverContents() {
                 //TODO; prevent multiple reads of same file
-                const passageContents = await window.electronAPI.openFile(getUSFM(ref[0]));
-                setNoteContents(passageContents);
+                let usfm  = getUSFM(ref[0]);
+                let fileName = usfm['book']+'.'+usfm['chapter'];
+                const passageContents = await window.electronAPI.openFile(fileName);
+
+                if (usfm['verse']) {
+                    setNoteContents([passageContents[usfm['verse']-1]]);
+                }
+                else {
+                    setNoteContents(passageContents);
+                }
             }
         }
         return ref;
@@ -235,7 +243,8 @@ function App() {
 
     async function loadPassage(passageName: string) {
         
-        let fileName = getUSFM(passageName);
+        let usfm  = getUSFM(passageName);
+        let fileName = usfm['book']+'.'+usfm['chapter'];
         
         if (!fileName) { //invalid
             setPassageContents(null);
@@ -249,6 +258,14 @@ function App() {
         // load contents externally from files
         //TODO; allow chapter-spanning and verse specification
         const passageContents = await window.electronAPI.openFile(fileName);
+
+        // if (usfm['verse']) {
+        //     setPassageContents([passageContents[usfm['verse']-1]]);
+        // }
+        // else {
+        //     setPassageContents(passageContents);
+        // }
+
         setPassageContents(passageContents);
         setPassageName(passageName);
     }
@@ -303,15 +320,20 @@ function getUSFM(reference: string) {
             return null;
         }
 
-        let book;
+        let usfm: any = {};
         if (books[match[1]]) { //full
-            book = books[match[1]];
+            usfm['book'] = books[match[1]];
         }
         else if (Object.values(books).includes(match[1])) { //usfm
-            book = match[1];
+            usfm['book'] = match[1];
         }
 
-        return book + '.'  + match[2];
+        usfm['chapter'] = match[2];
+        if (match.length > 3) {
+            usfm['verse'] =  match[3];
+        }
+
+        return usfm;
 }
 
 export default App;
