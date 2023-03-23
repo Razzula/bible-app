@@ -281,7 +281,6 @@ function App() {
         let chaptersContents = new Array();
         
         let usfm = getUSFM(searchQuery);
-        console.log(usfm);
         if (!usfm) {
             return;
         }
@@ -313,7 +312,6 @@ function App() {
         }
 
         setChaptersContents(chaptersContents);
-        console.log(chaptersContents);
         setSearchQuery(searchQuery);
         
         //scroll to verse if specified
@@ -415,26 +413,27 @@ function App() {
 
 function getUSFM(reference: string) {
 
-    const match = reference.toUpperCase().match(/((?:[123]+ )?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?|-(\d+))?/); //NOT GLOBAL
-    console.log(match);
+    const match = reference.toUpperCase().match(/((?:[123]+ ?)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?|-(\d+))?/); //NOT GLOBAL
 
     if (!match) { //invalid format
         return null;
     }
 
     let usfm: any = {};
-    if (books[match[1]]) { //full
-        usfm['book'] = books[match[1]];
-    }
-    else if (Object.values(books).includes(match[1])) { //usfm
-        usfm['book'] = match[1];
-    }
+    match[1] = match[1].replace(/\s+/, '');
+    books.forEach((book: (string[])) => {
+        if (book.includes(match[1])) {
+            console.log(book);
+            usfm['book'] = book[0];
+        }
+    });
 
     usfm['initialChapter'] = match[2];
     usfm['initialVerse'] =  Number(match[3]);
     usfm['finalVerse'] = Number(match[4]);
     usfm['finalChapter'] = Number(match[5]);
 
+    console.log(usfm);
     return usfm;
 }
 
