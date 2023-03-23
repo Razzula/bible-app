@@ -30,12 +30,13 @@ span.pc {
 div.q1 {
     line-height: 2em;
     padding-left: 2em;
-    text-indent: -2em;
+    text-indent: 2em;
+    margin-top: 16px;
 }
 div.q2 {
     line-height: 2em;
     padding-left: 2em;
-    text-indent: -1em;
+    text-indent: 3em;
 }
 
 //text types
@@ -82,7 +83,6 @@ div.q2 {
     opacity: .6;
     width: 12px;
 }
-
 .popover {
     max-width: 800px;
     padding: 0;
@@ -96,10 +96,10 @@ div.q2 {
 }   
 
 .blink {
-    animation: blinker 1.8s linear 1;
+    animation: blinker 4s linear 1;
 }
 @keyframes blinker {
-    50% {
+    30% {
         color: yellow;
     }
 }

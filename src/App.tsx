@@ -8,6 +8,7 @@ import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
 import '../styles/bible.scss';
+import '../styles/App.scss';
 
 const books = require('./books.json');
 
@@ -115,6 +116,11 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                     <span className={item.type} id={'v'+item.content}>{item.content}</span> //can use scrollIntoView() to jump to verse
                 );
             }
+            if (item.type == 'label chapter') {
+                return (
+                    <span className={item.type} id={'v1'}>{item.content}</span> //can use scrollIntoView() to jump to verse
+                );
+            }
     
             //other formatting
             return (
@@ -204,10 +210,11 @@ function Note({ contents, loadPassage }: Note) {
             async function updatePopoverContents() {
                 //TODO; prevent multiple reads of same file
                 let usfm  = getUSFM(ref[0]);
-                let fileName = usfm['book']+'.'+usfm['chapter'];
+                let fileName = usfm['book']+'.'+usfm['initialChapter'];
                 let passageContents = await window.electronAPI.openFile(fileName);
 
                 if (!passageContents) {
+                    setNoteContents(null);
                     return;
                 }
 
@@ -254,108 +261,164 @@ function Note({ contents, loadPassage }: Note) {
 
 function App() {
     //TODO; better initial values (currently an error)
-    const [passageName, setPassageName] = useState('');
-    const [passageContents, setPassageContents]: [any, any] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [chaptersContents, setChaptersContents]: [any, any] = useState([null]);
     var currentFileName: string;
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
     function handleClick() {
-        loadPassage(passageName);
+        loadPassage(searchQuery);
     }
 
     function handleChange(event: React.ChangeEvent<any>) {
-        setPassageName(event.currentTarget.value);
+        setSearchQuery(event.currentTarget.value);
     }
 
-    async function loadPassage(passageName: string) {
+    async function loadPassage(searchQuery: string) {
+
+        let chaptersContents = new Array();
         
-        let usfm = getUSFM(passageName);
+        let usfm = getUSFM(searchQuery);
+        console.log(usfm);
         if (!usfm) {
             return;
         }
 
-        let fileName = usfm['book']+'.'+usfm['chapter'];
-        
-        if (!fileName) { //invalid
-            setPassageContents(null);
-            return;
+        let chapterRange;
+        if (usfm['finalChapter']) {
+            chapterRange =  usfm['finalChapter'];
         }
-        if (fileName == currentFileName) { //prevent multiple reads of current file
-            return;
+        else {
+            chapterRange = usfm['initialChapter']
         }
-        currentFileName = fileName;
         
-        // load contents externally from files
-        //TODO; allow chapter-spanning
-        const passageContents = await window.electronAPI.openFile(fileName);
+        //load chapters from files
+        for (let chapter = usfm['initialChapter']; chapter <= chapterRange; chapter++) {
+            let fileName = usfm['book']+'.'+chapter;
+            
+            if (!fileName) { //invalid
+                continue;
+            }
+            // if (fileName == currentFileName) { //prevent multiple reads of current file
+            //     return;
+            // }
+            // currentFileName = fileName;
+            
+            // load contents externally from files
+            const chapterContents = await window.electronAPI.openFile(fileName); //TODO; invalid name crashes app
+            chaptersContents.push(chapterContents);
+    
+        }
 
-        setPassageContents(passageContents);
-        setPassageName(passageName);
+        setChaptersContents(chaptersContents);
+        console.log(chaptersContents);
+        setSearchQuery(searchQuery);
         
         //scroll to verse if specified
         if (usfm['initialVerse']) { //might need to move into state
-            const element = document.getElementById('v'+usfm['initialVerse']); //TEMP; -1 prevents verse going all the way to top
+
+            let range;
+            if (usfm['finalVerse']) {
+                range = usfm['finalVerse'];
+            }
+            else {
+                range = usfm['initialVerse'];
+            }
+
+            //jump to passage
+            const element = document.getElementById('v'+(usfm['initialVerse']-1)); //TEMP; -1 prevents verse going all the way to top
             if (element) {
                 element.scrollIntoView();
             }
-
-            let elements = document.getElementsByClassName('v'+usfm['initialVerse']);
-            for(let i = 0; i < elements.length; i++) {
-                elements[i].classList.remove('blink'); //TODO; allow repetition
-                elements[i].classList.add('blink');
+            else {
+                document.getElementById(docId)?.scrollIntoView(); //goto top
             }
+
+            //highlight passage
+            for (let verse = usfm['initialVerse']; verse <= range; verse++) {
+
+                const elements = document.getElementsByClassName('v'+verse);
+                for(let i = 0; i < elements.length; i++) {
+                    const element = elements[i] as HTMLElement;
+                    element.classList.remove('blink');
+                    element.offsetWidth; //allow repetition
+                    element.classList.add('blink');
+                }
+
+            }
+
+        }
+        else {
+            document.getElementById(docId)?.scrollIntoView(); //goto top
         }
     }
 
+    const passageContents = chaptersContents.map((chapterContents: any, i: Number) => {
+        if (i !== chaptersContents.length - 1) {
+            return (
+                <>
+                <Scripture contents={chapterContents} loadPassage={loadPassage}/>
+                <hr/>
+                </>
+            );
+        }
+        return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
+    });
+
     return (
         <>
-            <article id={docId} onClick={deselect}>
-                
-                {/* BANNER */}
-                <div className="input-group">
-                    <input type="text" value={passageName} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()}/>
-                    <button className='btn btn-default' onClick={handleClick}>Load</button>
-                </div>
 
-                {/* BIBLE */}
-                <AnchorBase anchor={baseAnchor} className="base">
+            {/* BANNER */}
+            <div className="input-group">
+                <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()}/>
+                <button className='btn btn-default' onClick={handleClick}>Load</button>
+            </div>
 
-                    {/*content /* autofill from JSON */}
-                    <Scripture contents={passageContents} loadPassage={loadPassage}></Scripture>
+            <div className='scroll'>
+                <article id={docId} onClick={deselect}>
+                    
+                        {/* BIBLE */}
+                        <AnchorBase anchor={baseAnchor} className="base">
 
-                </AnchorBase>
-                <p className="notice">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</p>
+                            {/*content /* autofill from JSON */}
+                            {passageContents}
 
-                {/* SIDENOTES */} {/* TODO; generate dynamically */}
-                <div className="sidenotes">
-                    <Sidenote sidenote={blue} base={baseAnchor}>
-                        <div style={{ width: 280, height: 150}}>
-                            <textarea defaultValue='Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem.'/>
+                        </AnchorBase>
+                        <p className="notice">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</p>
+
+                        {/* SIDENOTES */} {/* TODO; generate dynamically */}
+                        <div className="sidenotes">
+                            <Sidenote sidenote={blue} base={baseAnchor}>
+                                <div style={{ width: 280, height: 150}}>
+                                    <textarea defaultValue='Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem.'/>
+                                </div>
+                            </Sidenote>
+                            <Sidenote sidenote={red} base={baseAnchor}>
+                                <div style={{ width: 280, height: 100}}>right-hand note</div>
+                            </Sidenote>
                         </div>
-                    </Sidenote>
-                    <Sidenote sidenote={red} base={baseAnchor}>
-                        <div style={{ width: 280, height: 100}}>right-hand note</div>
-                    </Sidenote>
-                </div>
 
-                <div className="sidenotes l">
-                    <Sidenote sidenote={blue} base={baseAnchor}>
-                        <div style={{ width: 280, height: 100}}>left-hand note</div>
-                    </Sidenote>
-                </div>
+                        <div className="sidenotes l">
+                            <Sidenote sidenote={blue} base={baseAnchor}>
+                                <div style={{ width: 280, height: 100}}>left-hand note</div>
+                            </Sidenote>
+                        </div>
 
-            </article>
+                </article>
+            </div>
+
         </>
     );
 }
 
 function getUSFM(reference: string) {
 
-    const match = reference.toUpperCase().match(/((?:[123]+ )?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?)?/); //NOT GLOBAL
+    const match = reference.toUpperCase().match(/((?:[123]+ )?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?|-(\d+))?/); //NOT GLOBAL
+    console.log(match);
 
-    if (!match || match.length < 3) { //invalid format
+    if (!match) { //invalid format
         return null;
     }
 
@@ -367,14 +430,10 @@ function getUSFM(reference: string) {
         usfm['book'] = match[1];
     }
 
-    usfm['chapter'] = match[2];
-
-    if (match.length > 3) {
-        usfm['initialVerse'] =  Number(match[3]);
-    }
-    if (match.length > 4) {
-        usfm['finalVerse'] = Number(match[4]);
-    }
+    usfm['initialChapter'] = match[2];
+    usfm['initialVerse'] =  Number(match[3]);
+    usfm['finalVerse'] = Number(match[4]);
+    usfm['finalChapter'] = Number(match[5]);
 
     return usfm;
 }
