@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, dialog} = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 
 const fs = require('fs')
 const path = require('path')
@@ -29,7 +29,7 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    ipcMain.handle('test', (event, test) => handleFileOpen(test))
+    ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
     createWindow()
 
     app.on('activate', function () {
@@ -48,17 +48,19 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-async function handleFileOpen(fileName) {
+async function handleFileRead(fileName, localPath) {
+
+    const dirName = app.getPath("documents");
 
     let obj;
     try {
-        obj = JSON.parse(fs.readFileSync(path.join(__dirname, 'NKJV', fileName), 'utf8'));
+        obj = JSON.parse(fs.readFileSync(path.join(dirName,'bible-app',localPath,fileName), 'utf8'));
     }
     catch (err) {
         return null;
     }
 
-    obj[0][0]['chapter'] = fileName.split('.')[1];
-
     return obj;
 }
+
+//TODO; make `documents/bible-app` dir if not exist

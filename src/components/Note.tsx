@@ -77,7 +77,8 @@ function Note({ contents, loadPassage }: Note) {
                 //TODO; prevent multiple reads of same file
                 let usfm = getUSFM(ref[0]);
                 let fileName = usfm['book']+'.'+usfm['initialChapter'];
-                let passageContents = await window.electronAPI.openFile(fileName);
+                let passageContents = await window.electronAPI.readFile(fileName, "Scripture/NKJV");
+                passageContents[0][0]['chapter'] = usfm['initialChapter'];
 
                 if (!passageContents) {
                     setNoteContents(null);

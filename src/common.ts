@@ -3,6 +3,7 @@ const books = require('./books.json');
 export function getUSFM(reference: string) {
 
     const match = reference.toUpperCase().match(/((?:[123]+ ?)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?|-(\d+))?/); //NOT GLOBAL
+    console.log(match);
 
     if (!match) { //invalid format
         return null;
