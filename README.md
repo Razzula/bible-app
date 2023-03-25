@@ -6,6 +6,9 @@ Yarn: `npm install --global yarn`
 ### Dependencies
 ` yarn install `
 
+Requires Bible contents as specially-formatted JSON files in `Documents\bible-app\Scripture\NKJV\`, named `BOOK.CHAPTER`.
+`GEN.1`, `GEN.2` and `MAT.5` are provided as examples in `/misc`.
+
 ### ~~Building~~ Running
 ` yarn electron:serve`
 
