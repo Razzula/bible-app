@@ -3,7 +3,7 @@ const books = require('./books.json');
 export function getUSFM(reference: string) {
 
     const match = reference.toUpperCase().match(/((?:[123]+ ?)?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?|-(\d+))?/); //NOT GLOBAL
-    console.log(match);
+    // console.log(match);
 
     if (!match) { //invalid format
         return null;
@@ -13,7 +13,7 @@ export function getUSFM(reference: string) {
     match[1] = match[1].replace(/\s+/, '');
     books.forEach((book: (string[])) => {
         if (book.includes(match[1])) {
-            console.log(book);
+            // console.log(book);
             usfm['book'] = book[0];
         }
     });
@@ -23,6 +23,6 @@ export function getUSFM(reference: string) {
     usfm['finalVerse'] = Number(match[4]);
     usfm['finalChapter'] = Number(match[5]);
 
-    console.log(usfm);
+    // console.log(usfm);
     return usfm;
 }

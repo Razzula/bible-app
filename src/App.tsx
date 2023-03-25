@@ -26,7 +26,7 @@ const baseAnchor = 'anchor';
 function App() {
     //TODO; better initial values (currently an error)
     const [searchQuery, setSearchQuery] = useState('');
-    const [chaptersContents, setChaptersContents]: [Array<any>, any] = useState([null]);
+    const [passageContents, setPassageContents]: [Array<any>, any] = useState([]);
     // var currentFileName: string;
     const [tempNotesContents, setTempNotesContents]: [Array<any>, any] = useState([null]);
 
@@ -72,14 +72,28 @@ function App() {
             
             // load contents externally from files
             const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV"); //TODO; single-chapter books //TODO; make NKJV
-            chapterContents[0][0]['chapter'] = chapter;
+            if (chapterContents) {
+                chapterContents[0][0]['chapter'] = chapter;
+            }
             chaptersContents.push(chapterContents);
 
             loadPassageNotes(fileName);
     
         }
 
-        setChaptersContents(chaptersContents);
+        const passageContents = chaptersContents.map((chapterContents: any, i: Number) => {
+            if (i !== chaptersContents.length - 1) { //there is a subsequent chapter
+                return (
+                    <>
+                    <Scripture contents={chapterContents} loadPassage={loadPassage}/>
+                    <hr/>
+                    </>
+                );
+            }
+            return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
+        });
+
+        setPassageContents(passageContents);
         setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
         
         //scroll to verse if specified
@@ -124,42 +138,35 @@ function App() {
     async function loadPassageNotes(fileName: string) {
 
         const chapterNotes = await window.electronAPI.readFile(fileName,"notes");
-        console.log(chapterNotes);
 
         if (chapterNotes) {
-            setTempNotesContents(chapterNotes);
+
+            const notesContents = chapterNotes.map((noteContents: any) => {
+                console.log(noteContents);
+                if (noteContents) {
+                    return (
+                        <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
+                            <div style={{ width: 280, height: 150}}>
+                                <textarea>
+                                    {noteContents.contents}
+                                </textarea>
+                            </div>
+                        </Sidenote>
+                    );
+                }
+            });
+
+            setTempNotesContents(notesContents);
         }
         else {
-            setTempNotesContents([null]);
+            setTempNotesContents(null);
         }
+        
+        deselect();
 
     }
 
-    //TODO; everytime the search bar is changed these functions run (VERY slow for large passages)
-    const passageContents = chaptersContents.map((chapterContents: any, i: Number) => {
-        if (i !== chaptersContents.length - 1) { //there is a subsequent chapter
-            return (
-                <>
-                <Scripture contents={chapterContents} loadPassage={loadPassage}/>
-                <hr/>
-                </>
-            );
-        }
-        return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
-    });
-
-    const notesContents = tempNotesContents.map((noteContents: any) => {
-        if (noteContents) {
-            return (
-                <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
-                    <div style={{ width: 280, height: 150}}>
-                        <textarea defaultValue={noteContents.contents}/>
-                    </div>
-                </Sidenote>
-            );
-        }
-    });
-
+    //GENERATE JSX
     return (
         <>
 
@@ -184,7 +191,7 @@ function App() {
                         {/* SIDENOTES */} {/* TODO; generate dynamically */}
                         <div className="sidenotes">
 
-                            {notesContents}
+                            {tempNotesContents}
 
                             {/* <Sidenote sidenote='testR' base={baseAnchor}>
                                 <div style={{ width: 280, height: 100}}>right-hand note</div>
