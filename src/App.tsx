@@ -18,6 +18,17 @@ declare global {
     }
 }
 
+document.body.addEventListener('mouseup', (event) => {
+    switch (event.button) {
+        case 3:
+            console.log('back');
+            break;
+        case 4:
+            console.log('forward');
+            break;
+    }
+});
+
 var store: Store;
 
 const docId = 'article';
@@ -29,19 +40,57 @@ function App() {
     const [passageContents, setPassageContents]: [Array<any>, any] = useState([]);
     // var currentFileName: string;
     const [tempNotesContents, setTempNotesContents]: [Array<any>, any] = useState([null]);
+    const [historyStacks, setHistoryStacks]: [Array<Array<string>>, any] = useState([[],[]]);
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
-    function handleClick() {
-        loadPassage(searchQuery);
+    function handleSearch() {
+        loadPassage(searchQuery, true);
+    }
+
+    function handleBackClick() {
+        if (historyStacks[0].length >= 2) {
+            const currentSearchQuery = historyStacks[0].pop();
+            const pastSearchQuery = historyStacks[0].pop();
+
+            //load past page
+            if (pastSearchQuery) {
+                loadPassage(pastSearchQuery);
+            }
+            
+            //allow returning to current page
+            if (currentSearchQuery) {
+                historyStacks[1].push(currentSearchQuery);
+            }
+            if (historyStacks) {
+                setHistoryStacks(historyStacks);
+            }
+        }
+    }
+
+    function handleForwardClick() {
+        if (historyStacks[1].length >= 1) {
+            const pastSearchQuery = historyStacks[1].pop();
+            
+            if (pastSearchQuery) {
+                loadPassage(pastSearchQuery);
+            }
+            if (historyStacks) {
+                setHistoryStacks(historyStacks);
+            }
+        }
     }
 
     function handleChange(event: React.ChangeEvent<any>) {
         setSearchQuery(event.currentTarget.value);
     }
 
-    async function loadPassage(searchQuery: string) {
+    function handleTextSelection() {
+        // console.log(window.getSelection()?.toString());
+    }
+
+    async function loadPassage(searchQuery: string, clearForwardCache: boolean= false) {
 
         let chaptersContents = new Array();
         
@@ -92,13 +141,13 @@ function App() {
             }
             return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
         });
-
+        
         setPassageContents(passageContents);
         setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
         
         //scroll to verse if specified
         if (usfm['initialVerse']) { //might need to move into state
-
+            
             let range;
             if (usfm['finalVerse']) {
                 range = usfm['finalVerse'];
@@ -106,7 +155,7 @@ function App() {
             else {
                 range = usfm['initialVerse'];
             }
-
+            
             //jump to passage
             const element = document.getElementById('v'+(usfm['initialVerse']-1)); //TEMP; -1 prevents verse going all the way to top
             if (element) {
@@ -115,10 +164,10 @@ function App() {
             else {
                 document.getElementById(docId)?.scrollIntoView(); //goto top
             }
-
+            
             //highlight passage
             for (let verse = usfm['initialVerse']; verse <= range; verse++) {
-
+                
                 const elements = document.getElementsByClassName('v'+verse);
                 for(let i = 0; i < elements.length; i++) {
                     const element = elements[i] as HTMLElement;
@@ -126,13 +175,20 @@ function App() {
                     element.offsetWidth; //allow repetition
                     element.classList.add('blink');
                 }
-
+                
             }
-
+            
         }
         else {
             document.getElementById(docId)?.scrollIntoView(); //goto top
         }
+        
+        //TODO; validation
+        historyStacks[0].push(searchQuery)
+        if (clearForwardCache) {
+            historyStacks[1] = new Array<string>();
+        }
+        setHistoryStacks(historyStacks);
     }
 
     async function loadPassageNotes(fileName: string) {
@@ -147,9 +203,7 @@ function App() {
                     return (
                         <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
                             <div style={{ width: 280, height: 150}}>
-                                <textarea>
-                                    {noteContents.contents}
-                                </textarea>
+                                <textarea value={noteContents.contents}/> {/* TODO; not read only */}
                             </div>
                         </Sidenote>
                     );
@@ -172,12 +226,15 @@ function App() {
 
             {/* BANNER */}
             <div className="input-group">
-                <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleClick()}/>
-                <button className='btn btn-default' onClick={handleClick}>Load</button>
+                <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
+                <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
+
+                <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
+                <button className='btn btn-default' onClick={handleSearch}>Load</button>
             </div>
 
             <div className='scroll'>
-                <article id={docId} onClick={deselect}>
+                <article id={docId} onClick={deselect} onMouseUp={handleTextSelection}>
                     
                         {/* BIBLE */}
                         <AnchorBase anchor={baseAnchor} className="base">

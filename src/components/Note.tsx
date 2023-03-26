@@ -68,7 +68,7 @@ function Note({ contents, loadPassage }: Note) {
             return (
                 <>
                 <OverlayTrigger trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
-                    <span className='ref external' onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[0])}>{ref[0]}</span>
+                    <span className='ref external' onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[0], true)}>{ref[0]}</span>
                 </OverlayTrigger>
                 </>
             );
