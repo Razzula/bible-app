@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
-import Note from './Note';
+import Footnote from './Footnote';
 
 import '../../styles/bible.scss';
 
@@ -86,7 +86,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                 }
 
                 return (
-                    <Note contents={item.content} loadPassage={loadPassage} />
+                    <Footnote contents={item.content} loadPassage={loadPassage} />
                 );
             }
 

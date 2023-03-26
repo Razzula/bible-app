@@ -5,7 +5,7 @@ import { getUSFM }  from '../common';
 
 import Scripture from './Scripture';
 
-type Note = {
+type Footnote = {
     contents: string;
     loadPassage: any;
 }
@@ -25,7 +25,7 @@ const InnerPopover = React.forwardRef(
     },
 );
 
-function Note({ contents, loadPassage }: Note) {
+function Footnote({ contents, loadPassage }: Footnote) {
     const [noteContents, setNoteContents]: [any, any]  = useState();
 
     //detect references
@@ -126,4 +126,4 @@ function Note({ contents, loadPassage }: Note) {
 
 }
 
-export default Note;
+export default Footnote;

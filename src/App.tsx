@@ -11,6 +11,7 @@ import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
 import '../styles/App.scss';
+import SidenoteContent from './components/SidenoteContent';
 
 declare global {
     interface Window {
@@ -202,9 +203,7 @@ function App() {
                 if (noteContents) {
                     return (
                         <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
-                            <div style={{ width: 280, height: 150}}>
-                                <textarea value={noteContents.contents}/> {/* TODO; not read only */}
-                            </div>
+                            <SidenoteContent initialNoteContents={noteContents.contents}/>
                         </Sidenote>
                     );
                 }
