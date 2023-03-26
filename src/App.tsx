@@ -203,7 +203,7 @@ function App() {
                 if (noteContents) {
                     return (
                         <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
-                            <SidenoteContent initialNoteContents={noteContents.contents}/>
+                            <SidenoteContent id={noteContents.verse} initialNoteContents={noteContents.contents}/>
                         </Sidenote>
                     );
                 }
