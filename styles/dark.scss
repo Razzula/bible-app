@@ -15,6 +15,11 @@ body {
     border-radius: 4px;
 }
 
+.btn:disabled {
+    border: none;
+    opacity: 10%;
+}
+
 .popover {
     --bs-popover-bg: #2d3133;
 }

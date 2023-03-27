@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, cloneElement } from 'react';
 import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
@@ -88,10 +88,83 @@ function App() {
     }
 
     function handleTextSelection() {
-        // console.log(window.getSelection()?.toString());
+        const selectedElement = getSelectedElement() as HTMLElement;
+
+        if (selectedElement) {
+            const wrapper = document.createElement('test');
+            wrapSelectedElement(selectedElement, wrapper);
+        }
     }
 
-    async function loadPassage(searchQuery: string, clearForwardCache: boolean= false) {
+    function getSelectedElement() {
+        const selection = window.getSelection();
+        if (selection) {
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                if (range) {
+                    const node = range.startContainer;
+
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        return node.parentElement;
+                    } else {
+                        return node;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    function wrapSelectedElement(element: HTMLElement, wrapper: HTMLElement) { //TODO; wrapping a footnote breaks
+        const range = window.getSelection()?.getRangeAt(0);
+        if (!range) {
+            return;
+        }
+
+        const selectedNodes = range.cloneContents().childNodes;
+        if (!selectedNodes || !selectedNodes.length) {
+            return;
+        }
+
+        const startNode = range.startContainer;
+        const startOffset = range.startOffset;
+        const endNode = range.endContainer;
+        const endOffset = range.endOffset;
+
+        const multiSpanning = (range.startContainer !== range.endContainer);
+
+        // create new nodes for the three parts of the original element
+        const beforeSelected = document.createTextNode(
+            startNode.textContent?.substring(0, startOffset) || ""
+        );
+        const afterSelected = document.createTextNode(
+            endNode.textContent?.substring(endOffset) || ""
+        );
+        
+        // move the selected nodes to a new wrapper element
+        const newWrapper = wrapper.cloneNode() as HTMLElement;
+        while (selectedNodes.length) {
+            newWrapper.appendChild(selectedNodes[0]);
+        }
+
+        // clear the selection
+        range.deleteContents();
+        element.innerHTML = "";
+
+        // rebuild the original element with the three parts
+        element.appendChild(beforeSelected);
+        element.appendChild(newWrapper);
+        if (!multiSpanning) {
+            element.appendChild(afterSelected);
+        }
+        
+        console.log(beforeSelected);
+        console.log(newWrapper);
+        console.log(afterSelected);
+
+    }
+
+    async function loadPassage(searchQuery: string, clearForwardCache: boolean = false) {
 
         let chaptersContents = new Array();
         
@@ -229,7 +302,7 @@ function App() {
                 <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
 
                 <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
-                <button className='btn btn-default' onClick={handleSearch}>Load</button>
+                <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length == 0}>Load</button>
             </div>
 
             <div className='scroll'>
