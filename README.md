@@ -19,6 +19,6 @@ This program is free software: you can redistribute it and/or modify it under th
 See [LICENSE.md](https://github.com/Razzula/ible-app/blob/main/LICENSE.md) for details.
 
 ### New King James Version®. Copyright © 1982 by Thomas Nelson
-_Whilst this application requires data from the Bible in order to function, this repo does not provide these files other than a small number of demo files. These files are of the  New  King James  Version,  and are included under the [Gratis Use Guidelines](https://www.thomasnelson.com/about-us/permissions/#permissionBiblequote)._
+_Whilst this application requires data from the Bible in order to function, this repo does not provide these files other than a small number of [demo](https://github.com/Razzula/bible-app/tree/main/example/Scripture/NKJV/) files. These files are of the  New  King James  Version,  and are included under the [Gratis Use Guidelines](https://www.thomasnelson.com/about-us/permissions/#permissionBiblequote)._
 
 Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.
