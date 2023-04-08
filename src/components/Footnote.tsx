@@ -45,7 +45,7 @@ function Footnote({ contents, loadPassage }: Footnote) {
     if (matches[0][0] != 0) { //prevent pushing ''  
         data.push([contents.slice(0, matches[0][0]), false]);
     }
-    for (i= 0; i < matches.length; i++) {
+    for (i = 0; i < matches.length; i++) {
 
         data.push([contents.slice(matches[i][0], matches[i][1]), true]); //reference
 

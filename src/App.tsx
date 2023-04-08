@@ -173,13 +173,7 @@ function App() {
             return;
         }
 
-        let chapterRange;
-        if (usfm['finalChapter']) {
-            chapterRange =  usfm['finalChapter'];
-        }
-        else {
-            chapterRange = usfm['initialChapter']
-        }
+        let chapterRange = usfm['finalChapter'] ? usfm['finalChapter'] : usfm['initialChapter'];
         
         //load chapters from files
         for (let chapter = usfm['initialChapter']; chapter <= chapterRange; chapter++) {
@@ -222,13 +216,7 @@ function App() {
         //scroll to verse if specified
         if (usfm['initialVerse']) { //might need to move into state
             
-            let range;
-            if (usfm['finalVerse']) {
-                range = usfm['finalVerse'];
-            }
-            else {
-                range = usfm['initialVerse'];
-            }
+            let range = usfm['finalVerse'] ? usfm['finalVerse'] : usfm['initialVerse'];
             
             //jump to passage
             const element = document.getElementById('v'+(usfm['initialVerse']-1)); //TEMP; -1 prevents verse going all the way to top

@@ -43,7 +43,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
         for (let ii = 0; ii < contents[i].length; ii++) { //iterate through verse sections
             let section = contents[i][ii];
             
-            if (section.type == 'p' || section.type == 'q1' || section.type == 'q2') { //new paragraph
+            if (section.type == 'p' || section.type == 'q1' || section.type == 'q2' || section.type == 'pc') { //new paragraph
                 if (temp.length != 0) { //store previous sections as a paragraph
                     paragraphs.push(temp);
                 }
@@ -75,38 +75,45 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
     paragraphs.push(temp);
 
     // format paragraphs
+    function generateContents(item: any) {
+        //footnotes
+        if (item.type == 'note') {
+            if (ignoreFootnotes) {
+                return;
+            }
+
+            return (
+                <Footnote contents={item.content} loadPassage={loadPassage} />
+            );
+        }
+
+        //labels
+        if (item.type == 'label') {
+            return (
+                <span className={item.type} id={'v'+item.content}>{item.content}</span> //can use scrollIntoView() to jump to verse
+            );
+        }
+        if (item.type == 'label chapter') {
+            return (
+                <span className={item.type} id={'v1'}>{item.content}</span> //can use scrollIntoView() to jump to verse
+            );
+        }
+
+        //other formatting
+        if (item['children']) { // if node is a parent, recursively generate its contents
+            return (
+                <span className={item.type+' '+item.test}>{item['children'].map(generateContents)}</span>
+            );
+        }
+        return (
+            <span className={item.type+' '+item.test}>{item.content}</span>
+        );
+    }
+
     const content = paragraphs.map((paragraph: Array<{type:string, content:string, test:string}>) => {
 
         // format contents of paragraph
-        const paraContent = paragraph.map((item) => {
-            //footnotes
-            if (item.type == 'note') {
-                if (ignoreFootnotes) {
-                    return;
-                }
-
-                return (
-                    <Footnote contents={item.content} loadPassage={loadPassage} />
-                );
-            }
-
-            //labels
-            if (item.type == 'label') {
-                return (
-                    <span className={item.type} id={'v'+item.content}>{item.content}</span> //can use scrollIntoView() to jump to verse
-                );
-            }
-            if (item.type == 'label chapter') {
-                return (
-                    <span className={item.type} id={'v1'}>{item.content}</span> //can use scrollIntoView() to jump to verse
-                );
-            }
-    
-            //other formatting
-            return (
-                <span className={item.type+' '+item.test}>{item.content}</span>
-            );
-        });
+        const paraContent = paragraph.map(generateContents);
 
         let paraType = paragraph[0].type
         if (paraType.startsWith('label')) {
@@ -123,7 +130,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
     });
 
     //TODO; work out how to use <InLineAnchor>s with this new system
-
+    
     return (<>{content}</>);
 }
 
