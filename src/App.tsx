@@ -36,7 +36,6 @@ const docId = 'article';
 const baseAnchor = 'anchor';
 
 function App() {
-    //TODO; better initial values (currently an error)
     const [searchQuery, setSearchQuery] = useState('');
     const [passageContents, setPassageContents]: [Array<any>, any] = useState([]);
     // var currentFileName: string;
@@ -164,6 +163,18 @@ function App() {
 
     }
 
+    function generatePassage(chapterContents: any, i: Number, chaptersContentsLength: number) {
+        if (chapterContents[0][0]['chapter']) { //there is a subsequent chapter
+            return (
+                <>
+                <hr/>
+                <Scripture contents={chapterContents} loadPassage={loadPassage}/>
+                </>
+            );
+        }
+        return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
+    }
+
     async function loadPassage(searchQuery: string, clearForwardCache: boolean = false) {
 
         let chaptersContents = new Array();
@@ -198,17 +209,7 @@ function App() {
     
         }
 
-        const passageContents = chaptersContents.map((chapterContents: any, i: Number) => {
-            if (i !== chaptersContents.length - 1) { //there is a subsequent chapter
-                return (
-                    <>
-                    <Scripture contents={chapterContents} loadPassage={loadPassage}/>
-                    <hr/>
-                    </>
-                );
-            }
-            return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
-        });
+        const passageContents = chaptersContents.map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, chaptersContents.length));
         
         setPassageContents(passageContents);
         setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
@@ -277,7 +278,59 @@ function App() {
         }
         
         deselect();
+    }
 
+    async function expandPassage(delta: number) {
+        //get next chapter
+        const historyStack = historyStacks[0]
+        let usfm = getUSFM(historyStack[historyStack.length-1]);
+
+        let extraChapter = usfm['finalChapter'] ? usfm['finalChapter'] : usfm['initialChapter']
+        extraChapter = Number(extraChapter) + delta
+
+        let fileName = usfm['book'] + '.' + extraChapter
+        const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV");
+        if (chapterContents) {
+            chapterContents[0][0]['chapter'] = extraChapter;
+        }
+        
+        //truncate up to next heading
+        let extraContents = new Array();
+
+        const start = delta == 1 ? 0 : chapterContents.length - 1
+
+        for (let i = start; (i < chapterContents.length && i >= 0); i += delta) {
+
+            if (chapterContents[i]['header']) {
+                if (delta === -1) {
+                    extraContents.push(chapterContents[i]);
+                }
+                break;
+            }
+            if (chapterContents[i][0] && chapterContents[i][0]['header']) {
+                if (delta === -1) {
+                    extraContents.push(chapterContents[i]);
+                }
+                break;
+            }
+            extraContents.push(chapterContents[i]);
+            
+        }
+
+        //generate passage and merge into current
+        if (delta === 1) {
+            const extraPassageContents = [extraContents].map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, 1));
+            setPassageContents(passageContents.concat(extraPassageContents));
+        }
+        else { //TODO; fix verse numbers
+            extraContents = extraContents.reverse()
+            extraContents[0][0]['verse'] = (chapterContents.length + 1) - extraContents.length;
+            const extraPassageContents = [extraContents].map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, 1));
+            setPassageContents(extraPassageContents.concat(passageContents));
+        }
+
+        //TODO; record history
+        //TODO; update searchbar contents
     }
 
     //GENERATE JSX
@@ -298,10 +351,12 @@ function App() {
                     
                         {/* BIBLE */}
                         <AnchorBase anchor={baseAnchor} className="base">
+                            <button onClick={() => expandPassage(-1)} className='btn btn-default ellipsis'>...</button><br/>
 
                             {/*content /* autofill from JSON */}
                             {passageContents}
 
+                            <br/><button onClick={() => expandPassage(1)} className='btn btn-default ellipsis'>...</button>
                         </AnchorBase>
                         <p className="notice">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</p>
 
@@ -327,7 +382,5 @@ function App() {
         </>
     );
 }
-
-//TODO; back and forward functions
 
 export default App;

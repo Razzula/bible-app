@@ -122,9 +122,10 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
 
         return (
             <>
-                <div className={paraType}>
+                <span className={paraType}>
                     {paraContent}
-                </div>
+                </span>
+                <br/>
             </>
         );
     });

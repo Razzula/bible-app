@@ -17,29 +17,33 @@
 }
 
 //paragraphs
-div.s { //header
+span.s { //header
     font-weight: 700;
     line-height: 1em;
-    margin: 2em 0 0 0;
+    margin: 1em 0 0 0;
+    display: inline-block;
 }
-div.p { //regular paragraph: indent first line
+span.p { //regular paragraph: indent first line
     text-indent: 1em;
     line-height: 2em;
     margin-top: 16px;
+    display: inline-block;
 }
 span.pc {
     text-align: center;
 }
-div.q1 {
+span.q1 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: 2em;
     margin-top: 16px;
+    display: inline-block;
 }
-div.q2 {
+span.q2 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: 3em;
+    display: inline-block;
 }
 
 //text types
