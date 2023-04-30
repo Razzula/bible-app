@@ -47,10 +47,9 @@ span.q2 {
 }
 
 //text types
-.qs {
-    display: block;
+span.qs {
     font-style: italic;
-    text-align: right;
+    float: right;
 }
 
 .it, .sls { //additional words required in English for clarification: italicised

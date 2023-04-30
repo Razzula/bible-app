@@ -301,17 +301,19 @@ function App() {
 
         for (let i = start; (i < chapterContents.length && i >= 0); i += delta) {
 
-            if (chapterContents[i]['header']) {
-                if (delta === -1) {
-                    extraContents.push(chapterContents[i]);
+            if (i !== 0) {
+                if (chapterContents[i]['header']) {
+                    if (delta === -1) {
+                        extraContents.push(chapterContents[i]);
+                    }
+                    break;
                 }
-                break;
-            }
-            if (chapterContents[i][0] && chapterContents[i][0]['header']) {
-                if (delta === -1) {
-                    extraContents.push(chapterContents[i]);
+                if (chapterContents[i][0] && chapterContents[i][0]['header']) {
+                    if (delta === -1) {
+                        extraContents.push(chapterContents[i]);
+                    }
+                    break;
                 }
-                break;
             }
             extraContents.push(chapterContents[i]);
             

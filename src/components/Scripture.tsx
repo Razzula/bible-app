@@ -43,7 +43,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
         for (let ii = 0; ii < contents[i].length; ii++) { //iterate through verse sections
             let section = contents[i][ii];
             
-            if (section.type == 'p' || section.type == 'q1' || section.type == 'q2' || section.type == 'pc') { //new paragraph
+            if (section.type == 'p' || section.type == 'q1' || section.type == 'q2' || section.type == 'pc' || section.type == 'qs') { //new paragraph
                 if (temp.length != 0) { //store previous sections as a paragraph
                     paragraphs.push(temp);
                 }
