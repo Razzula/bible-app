@@ -257,6 +257,9 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
         root = soup.find('div')
         node = create_node(root)
 
+        if ('content' in node and 'type' not in node):
+            node = [node] # {content: ...} --> [{content: ...}]
+        
         if ('children' in node):
             #if ('type' in node):
             #    pass
@@ -291,11 +294,12 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
 ## START
 manifest = json.load('manifest.json')
 
-if (len(sys.argv) < 2):  # check there are 3 arguments: the script, input, output
+if (len(sys.argv) < 2): #check there are 3 arguments: the script, & translation
     print('error: insufficient arguments')
 else:
-    if (os.path.isdir(os.path.join(sys.argv[1], 'original'))):
+    if (os.path.isdir(os.path.join(sys.argv[1],'original'))):
         extract(sys.argv[1])
     else:
         print(f'directory /{sys.argv[1]}/original does not exist')
-#extract('NKJV')
+
+# extract('NKJV') #for debugging
