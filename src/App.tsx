@@ -3,7 +3,7 @@ import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 
-import { getUSFM }  from '../src/common';
+import { getUSFM }  from './common';
 
 import Scripture from './components/Scripture';
 
@@ -27,26 +27,28 @@ document.body.addEventListener('mouseup', (event) => {
         case 4:
             console.log('forward');
             break;
+
+        // no default
     }
 });
 
-var store: Store;
+let store: Store;
 
 const docId = 'article';
 const baseAnchor = 'anchor';
 
 function App() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [passageContents, setPassageContents]: [Array<any>, any] = useState([]);
+    const [passageContents, setPassageContents]: [Array<JSX.Element>, Function] = useState([]);
     // var currentFileName: string;
-    const [tempNotesContents, setTempNotesContents]: [Array<any>, any] = useState([null]);
-    const [historyStacks, setHistoryStacks]: [Array<Array<string>>, any] = useState([[],[]]);
+    const [tempNotesContents, setTempNotesContents]: [Array<null>, Function] = useState([null]);
+    const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[],[]]);
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
     function handleSearch() {
-        loadPassage(searchQuery, true);
+        void loadPassage(searchQuery, true);
     }
 
     function handleBackClick() {
@@ -56,7 +58,7 @@ function App() {
 
             //load past page
             if (pastSearchQuery) {
-                loadPassage(pastSearchQuery);
+                void loadPassage(pastSearchQuery);
             }
             
             //allow returning to current page
@@ -74,7 +76,7 @@ function App() {
             const pastSearchQuery = historyStacks[1].pop();
             
             if (pastSearchQuery) {
-                loadPassage(pastSearchQuery);
+                void loadPassage(pastSearchQuery);
             }
             if (historyStacks) {
                 setHistoryStacks(historyStacks);
@@ -163,8 +165,8 @@ function App() {
 
     }
 
-    function generatePassage(chapterContents: any, i: Number, chaptersContentsLength: number) {
-        if (chapterContents[0][0]['chapter']) { //there is a subsequent chapter
+    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number) {
+        if (chapterContents[0][0].chapter) { //there is a subsequent chapter
             return (
                 <>
                 <hr/>
@@ -175,25 +177,25 @@ function App() {
         return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
     }
 
-    async function loadPassage(searchQuery: string, clearForwardCache: boolean = false) {
+    async function loadPassage(searchQuery: string, clearForwardCache = false) {
 
-        let chaptersContents = new Array();
+        const chaptersContents = [];
         
-        let usfm = getUSFM(searchQuery);
+        const usfm = getUSFM(searchQuery);
         if (!usfm) {
             return;
         }
 
-        let chapterRange = usfm['finalChapter'] ? usfm['finalChapter'] : usfm['initialChapter'];
+        const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
         
         //load chapters from files
-        for (let chapter = usfm['initialChapter']; chapter <= chapterRange; chapter++) {
-            let fileName = usfm['book']+'.'+chapter;
+        for (let chapter = usfm.initialChapter; chapter <= chapterRange; chapter++) {
+            const fileName = `${usfm.book}.${chapter}`;
             
             if (!fileName) { //invalid
                 continue;
             }
-            // if (fileName == currentFileName) { //prevent multiple reads of current file
+            // if (fileName === currentFileName) { //prevent multiple reads of current file
             //     return;
             // }
             // currentFileName = fileName;
@@ -201,26 +203,26 @@ function App() {
             // load contents externally from files
             const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV"); //TODO; single-chapter books //TODO; make NKJV
             if (chapterContents) {
-                chapterContents[0][0]['chapter'] = chapter;
+                chapterContents[0][0].chapter = chapter;
             }
             chaptersContents.push(chapterContents);
 
-            loadPassageNotes(fileName);
+            void loadPassageNotes(fileName);
     
         }
 
-        const passageContents = chaptersContents.map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, chaptersContents.length));
+        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length));
         
         setPassageContents(passageContents);
         setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
         
         //scroll to verse if specified
-        if (usfm['initialVerse']) { //might need to move into state
+        if (usfm.initialVerse) { //might need to move into state
             
-            let range = usfm['finalVerse'] ? usfm['finalVerse'] : usfm['initialVerse'];
+            const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
             
             //jump to passage
-            const element = document.getElementById('v'+(usfm['initialVerse']-1)); //TEMP; -1 prevents verse going all the way to top
+            const element = document.getElementById(`v${usfm.initialVerse-1}`); //TEMP; -1 prevents verse going all the way to top
             if (element) {
                 element.scrollIntoView();
             }
@@ -229,11 +231,11 @@ function App() {
             }
             
             //highlight passage
-            for (let verse = usfm['initialVerse']; verse <= range; verse++) {
+            for (let verse = usfm.initialVerse; verse <= range; verse++) {
                 
-                const elements = document.getElementsByClassName('v'+verse);
-                for(let i = 0; i < elements.length; i++) {
-                    const element = elements[i] as HTMLElement;
+                const elements = document.getElementsByClassName(`v${verse}`);
+                for(const e of elements) {
+                    const element = e as HTMLElement;
                     element.classList.remove('blink');
                     element.offsetWidth; //allow repetition
                     element.classList.add('blink');
@@ -256,19 +258,17 @@ function App() {
 
     async function loadPassageNotes(fileName: string) {
 
-        const chapterNotes = await window.electronAPI.readFile(fileName,"notes");
+        const chapterNotes: [] = await window.electronAPI.readFile(fileName,"notes");
 
         if (chapterNotes) {
 
-            const notesContents = chapterNotes.map((noteContents: any) => {
+            const notesContents = chapterNotes.map((noteContents: {verse: string, contents: string}) => {
                 console.log(noteContents);
-                if (noteContents) {
-                    return (
-                        <Sidenote sidenote={noteContents.verse} base={baseAnchor}>
-                            <SidenoteContent id={noteContents.verse} initialNoteContents={noteContents.contents}/>
-                        </Sidenote>
-                    );
-                }
+                return (
+                    <Sidenote sidenote={noteContents.verse} base={baseAnchor} key={noteContents.verse}>
+                        <SidenoteContent id={noteContents.verse} initialNoteContents={noteContents.contents}/>
+                    </Sidenote>
+                );
             });
 
             setTempNotesContents(notesContents);
@@ -283,32 +283,32 @@ function App() {
     async function expandPassage(delta: number) {
         //get next chapter
         const historyStack = historyStacks[0]
-        let usfm = getUSFM(historyStack[historyStack.length-1]);
+        const usfm = getUSFM(historyStack[historyStack.length-1]);
 
-        let extraChapter = usfm['finalChapter'] ? usfm['finalChapter'] : usfm['initialChapter']
+        let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
         extraChapter = Number(extraChapter) + delta
 
-        let fileName = usfm['book'] + '.' + extraChapter
+        const fileName = usfm.book + '.' + extraChapter
         const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV");
         if (chapterContents) {
-            chapterContents[0][0]['chapter'] = extraChapter;
+            chapterContents[0][0].chapter = extraChapter;
         }
         
         //truncate up to next heading
-        let extraContents = new Array();
+        let extraContents = [];
 
-        const start = delta == 1 ? 0 : chapterContents.length - 1
+        const start = (delta === 1 ? 0 : chapterContents.length - 1)
 
         for (let i = start; (i < chapterContents.length && i >= 0); i += delta) {
 
             if (i !== 0) {
-                if (chapterContents[i]['header']) {
+                if (chapterContents[i].header) {
                     if (delta === -1) {
                         extraContents.push(chapterContents[i]);
                     }
                     break;
                 }
-                if (chapterContents[i][0] && chapterContents[i][0]['header']) {
+                if (chapterContents[i][0]?.header) {
                     if (delta === -1) {
                         extraContents.push(chapterContents[i]);
                     }
@@ -321,13 +321,13 @@ function App() {
 
         //generate passage and merge into current
         if (delta === 1) {
-            const extraPassageContents = [extraContents].map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, 1));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1));
             setPassageContents(passageContents.concat(extraPassageContents));
         }
         else { //TODO; fix verse numbers
             extraContents = extraContents.reverse()
-            extraContents[0][0]['verse'] = (chapterContents.length + 1) - extraContents.length;
-            const extraPassageContents = [extraContents].map((chapterContents: any, i: Number) => generatePassage(chapterContents, i, 1));
+            extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1));
             setPassageContents(extraPassageContents.concat(passageContents));
         }
 
@@ -345,7 +345,7 @@ function App() {
                 <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
 
                 <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
-                <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length == 0}>Load</button>
+                <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
             </div>
 
             <div className='scroll'>

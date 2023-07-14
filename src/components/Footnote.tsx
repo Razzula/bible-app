@@ -7,7 +7,7 @@ import Scripture from './Scripture';
 
 type Footnote = {
     contents: string;
-    loadPassage: any;
+    loadPassage: Function;
 }
 
 //popover with passage
@@ -26,23 +26,24 @@ const InnerPopover = React.forwardRef(
 );
 
 function Footnote({ contents, loadPassage }: Footnote) {
-    const [noteContents, setNoteContents]: [any, any]  = useState();
+    const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
 
     //detect references
-    const pattern = RegExp(/((?:[123]+ )?[A-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?)?/g);
-    let match;
-    let matches = new Array();
+    const pattern = RegExp(/((?:[123]+ )?[A-Za-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?)?/g);
+    const matches = [];
 
-    while ((match = pattern.exec(contents)) !== null) { //get positions of references
-        matches.push([match.index, pattern.lastIndex]);
+    for (const match of contents.matchAll(pattern)) { //get positions of references
+        if (match.index !== undefined) {
+            matches.push([match.index, match.index + match[0].length]);
+        }
     }
 
-    let data = new Array();
+    const data = new Array();
 
     //extract references
     let i;
 
-    if (matches[0][0] != 0) { //prevent pushing ''  
+    if (matches[0][0] !== 0) { //prevent pushing ''  
         data.push([contents.slice(0, matches[0][0]), false]);
     }
     for (i = 0; i < matches.length; i++) {
@@ -54,7 +55,7 @@ function Footnote({ contents, loadPassage }: Footnote) {
         }
         
     }
-    if (matches[i-1][1] != contents.length) { //prevent pushing ''  
+    if (matches[i-1][1] !== contents.length) { //prevent pushing ''  
         data.push([contents.slice(matches[i-1][1], contents.length), false]);
     }
 
@@ -66,19 +67,17 @@ function Footnote({ contents, loadPassage }: Footnote) {
             const notePassage = (<Scripture contents={noteContents} ignoreFootnotes />);
             //contents of footnote popover
             return (
-                <>
                 <OverlayTrigger trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
                     <span className='ref external' onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[0], true)}>{ref[0]}</span>
                 </OverlayTrigger>
-                </>
             );
 
             async function updatePopoverContents() {
                 //TODO; prevent multiple reads of same file
-                let usfm = getUSFM(ref[0]);
-                let fileName = usfm['book']+'.'+usfm['initialChapter'];
+                const usfm = getUSFM(ref[0]);
+                const fileName = `${usfm.book}.${usfm.initialChapter}`;
                 let passageContents = await window.electronAPI.readFile(fileName, "Scripture/NKJV");
-                passageContents[0][0]['chapter'] = usfm['initialChapter'];
+                passageContents[0][0].chapter = usfm.initialChapter;
 
                 if (!passageContents) {
                     setNoteContents(null);
@@ -88,11 +87,11 @@ function Footnote({ contents, loadPassage }: Footnote) {
                 //trim to specific verses
                 let initalVerse = 1, finalVerse = passageContents.length
 
-                if (usfm['initialVerse']) {
-                    initalVerse = usfm['initialVerse'];
+                if (usfm.initialVerse) {
+                    initalVerse = usfm.initialVerse;
 
-                    if (usfm['finalVerse']) {
-                        finalVerse = usfm['finalVerse'];
+                    if (usfm.finalVerse) {
+                        finalVerse = usfm.finalVerse;
                     }
                     else {
                         finalVerse = initalVerse;
@@ -100,7 +99,7 @@ function Footnote({ contents, loadPassage }: Footnote) {
                 }
 
                 passageContents = passageContents.slice(initalVerse-1, finalVerse);
-                passageContents[0][0]['verse'] = initalVerse;
+                passageContents[0][0].verse = initalVerse;
 
                 setNoteContents(passageContents);
             }
