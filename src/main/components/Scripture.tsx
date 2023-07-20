@@ -3,7 +3,7 @@ import { Alert } from 'react-bootstrap';
 
 import Footnote from './Footnote';
 
-import '../../styles/bible.scss';
+import '../styles/bible.scss';
 
 type Scripture = {
     contents: any;

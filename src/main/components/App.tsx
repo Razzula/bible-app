@@ -3,15 +3,15 @@ import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 
-import { getUSFM }  from './common';
+import { getUSFM }  from '../utils/bibleReferences';
 
-import Scripture from './components/Scripture';
+import Scripture from './Scripture';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
 import '../styles/App.scss';
-import SidenoteContent from './components/SidenoteContent';
+import SidenoteContent from './SidenoteContent';
 
 declare global {
     interface Window {

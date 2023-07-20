@@ -10,7 +10,7 @@ module.exports = {
     usedExports: true,
   },
   entry: {
-    app: './src/index.tsx',
+    app: './src/main/index.tsx',
   },
   plugins: [
     // new CleanWebpackPlugin(),

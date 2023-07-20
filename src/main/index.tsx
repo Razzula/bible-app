@@ -4,13 +4,13 @@ import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { Store, setup } from 'sidenotes';
-import rootReducer from './reducers';
+import rootReducer from './utils/reducers';
 
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 
-import App from "./App";
+import App from "./components/App";
 
 const store: Store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 setup(store, { padding: 10 });

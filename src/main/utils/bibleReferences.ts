@@ -1,4 +1,4 @@
-import books from './books.json';
+import books from '../../../public/books.json';
 const booksArray: any = books;
 
 export function getUSFM(reference: string) {

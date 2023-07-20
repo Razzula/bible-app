@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { getUSFM }  from '../common';
+import { getUSFM }  from '../utils/bibleReferences';
 
 import Scripture from './Scripture';
 

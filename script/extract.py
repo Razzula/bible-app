@@ -107,6 +107,9 @@ def extract(directory):
 
     global current
 
+    with open(os.path.join(root, '..', 'public', 'manifest.json'), 'r') as f:
+        manifest = json.load(f)
+
     if (not os.path.isdir(os.path.join(directory, 'new'))):
         os.mkdir(os.path.join(directory, 'new'))  # create /new/
 
@@ -115,7 +118,7 @@ def extract(directory):
         print(book['title'])
         pass
 
-        for chapter in range(1, book['chapters']+1):
+        for chapter in range(1, len(book['chapters'])):
             current = f'{book["usfm"]}.{chapter}'
             #if (current != 'MAT.5'):
             #    continue
@@ -292,7 +295,7 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
 
 
 ## START
-manifest = json.load('manifest.json')
+root = os.path.dirname(__file__)
 
 if (len(sys.argv) < 2): #check there are 3 arguments: the script, & translation
     print('error: insufficient arguments')
