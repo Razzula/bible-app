@@ -91,10 +91,10 @@ function App() {
     function handleTextSelection() {
         const selectedElement = getSelectedElement() as HTMLElement;
 
-        if (selectedElement) {
-            const wrapper = document.createElement('test');
-            wrapSelectedElement(selectedElement, wrapper);
-        }
+        // if (selectedElement) {
+        //     const wrapper = document.createElement('test');
+        //     wrapSelectedElement(selectedElement, wrapper);
+        // }
     }
 
     function getSelectedElement() {
