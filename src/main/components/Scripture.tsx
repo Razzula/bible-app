@@ -37,8 +37,13 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
     let verse = 1;
     for (let i = 0; i < contents.length; i++) { //iterate through verses
 
+        if (Array.isArray(contents[i]) === false) { // TODO; convert below code to function and use that instead
+            contents[i] = [contents[i]];
+        }
+
         //content
         for (let ii = 0; ii < contents[i].length; ii++) { //iterate through verse sections
+
             const section = contents[i][ii];
             
             if (section.type === 'p' || section.type === 'q1' || section.type === 'q2' || section.type === 'pc' || section.type === 'qs') { //new paragraph
