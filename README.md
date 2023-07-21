@@ -1,13 +1,14 @@
 # bible-app
 ## Installation
 ### Prerequisites
-[Node.js & npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+[Node.js & npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)  
 Yarn: `npm install --global yarn`
 ### Dependencies
 ` yarn install `
 
-Requires Bible contents as specially-formatted JSON files in `Documents\bible-app\Scripture\NKJV\`, named `BOOK.CHAPTER`.
-`GEN.1`, `GEN.2` and `MAT.5` are provided as examples in `/misc`.
+Requires Bible contents as specially-formatted JSON files in `Documents\bible-app\Scripture\NKJV\`, named `BOOK.CHAPTER`.  
+`GEN.1`, `GEN.2` and `MAT.5` are provided as examples in [`/example/Scripture/NKJV`](/example/Scripture/NKJV).  
+See [`/script`](/script) for information on how to generate these files.
 
 ### ~~Building~~ Running
 ` yarn electron:serve`
