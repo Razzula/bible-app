@@ -97,39 +97,42 @@ def readString(arrayOfByte, i=3):
     if (current not in a):
         b = readString(arrayOfByte, 4)
         #if (current not in b):
-        #    pass
         return b
     return a
 
 
 #EXTRACT
-def extract(directory):
+def extract(inDir, outDir):
 
     global current
+    
+    root = os.path.dirname(__file__)
 
     with open(os.path.join(root, '..', 'public', 'manifest.json'), 'r') as f:
         manifest = json.load(f)
 
-    if (not os.path.isdir(os.path.join(directory, 'new'))):
-        os.mkdir(os.path.join(directory, 'new'))  # create /new/
+    if (not os.path.isdir(outDir)):
+        os.mkdir(outDir)  # create 
 
     # BODY
     for book in manifest:
-        print(book['title'])
-        pass
+        if ('full-title' in book):
+            print(book['full-title'])
+        else:
+            print(book['title'])
 
-        for chapter in range(1, len(book['chapters'])):
+        for chapter in range(len(book['chapters']) + 1):
+            if (chapter == 0):
+                chapter = 'INTRO'
+
             current = f'{book["usfm"]}.{chapter}'
-            #if (current != 'MAT.5'):
-            #    continue
-            #pass
 
-            fileName = os.path.join(directory, 'original',current)
+            fileName = os.path.join(inDir, current)
             if (not os.path.exists(fileName)):
                 if ('INTRO' in fileName):
-                    print(f'{bcolors.WARNING}error: {fileName} does not exist{bcolors.ENDC}')
+                    print(f'\t{bcolors.WARNING}{current}{bcolors.ENDC}')
                 else:
-                    print(f'{bcolors.ERROR}error: {fileName} does not exist{bcolors.ENDC}')
+                    print(f'\t{bcolors.ERROR}{current}{bcolors.ENDC}')
                 continue
 
             data = readFile(fileName)
@@ -150,7 +153,7 @@ def extract(directory):
                 if (line == '      </div>'):
                     break
 
-            makeSimple(out, directory, book['usfm'], current)
+            makeSimple(out, outDir, book['usfm'], current)
 
         #break # just Genesis
 
@@ -158,7 +161,7 @@ def extract(directory):
 
 
 # SIMPLIFY
-def makeSimple(data, dir, book, file):  # HTML to JSON
+def makeSimple(data, outDir, book, file):  # HTML to JSON
     global headers
 
     # STRIP HTML, MAINTAINING PARAGRAPH STRUCTURE
@@ -178,9 +181,9 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
             note = re.search(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), cleantext)
 
         # div
-        para = re.match(re.compile(f'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), cleantext)
+        para = re.match(re.compile(fr'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), cleantext)
         if (not para):
-            para = re.match(re.compile(f'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), cleantext)
+            para = re.match(re.compile(fr'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), cleantext)
         if (not para):   # heading
             header = '~'
             headers.append(re.sub(re.compile('<[^>]+>'), '', cleantext))
@@ -204,8 +207,7 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
             text += cleantext
 
     # SPLIT INTO VERSES
-    verses = re.split(re.compile(f'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), text)
-    pass
+    verses = re.split(re.compile(fr'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), text)
 
     # formatting
     def create_node(element):
@@ -254,7 +256,7 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
         return result
 
     for i in range(1, len(verses)):
-        verse = re.sub(re.compile(f'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), '', verses[i])  # remove additinal verse markers
+        verse = re.sub(re.compile(fr'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), '', verses[i])  # remove additinal verse markers
 
         soup = BeautifulSoup(f'<div>{verse}</div>', 'html.parser')
         root = soup.find('div')
@@ -265,7 +267,6 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
         
         if ('children' in node):
             #if ('type' in node):
-            #    pass
             node = node['children']
 
         if ('type' in node):
@@ -277,32 +278,33 @@ def makeSimple(data, dir, book, file):  # HTML to JSON
 
         # update
         verses[i] = node
-    pass
 
     # OUT
     outJSON = json.dumps(verses[1:], indent=4)
-    with open(f'{dir}/new/{file}', 'w') as f:
+    outDir = os.path.join(outDir, file)
+    with open(outDir, 'w') as f:
         f.write(outJSON)
 
     # reformat file (condensed)
-    with open(f'{dir}/new/{file}', 'r') as f:
+    with open(outDir, 'r') as f:
         temp = f.read()
     temp = re.sub(re.compile(r'\n            '), ' ', temp)
     temp = re.sub(re.compile(r'\n        },'), ' },', temp)
     temp = re.sub(re.compile(r'\n        }'), ' }', temp)
-    with open(f'{dir}/new/{file}', 'w') as f:
+    with open(outDir, 'w') as f:
         f.write(temp)
 
 
 ## START
-root = os.path.dirname(__file__)
+def main(args):
 
-if (len(sys.argv) < 2): #check there are 3 arguments: the script, & translation
-    print('error: insufficient arguments')
-else:
-    if (os.path.isdir(os.path.join(sys.argv[1],'original'))):
-        extract(sys.argv[1])
+    if (len(args) < 2): #check there are 3 arguments: the script, & translation
+        print('error: insufficient arguments')
     else:
-        print(f'directory /{sys.argv[1]}/original does not exist')
+        if (os.path.isdir(os.path.join(args[1]))):
+            extract(args[1], args[2])
+        else:
+            print(f'directory /{args[1]}/ does not exist')
 
-# extract('NKJV') #for debugging
+if __name__ == "__main__":
+    main(sys.argv)
