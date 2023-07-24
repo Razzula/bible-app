@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { getUSFM }  from '../utils/bibleReferences';
+import { getUSFM, locateReferences }  from '../utils/bibleReferences';
 
-import Scripture from './Scripture';
+import Scripture from './scripture/Scripture';
 
 type Footnote = {
     contents: string;
     loadPassage: Function;
+    currentBook: string;
+    currentChapter: number;
 }
 
 //popover with passage
@@ -25,56 +27,29 @@ const InnerPopover = React.forwardRef(
     },
 );
 
-function Footnote({ contents, loadPassage }: Footnote) {
+function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footnote) {
     const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
 
-    //detect references
-    const pattern = RegExp(/((?:[123]+ )?[A-Za-z]+)\.?\s*(\d+)(?::\s*(\d+)(?:\s*-(\d+))?)?/g);
-    const matches = [];
-
-    for (const match of contents.matchAll(pattern)) { //get positions of references
-        if (match.index !== undefined) {
-            matches.push([match.index, match.index + match[0].length]);
-        }
-    }
-
-    const data = new Array();
-
-    //extract references
-    let i;
-
-    if (matches[0][0] !== 0) { //prevent pushing ''  
-        data.push([contents.slice(0, matches[0][0]), false]);
-    }
-    for (i = 0; i < matches.length; i++) {
-
-        data.push([contents.slice(matches[i][0], matches[i][1]), true]); //reference
-
-        if (i < matches.length-1) { 
-            data.push([contents.slice(matches[i][1], matches[i+1][0]), false]); //post-reference
-        }
-        
-    }
-    if (matches[i-1][1] !== contents.length) { //prevent pushing ''  
-        data.push([contents.slice(matches[i-1][1], contents.length), false]);
-    }
+    const data = locateReferences(contents, currentBook, currentChapter);
 
     //format references
     const references = data.map((ref) => {
         if (ref[1]) {
+
+            const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
             
             //format passage
             const notePassage = (<Scripture contents={noteContents} ignoreFootnotes />);
             //contents of footnote popover
             return (
                 <OverlayTrigger trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
-                    <span className='ref external' onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[0], true)}>{ref[0]}</span>
+                    <span className={refType} onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[1], true)}>{ref[0]}</span>
                 </OverlayTrigger>
             );
 
             async function updatePopoverContents() {
                 //TODO; prevent multiple reads of same file
-                const usfm = getUSFM(ref[0]);
+                const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
                 let passageContents = await window.electronAPI.readFile(fileName, "Scripture/NKJV");
                 passageContents[0][0].chapter = usfm.initialChapter;

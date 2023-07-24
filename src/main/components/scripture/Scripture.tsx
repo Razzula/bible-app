@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
-import Footnote from './Footnote';
+import Footnote from '../Footnote';
 
 import '../styles/bible.scss';
 
@@ -85,8 +85,8 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                 return;
             }
 
-            return (
-                <Footnote contents={item.content} loadPassage={loadPassage} />
+            return ( //TODO; currentBook is hardcoded
+                <Footnote contents={item.content} loadPassage={loadPassage} currentBook={'GEN'} currentChapter={1} />
             );
         }
 

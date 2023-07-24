@@ -5,7 +5,7 @@ import { useStore } from 'react-redux';
 
 import { getUSFM }  from '../utils/bibleReferences';
 
-import Scripture from './Scripture';
+import Scripture from './scripture/Scripture';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
@@ -48,7 +48,7 @@ function App() {
     const deselect = () => store.dispatch(deselectSidenote(docId));
     
     function handleSearch() {
-        void loadPassage(searchQuery, true);
+        void loadPassageFromString(searchQuery, true);
     }
 
     function handleBackClick() {
@@ -58,7 +58,7 @@ function App() {
 
             //load past page
             if (pastSearchQuery) {
-                void loadPassage(pastSearchQuery);
+                void loadPassageFromString(pastSearchQuery);
             }
             
             //allow returning to current page
@@ -76,7 +76,7 @@ function App() {
             const pastSearchQuery = historyStacks[1].pop();
             
             if (pastSearchQuery) {
-                void loadPassage(pastSearchQuery);
+                void loadPassageFromString(pastSearchQuery);
             }
             if (historyStacks) {
                 setHistoryStacks(historyStacks);
@@ -170,20 +170,32 @@ function App() {
             return (
                 <>
                 <hr/>
-                <Scripture contents={chapterContents} loadPassage={loadPassage}/>
+                <Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM}/>
                 </>
             );
         }
-        return (<Scripture contents={chapterContents} loadPassage={loadPassage}/>);
+        return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM}/>);
     }
 
-    async function loadPassage(searchQuery: string, clearForwardCache = false) {
+    async function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
+        
+        const result = getUSFM(searchQuery);
+        if (!result) {
+            return;
+        }
+
+        loadPassageFromUSFM(result, clearForwardCache) //TODO; TEMP
+    }
+
+    async function loadPassageFromUSFM(result: any, clearForwardCache = false) {
 
         const chaptersContents = [];
-        
-        const usfm = getUSFM(searchQuery);
-        if (!usfm) {
-            return;
+
+        let usfm: any = result;
+        if (Array.isArray(result)) { //TODO; TEMP
+
+            usfm = result[0]; // TODO; actully load the contetns of all the passages
+
         }
 
         const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
@@ -283,7 +295,7 @@ function App() {
     async function expandPassage(delta: number) {
         //get next chapter
         const historyStack = historyStacks[0]
-        const usfm = getUSFM(historyStack[historyStack.length-1]);
+        const usfm = getUSFM(historyStack[historyStack.length-1])[0]; //TODO; TEMP
 
         let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
         extraChapter = Number(extraChapter) + delta
