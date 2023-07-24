@@ -176,8 +176,19 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
         note = re.search(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), cleantext)
         while (note):
             noteContent = cleantext[note.regs[1][0]:note.regs[1][1]]
-            cleantext = re.sub(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), f'<span class="note">{noteContent}</span>', cleantext, 1)  # remove footnotes
 
+            #squash 'x, x+1' notation
+            commaNotation = re.findall(re.compile(r'(\d+), (?=(\d+))'), noteContent)
+            if (commaNotation):
+                for match in commaNotation:
+
+                    initialVerse = int(match[0])
+                    finalVerse = int(match[1])
+
+                    if (initialVerse + 1 == finalVerse):
+                        noteContent = re.sub(re.compile(f'{initialVerse}, {finalVerse}'), f'{initialVerse}-{finalVerse}', noteContent)
+
+            cleantext = re.sub(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), f'<span class="note">{noteContent}</span>', cleantext, 1)  # remove footnotes
             note = re.search(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), cleantext)
 
         # div
