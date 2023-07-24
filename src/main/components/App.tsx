@@ -165,16 +165,17 @@ function App() {
 
     }
 
-    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number) {
+    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string) {
+        console.log(chaptersContentsLength);
         if (chapterContents[0][0].chapter) { //there is a subsequent chapter
             return (
                 <>
                 <hr/>
-                <Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM}/>
+                <Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/> {/* TODO; currently hardcoded */}
                 </>
             );
         }
-        return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM}/>);
+        return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/>);
     }
 
     async function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
@@ -223,7 +224,7 @@ function App() {
     
         }
 
-        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length));
+        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book));
         
         setPassageContents(passageContents);
         setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
@@ -333,13 +334,13 @@ function App() {
 
         //generate passage and merge into current
         if (delta === 1) {
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
             setPassageContents(passageContents.concat(extraPassageContents));
         }
         else { //TODO; fix verse numbers
             extraContents = extraContents.reverse()
             extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
             setPassageContents(extraPassageContents.concat(passageContents));
         }
 

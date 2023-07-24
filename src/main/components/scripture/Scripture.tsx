@@ -3,15 +3,17 @@ import { Alert } from 'react-bootstrap';
 
 import Footnote from '../Footnote';
 
-import '../styles/bible.scss';
+import '../../styles/bible.scss';
 
 type Scripture = {
     contents: any;
     ignoreFootnotes?: boolean;
-    loadPassage?: any
+    loadPassage?: any;
+    passageBook?: string;
+    passageChapter?: number;
 }
 
-function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
+function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter }: Scripture) {
 
     //presence check
     if (contents === (null || undefined)) {
@@ -85,8 +87,8 @@ function Scripture({ contents, ignoreFootnotes, loadPassage }: Scripture) {
                 return;
             }
 
-            return ( //TODO; currentBook is hardcoded
-                <Footnote contents={item.content} loadPassage={loadPassage} currentBook={'GEN'} currentChapter={1} />
+            return (
+                <Footnote contents={item.content} loadPassage={loadPassage} currentBook={passageBook || ''} currentChapter={passageChapter || 0} />
             );
         }
 
