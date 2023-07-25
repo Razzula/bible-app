@@ -7,6 +7,15 @@ from bs4 import BeautifulSoup
 
 
 class bcolors:
+    """
+    A class to define escape codes for colored text in the terminal.
+
+    Attributes:
+        ERROR (str): Red.
+        WARNING (str): Yellow.
+        ENDC (str): Reset to default.
+    """
+
     ERROR = '\033[91m'
     WARNING = '\033[93m'
     ENDC = '\033[0m'
@@ -74,12 +83,32 @@ headers = []
 
 
 def readFile(paramFile):
+    """
+    Read a binary file and convert its contents to a string.
+
+    Parameters:
+        paramFile (str): The path to the binary file to be read.
+
+    Returns:
+        str: The contents of the binary file as a string.
+    """
+
     with open(paramFile, 'rb') as f:
         arrayOfByte = f.read()
         return readString(arrayOfByte)
 
 
 def readString(arrayOfByte, i=3):
+    """
+    Convert a portion of an array of bytes to a string.
+
+    Parameters:
+        arrayOfByte (bytes): An array of bytes to be processed.
+        i (int, optional): The starting index in the array (default is 3).
+
+    Returns:
+        str: The resulting string extracted from the array of bytes.
+    """
 
     byteArray = []
     while (i < len(arrayOfByte)):
@@ -96,23 +125,41 @@ def readString(arrayOfByte, i=3):
 
     if (current not in a):
         b = readString(arrayOfByte, 4)
-        #if (current not in b):
         return b
     return a
 
 
-#EXTRACT
+# EXTRACT
 def extract(inDir, outDir):
+    """
+    Extract and process data from input directory and create new files in the output directory.
+
+    Parameters:
+        inDir (str): The input directory containing the data files to be processed.
+        outDir (str): The output directory where the processed files will be stored.
+
+    Returns:
+        None
+
+    Global Variables Used:
+        current (str): A global variable used to keep track of the current file being processed.
+
+    Notes:
+        Assumes the presence of a 'manifest.json' file in the 'public' subdirectory
+        located relative to the script file. This file is used to load the 'manifest' data.
+
+        Assumes inputs are in .yves format.
+    """
 
     global current
-    
+
     root = os.path.dirname(__file__)
 
     with open(os.path.join(root, '..', 'public', 'manifest.json'), 'r') as f:
         manifest = json.load(f)
 
     if (not os.path.isdir(outDir)):
-        os.mkdir(outDir)  # create 
+        os.mkdir(outDir)  # create
 
     # BODY
     for book in manifest:
@@ -153,15 +200,33 @@ def extract(inDir, outDir):
                 if (line == '      </div>'):
                     break
 
-            makeSimple(out, outDir, book['usfm'], current)
-
-        #break # just Genesis
+            simplify(out, outDir, book['usfm'], current)
 
     print('DONE')
 
 
 # SIMPLIFY
-def makeSimple(data, outDir, book, file):  # HTML to JSON
+def simplify(data, outDir, book, file):  # HTML to JSON
+    """
+    Process data in HTML format and save it as JSON.
+
+    Parameters:
+        data (list): A list of strings containing the HTML data to be processed.
+        outDir (str): The directory where the processed data will be saved as JSON.
+        book (str): The book identifier.
+        file (str): The name of the file being processed.
+
+    Returns:
+        None
+
+    Global Variables Used:
+        headers (list): A global list to store extracted headers during processing.
+
+    Notes:
+        Assumes the presence of specific HTML tags for different content types,
+        such as 'div' tags for paragraphs and 'span' tags for content.
+    """
+
     global headers
 
     # STRIP HTML, MAINTAINING PARAGRAPH STRUCTURE
@@ -177,7 +242,7 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
         while (note):
             noteContent = cleantext[note.regs[1][0]:note.regs[1][1]]
 
-            #squash 'x, x+1' notation
+            # squash 'x, x+1' notation
             commaNotation = re.findall(re.compile(r'(\d+), (?=(\d+))'), noteContent)
             if (commaNotation):
                 for match in commaNotation:
@@ -198,7 +263,6 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
         if (not para):   # heading
             header = '~'
             headers.append(re.sub(re.compile('<[^>]+>'), '', cleantext))
-            continue  #TODO
 
         p = para.regs[0][1]
         cleantext = re.sub(re.compile(r'<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + header + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1)  # <div class='p'><...>1</>... ==> <...>1</>[p]...
@@ -206,11 +270,6 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
 
         # content tags
         cleantext = re.sub(re.compile('<span class="content">'), '<span>', cleantext)
-
-        # #headings
-        # cleantext = re.sub(re.compile('<div class="s"><span class="heading">[^>]+</span></div>'), '', cleantext)
-        # if (cleantext == ''):
-        #     continue
 
         if (header):
             header = ''
@@ -237,7 +296,7 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
 
                 if ((element.contents) and (element.contents[0].name) and (element.contents[0].has_attr('class'))):
                     if ('type' in result):
-                        result['type'].extend(element.contents[0]['class'])  #TODO; prevent duplication
+                        result['type'].extend(element.contents[0]['class'])  # TODO; prevent duplication
                     else:
                         result['type'] = element.contents[0]['class']
 
@@ -274,10 +333,9 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
         node = create_node(root)
 
         if ('content' in node and 'type' not in node):
-            node = [node] # {content: ...} --> [{content: ...}]
-        
+            node = [node]  # {content: ...} --> [{content: ...}]
+
         if ('children' in node):
-            #if ('type' in node):
             node = node['children']
 
         if ('type' in node):
@@ -306,16 +364,20 @@ def makeSimple(data, outDir, book, file):  # HTML to JSON
         f.write(temp)
 
 
-## START
+# START
 def main(args):
+    """
+    Entry point of the script for processing translation data.
+    """
 
-    if (len(args) < 2): #check there are 3 arguments: the script, & translation
+    if (len(args) < 2):  # check there are 3 arguments: the script, & translation
         print('error: insufficient arguments')
     else:
         if (os.path.isdir(os.path.join(args[1]))):
             extract(args[1], args[2])
         else:
             print(f'directory /{args[1]}/ does not exist')
+
 
 if __name__ == "__main__":
     main(sys.argv)

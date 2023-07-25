@@ -12,11 +12,11 @@ type Footnote = {
     currentChapter: number;
 }
 
-//popover with passage
+// popover with passage
 const InnerPopover = React.forwardRef(
     ({ popper, children, show: _, ...props }: any, ref: any) => {
         React.useEffect(() => {
-            popper.scheduleUpdate(); //update positioning
+            popper.scheduleUpdate(); // update positioning
         }, [children, popper]);
 
         return (
@@ -27,28 +27,43 @@ const InnerPopover = React.forwardRef(
     },
 );
 
+/**
+ * A React component to display footnotes.
+ *
+ * @param {FootnoteContentProps} props - The properties passed to the component.
+ *  - contents (string): The contents of the footnote.
+ *  - loadPassage (Function): A function to load a passage.
+ *  - currentBook (string): The current book.
+ *  - currentChapter (number): The current chapter.
+ *
+ * @returns {JSX.Element} A JSX Element of a `span` containing the footnote.
+ * 
+ * @note
+ *   - References are automatically formatted and linked to the appropriate passage.
+ *   - Hovering over a reference will display the passage in a popover.
+ */
 function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footnote) {
     const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
 
     const data = locateReferences(contents, currentBook, currentChapter);
 
-    //format references
+    // format references
     const references = data.map((ref) => {
         if (ref[1]) {
 
             const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
             
-            //format passage
+            // format passage
             const notePassage = (<Scripture contents={noteContents} ignoreFootnotes />);
-            //contents of footnote popover
+            // contents of footnote popover
             return (
-                <OverlayTrigger trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
+                <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
                     <span className={refType} onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[1], true)}>{ref[0]}</span>
                 </OverlayTrigger>
             );
 
             async function updatePopoverContents() {
-                //TODO; prevent multiple reads of same file
+                // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
                 let passageContents = await window.electronAPI.readFile(fileName, "Scripture/NKJV");
@@ -59,7 +74,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footno
                     return;
                 }
 
-                //trim to specific verses
+                // trim to specific verses
                 let initalVerse = 1, finalVerse = passageContents.length
 
                 if (usfm.initialVerse) {
@@ -82,7 +97,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footno
         return ref;
     });
 
-    //popover with footnote contents
+    // popover with footnote contents
     const footnotePopover = (
         <Popover id="popover-basic">
             <Popover.Body>
@@ -91,7 +106,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footno
         </Popover>
     );
     
-    //footnote
+    // footnote
     return (
         <OverlayTrigger trigger="click" rootClose placement="top" overlay={footnotePopover}>
             <span className="note"/>

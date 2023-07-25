@@ -19,28 +19,18 @@ declare global {
     }
 }
 
-document.body.addEventListener('mouseup', (event) => {
-    switch (event.button) {
-        case 3:
-            console.log('back');
-            break;
-        case 4:
-            console.log('forward');
-            break;
-
-        // no default
-    }
-});
-
 let store: Store;
 
 const docId = 'article';
 const baseAnchor = 'anchor';
 
+/**
+ * A React component to display the main application.
+ * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
+ */
 function App() {
     const [searchQuery, setSearchQuery] = useState('');
     const [passageContents, setPassageContents]: [Array<JSX.Element>, Function] = useState([]);
-    // var currentFileName: string;
     const [tempNotesContents, setTempNotesContents]: [Array<null>, Function] = useState([null]);
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[],[]]);
 
@@ -56,12 +46,12 @@ function App() {
             const currentSearchQuery = historyStacks[0].pop();
             const pastSearchQuery = historyStacks[0].pop();
 
-            //load past page
+            // load past page
             if (pastSearchQuery) {
                 void loadPassageFromString(pastSearchQuery);
             }
             
-            //allow returning to current page
+            // allow returning to current page
             if (currentSearchQuery) {
                 historyStacks[1].push(currentSearchQuery);
             }
@@ -90,11 +80,6 @@ function App() {
 
     function handleTextSelection() {
         const selectedElement = getSelectedElement() as HTMLElement;
-
-        // if (selectedElement) {
-        //     const wrapper = document.createElement('test');
-        //     wrapSelectedElement(selectedElement, wrapper);
-        // }
     }
 
     function getSelectedElement() {
@@ -116,7 +101,7 @@ function App() {
         return null;
     }
 
-    function wrapSelectedElement(element: HTMLElement, wrapper: HTMLElement) { //TODO; wrapping a footnote breaks
+    function wrapSelectedElement(element: HTMLElement, wrapper: HTMLElement) { // TODO; wrapping a footnote breaks
         const range = window.getSelection()?.getRangeAt(0);
         if (!range) {
             return;
@@ -136,10 +121,10 @@ function App() {
 
         // create new nodes for the three parts of the original element
         const beforeSelected = document.createTextNode(
-            startNode.textContent?.substring(0, startOffset) || ""
+            startNode.textContent?.substring(0, startOffset) ?? ""
         );
         const afterSelected = document.createTextNode(
-            endNode.textContent?.substring(endOffset) || ""
+            endNode.textContent?.substring(endOffset) ?? ""
         );
         
         // move the selected nodes to a new wrapper element
@@ -166,26 +151,25 @@ function App() {
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string) {
-        console.log(chaptersContentsLength);
-        if (chapterContents[0][0].chapter) { //there is a subsequent chapter
+        if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
                 <hr/>
-                <Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/> {/* TODO; currently hardcoded */}
+                <Scripture key={`${passageBook}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/> {/* TODO; currently hardcoded */}
                 </>
             );
         }
         return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/>);
     }
 
-    async function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
+    function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
         
         const result = getUSFM(searchQuery);
         if (!result) {
             return;
         }
 
-        loadPassageFromUSFM(result, clearForwardCache) //TODO; TEMP
+        void loadPassageFromUSFM(result, clearForwardCache)
     }
 
     async function loadPassageFromUSFM(result: any, clearForwardCache = false) {
@@ -193,7 +177,7 @@ function App() {
         const chaptersContents = [];
 
         let usfm: any = result;
-        if (Array.isArray(result)) { //TODO; TEMP
+        if (Array.isArray(result)) { // TODO; TEMP
 
             usfm = result[0]; // TODO; actully load the contetns of all the passages
 
@@ -201,20 +185,17 @@ function App() {
 
         const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
         
-        //load chapters from files
+        // load chapters from files
         for (let chapter = usfm.initialChapter; chapter <= chapterRange; chapter++) {
             const fileName = `${usfm.book}.${chapter}`;
             
-            if (!fileName) { //invalid
+            if (!fileName) { // invalid
                 continue;
             }
-            // if (fileName === currentFileName) { //prevent multiple reads of current file
-            //     return;
-            // }
-            // currentFileName = fileName;
+            // TODO; prevent multiple reads of current file
             
             // load contents externally from files
-            const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV"); //TODO; single-chapter books //TODO; make NKJV
+            const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV"); // TODO; single-chapter books // TODO; make NKJV
             if (chapterContents) {
                 chapterContents[0][0].chapter = chapter;
             }
@@ -227,30 +208,30 @@ function App() {
         const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book));
         
         setPassageContents(passageContents);
-        setSearchQuery(searchQuery); //TODO; format, e.g 'gen1' --> 'Genesis 1'
+        setSearchQuery(searchQuery); // TODO; format, e.g 'gen1' --> 'Genesis 1'
         
-        //scroll to verse if specified
-        if (usfm.initialVerse) { //might need to move into state
+        // scroll to verse if specified
+        if (usfm.initialVerse) { // might need to move into state
             
             const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
             
-            //jump to passage
-            const element = document.getElementById(`v${usfm.initialVerse-1}`); //TEMP; -1 prevents verse going all the way to top
+            // jump to passage
+            const element = document.getElementById(`v${usfm.initialVerse-1}`); // TEMP; -1 prevents verse going all the way to top
             if (element) {
                 element.scrollIntoView();
             }
             else {
-                document.getElementById(docId)?.scrollIntoView(); //goto top
+                document.getElementById(docId)?.scrollIntoView(); // goto top
             }
             
-            //highlight passage
+            // highlight passage
             for (let verse = usfm.initialVerse; verse <= range; verse++) {
                 
                 const elements = document.getElementsByClassName(`v${verse}`);
                 for(const e of elements) {
                     const element = e as HTMLElement;
                     element.classList.remove('blink');
-                    element.offsetWidth; //allow repetition
+                    element.offsetWidth; // allow repetition
                     element.classList.add('blink');
                 }
                 
@@ -258,10 +239,10 @@ function App() {
             
         }
         else {
-            document.getElementById(docId)?.scrollIntoView(); //goto top
+            document.getElementById(docId)?.scrollIntoView(); // goto top
         }
         
-        //TODO; validation
+        // TODO; validation
         historyStacks[0].push(searchQuery)
         if (clearForwardCache) {
             historyStacks[1] = new Array<string>();
@@ -278,7 +259,7 @@ function App() {
             const notesContents = chapterNotes.map((noteContents: {verse: string, contents: string}) => {
                 console.log(noteContents);
                 return (
-                    <Sidenote sidenote={noteContents.verse} base={baseAnchor} key={noteContents.verse}>
+                    <Sidenote key={noteContents.verse} sidenote={noteContents.verse} base={baseAnchor}>
                         <SidenoteContent id={noteContents.verse} initialNoteContents={noteContents.contents}/>
                     </Sidenote>
                 );
@@ -294,20 +275,20 @@ function App() {
     }
 
     async function expandPassage(delta: number) {
-        //get next chapter
+        // get next chapter
         const historyStack = historyStacks[0]
-        const usfm = getUSFM(historyStack[historyStack.length-1])[0]; //TODO; TEMP
+        const usfm = getUSFM(historyStack[historyStack.length-1])[0]; // TODO; TEMP
 
         let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
         extraChapter = Number(extraChapter) + delta
 
-        const fileName = usfm.book + '.' + extraChapter
+        const fileName = `${usfm.book}.${extraChapter}`
         const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV");
         if (chapterContents) {
             chapterContents[0][0].chapter = extraChapter;
         }
         
-        //truncate up to next heading
+        // truncate up to next heading
         let extraContents = [];
 
         const start = (delta === 1 ? 0 : chapterContents.length - 1)
@@ -332,23 +313,23 @@ function App() {
             
         }
 
-        //generate passage and merge into current
+        // generate passage and merge into current
         if (delta === 1) {
             const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
             setPassageContents(passageContents.concat(extraPassageContents));
         }
-        else { //TODO; fix verse numbers
+        else { // TODO; fix verse numbers
             extraContents = extraContents.reverse()
             extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
             const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
             setPassageContents(extraPassageContents.concat(passageContents));
         }
 
-        //TODO; record history
-        //TODO; update searchbar contents
+        // TODO; record history
+        // TODO; update searchbar contents
     }
 
-    //GENERATE JSX
+    // GENERATE JSX
     return (
         <>
 
@@ -393,7 +374,6 @@ function App() {
 
                 </article>
             </div>
-
         </>
     );
 }
