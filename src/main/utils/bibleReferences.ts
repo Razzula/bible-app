@@ -1,3 +1,4 @@
+import { ref } from 'sidenotes/dist/src/connect';
 import books from '../../../public/books.json';
 const booksArray: any = books;
 
@@ -213,5 +214,69 @@ export function locateReferences(text: string, currentBook: string | null = null
     }
 
     return data;
+
+}
+
+/**
+ * Assemble the given reference data into a single string.
+ * @param {Array<any>} referenceData An array of reference data objects.
+ * @returns {string} The assembled reference text.
+ * @note The function handles multiple references separated by commas or semicolons.
+ * @example getReferenceText([{ book: "JHN", initialChapter: 3, initialVerse: 16, finalVerse: 17 }, { book: "GEN", initialChapter: 1, initialVerse: 1 }]) returns "John 3:16-17; Genesis 1:1"
+ */
+export function getReferenceText(referenceData: Array<any>): string {
+
+    if (!Array.isArray(referenceData)) {
+        referenceData = [referenceData];
+    }
+
+    let referenceText = '';
+
+    let currentBook = '';
+    let currentChapter = NaN;
+
+    referenceData.forEach((reference: any, i: number) => {
+
+        // multi-reference separator
+        if (i !== 0) {
+            if ((reference.book !== currentBook) && (reference.initialChapter !== currentChapter)) {
+                referenceText += ', ';
+            }
+            else {
+                referenceText += '; ';
+            }
+        }
+
+        // book
+        if (reference.book !== currentBook) {
+            currentBook = reference.book;
+
+            booksArray.forEach((book: string[]) => { // get human-readable book name
+                if (book.includes(reference.book)) {
+                    reference.book = book[1];
+                }
+            });
+            referenceText += `${reference.book.charAt(0)}${reference.book.substr(1).toLowerCase()} `; // format to proper case
+        }
+        // chapter
+        if (reference.initialChapter !== currentChapter) {
+            referenceText += reference.initialChapter;
+            currentChapter = reference.initialChapter;
+        }
+        
+        // verses
+        if (!Number.isNaN(reference.initialVerse)) {
+            referenceText += `:${reference.initialVerse}`;
+        }
+        if (!Number.isNaN(reference.finalVerse)) {
+            referenceText += `-${reference.finalVerse}`;
+        }
+        if (!Number.isNaN(reference.finalChapter) && (reference.finalChapter !== undefined)) {
+            referenceText += `-${reference.finalChapter}`;
+        }
+
+    });
+
+    return referenceText;
 
 }

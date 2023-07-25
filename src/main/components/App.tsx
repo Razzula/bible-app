@@ -3,7 +3,7 @@ import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 
-import { getUSFM }  from '../utils/bibleReferences';
+import { getUSFM, getReferenceText }  from '../utils/bibleReferences';
 
 import Scripture from './scripture/Scripture';
 
@@ -172,15 +172,13 @@ function App() {
         void loadPassageFromUSFM(result, clearForwardCache)
     }
 
-    async function loadPassageFromUSFM(result: any, clearForwardCache = false) {
+    async function loadPassageFromUSFM(usfm: any, clearForwardCache = false) {
 
         const chaptersContents = [];
 
-        let usfm: any = result;
-        if (Array.isArray(result)) { // TODO; TEMP
+        if (Array.isArray(usfm)) { // TODO; TEMP
 
-            usfm = result[0]; // TODO; actully load the contetns of all the passages
-
+            usfm = usfm[0]; // TODO; actully load the contetns of all the passages
         }
 
         const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
@@ -208,7 +206,7 @@ function App() {
         const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book));
         
         setPassageContents(passageContents);
-        setSearchQuery(searchQuery); // TODO; format, e.g 'gen1' --> 'Genesis 1'
+        setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
         
         // scroll to verse if specified
         if (usfm.initialVerse) { // might need to move into state
