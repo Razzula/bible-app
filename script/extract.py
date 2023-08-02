@@ -263,6 +263,7 @@ def simplify(data, outDir, book, file):  # HTML to JSON
         if (not para):   # heading
             header = '~'
             headers.append(re.sub(re.compile('<[^>]+>'), '', cleantext))
+            continue
 
         p = para.regs[0][1]
         cleantext = re.sub(re.compile(r'<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + header + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1)  # <div class='p'><...>1</>... ==> <...>1</>[p]...
