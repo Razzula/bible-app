@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
-import Footnote from '../Footnote';
+import Footnote from './Footnote';
 
 import '../../styles/bible.scss';
 
@@ -28,7 +28,7 @@ type Scripture = {
 function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter }: Scripture) {
 
     // presence check
-    if (contents == null) {
+    if (contents === null) {
         return (
             <Alert variant="danger">
                 <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
@@ -95,6 +95,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passag
                 return;
             }
 
+            console.log(item);
             return (
                 <Footnote contents={item.content} loadPassage={loadPassage} currentBook={passageBook ?? ''} currentChapter={passageChapter ?? 0} />
             );
@@ -113,6 +114,7 @@ function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passag
         }
 
         // other formatting
+        console.log(item);
         if (item.children) { // if node is a parent, recursively generate its contents
             return (
                 <span className={`${item.type} ${item.test}`}>{item.children.map(generateContents)}</span>

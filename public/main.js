@@ -30,6 +30,7 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
     ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
+    ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
     createWindow()
 
     app.on('activate', () => {
@@ -58,6 +59,27 @@ async function handleFileRead(fileName, localPath) {
     catch (err) {
         return null;
     }
+
+}
+
+async function handleDirectoryScan(localPath) {
+
+    const dirName = app.getPath("documents");
+    const directoryPath = path.join(dirName, 'bible-app', localPath);
+
+    const items = fs.readdirSync(directoryPath);
+    const directories = [];
+
+    for (const item of items) {
+        const itemPath = path.join(directoryPath, item);
+        const stat = fs.statSync(itemPath);
+
+        if (stat.isDirectory()) {
+            directories.push(item);
+        }
+    }
+
+    return directories;
 
 }
 

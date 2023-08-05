@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { getUSFM, locateReferences }  from '../utils/bibleReferences';
+import { getUSFM, locateReferences }  from '../../utils/bibleReferences';
 
-import Scripture from './scripture/Scripture';
+import Scripture from './Scripture';
 
 type Footnote = {
     contents: string;
@@ -45,6 +45,7 @@ const InnerPopover = React.forwardRef(
 function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footnote) {
     const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
 
+    console.log(contents);
     const data = locateReferences(contents, currentBook, currentChapter);
 
     // format references

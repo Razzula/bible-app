@@ -1,7 +1,8 @@
-import React, { useState, cloneElement } from 'react';
+import React, { useState, cloneElement, useEffect } from 'react';
 import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
+import { Alert } from 'react-bootstrap';
 
 import { getUSFM, getReferenceText }  from '../utils/bibleReferences';
 
@@ -11,13 +12,19 @@ import 'sidenotes/dist/sidenotes.css';
 import '../styles/dark.scss';
 import '../styles/sidenotes.scss';
 import '../styles/App.scss';
-import SidenoteContent from './SidenoteContent';
+import SidenoteContent from './scripture/SidenoteContent';
+
+import licenses from '../../../public/licenses.json';
 
 declare global {
     interface Window {
         [index: string]: any;
     }
 }
+
+interface Licenses {
+    [key: string]: string;
+  }
 
 let store: Store;
 
@@ -30,12 +37,19 @@ const baseAnchor = 'anchor';
  */
 function App() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [translationsList, setTranslationsList] = useState('');
+    const [selectedTranslation, setSelectedTranslation] = useState('');
+    const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
     const [passageContents, setPassageContents]: [Array<JSX.Element>, Function] = useState([]);
     const [tempNotesContents, setTempNotesContents]: [Array<null>, Function] = useState([null]);
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[],[]]);
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
+
+    useEffect(() => {
+        getTranslationList();
+    }, []);
     
     function handleSearch() {
         void loadPassageFromString(searchQuery, true);
@@ -74,8 +88,17 @@ function App() {
         }
     }
 
-    function handleChange(event: React.ChangeEvent<any>) {
+    function handleSearchBarChange(event: React.ChangeEvent<any>) {
         setSearchQuery(event.currentTarget.value);
+    }
+
+    function handleTranslationSelectChange(event: React.ChangeEvent<any>) {
+        updateSelectedTranslation(event.currentTarget.value);
+    }
+
+    function updateSelectedTranslation(translation: string) {
+        setSelectedTranslation(translation);
+        setSelectedTranslationLicense((licenses as any)[translation]);
     }
 
     function handleTextSelection() {
@@ -99,6 +122,30 @@ function App() {
             }
         }
         return null;
+    }
+
+    async function getTranslationList() {
+        const translations = await window.electronAPI.getDirectories(`Scripture`);
+
+        if (translations.length === 0) {
+            console.log('No translations found');
+            setPassageContents(
+                <Alert variant="danger">
+                    <Alert.Heading>404</Alert.Heading>
+                    <p>
+                        No translations found. Please add a translation to the Scripture folder.
+                    </p>
+                </Alert>
+            );
+            return null;
+        }
+
+        const translationList = translations.map((translation: string) => {
+            return <option value={translation}>{translation}</option>;
+        });
+
+        setTranslationsList(translationList);
+        updateSelectedTranslation('NKJV'); //TODO: make this a setting
     }
 
     function wrapSelectedElement(element: HTMLElement, wrapper: HTMLElement) { // TODO; wrapping a footnote breaks
@@ -193,7 +240,7 @@ function App() {
             // TODO; prevent multiple reads of current file
             
             // load contents externally from files
-            const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV"); // TODO; single-chapter books // TODO; make NKJV
+            const chapterContents = await window.electronAPI.readFile(fileName,`Scripture/${selectedTranslation}`); // TODO; single-chapter books // TODO; make NKJV
             if (chapterContents) {
                 chapterContents[0][0].chapter = chapter;
             }
@@ -281,7 +328,7 @@ function App() {
         extraChapter = Number(extraChapter) + delta
 
         const fileName = `${usfm.book}.${extraChapter}`
-        const chapterContents = await window.electronAPI.readFile(fileName,"Scripture/NKJV");
+        const chapterContents = await window.electronAPI.readFile(fileName,`Scripture/${selectedTranslation}`);
         if (chapterContents) {
             chapterContents[0][0].chapter = extraChapter;
         }
@@ -336,7 +383,13 @@ function App() {
                 <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
                 <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
 
-                <input type="text" value={searchQuery} className="form-control" onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
+                {/* SEARCH BAR */}
+                <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
+                {/* TRANSLATION SELECT */}
+                <select value={selectedTranslation}className="select" onChange={handleTranslationSelectChange}>
+                    {translationsList}
+                </select>
+                {/* SEARCH BUTTON */}
                 <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
             </div>
 
@@ -352,7 +405,7 @@ function App() {
 
                             <br/><button onClick={() => expandPassage(1)} className='btn btn-default ellipsis'>...</button>
                         </AnchorBase>
-                        <p className="notice">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</p>
+                        <p className="notice">{selectedTranslationLicense}</p>
 
                         {/* SIDENOTES */} {/* TODO; generate dynamically */}
                         <div className="sidenotes">
