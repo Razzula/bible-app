@@ -50,6 +50,10 @@ function App() {
     useEffect(() => {
         getTranslationList();
     }, []);
+
+    useEffect(() => {
+        loadPassageFromString(searchQuery);
+    }, [selectedTranslation]);
     
     function handleSearch() {
         void loadPassageFromString(searchQuery, true);
@@ -197,16 +201,16 @@ function App() {
 
     }
 
-    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string) {
+    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number) {
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
                 <hr/>
-                <Scripture key={`${passageBook}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/> {/* TODO; currently hardcoded */}
+                <Scripture key={`${passageBook}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} />
                 </>
             );
         }
-        return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0}/>);
+        return (<Scripture contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} />);
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
@@ -250,7 +254,7 @@ function App() {
     
         }
 
-        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book));
+        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book, usfm.initialChapter));
         
         setPassageContents(passageContents);
         setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
@@ -360,13 +364,13 @@ function App() {
 
         // generate passage and merge into current
         if (delta === 1) {
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
             setPassageContents(passageContents.concat(extraPassageContents));
         }
         else { // TODO; fix verse numbers
             extraContents = extraContents.reverse()
             extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
             setPassageContents(extraPassageContents.concat(passageContents));
         }
 

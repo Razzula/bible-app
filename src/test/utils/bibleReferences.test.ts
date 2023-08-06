@@ -91,7 +91,7 @@ describe('bibleReferences Tests', () => {
     it('Chapter Reference', () => {
       ['Chapter 1', 'Ch. 1'].forEach((reference: string) => {
         const usfm = getUSFM(reference, 'GEN');
-
+        
         expect(usfm[0].book).to.equal('GEN');
         expect(usfm[0].initialChapter).to.equal(1);
       });
@@ -126,16 +126,16 @@ describe('bibleReferences Tests', () => {
       const text = 'Genesis 3:15';
       const references = locateReferences(text);
 
-      expect(references).to.deep.equal([[text, true]]);
+      expect(references).to.deep.equal([[text, { "book": "GEN", "finalChapter": NaN, "finalVerse": NaN, "initialChapter": 3, "initialVerse": 15 }]]);
     });
 
     it('Standard input', () => {
       const references = locateReferences('Genesis 3:15; Exodus 2:1-2');
 
       expect(references).to.deep.equal([
-        ['Genesis 3:15', true],
+        ['Genesis 3:15', { "book": "GEN", "finalChapter": NaN, "finalVerse": NaN, "initialChapter": 3, "initialVerse": 15 }],
         ['; ', false],
-        ['Exodus 2:1-2', true],
+        ['Exodus 2:1-2', { "book": "EXO", "finalChapter": NaN, "finalVerse": 2, "initialChapter": 2, "initialVerse": 1 }],
       ]);
 
     });
@@ -144,9 +144,9 @@ describe('bibleReferences Tests', () => {
       const references = locateReferences('Genesis 3:15, 20');
 
       expect(references).to.deep.equal([
-        ['Genesis 3:15', true],
+        ['Genesis 3:15', { "book": "GEN", "finalChapter": NaN, "finalVerse": NaN, "initialChapter": 3, "initialVerse": 15 }],
         [',', false],
-        [' 20', true],
+        [' 20', { "book": "GEN", "finalVerse": NaN, "initialChapter": 3, "initialVerse": 20 }],
       ]);
 
     });

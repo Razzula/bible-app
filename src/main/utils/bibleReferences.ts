@@ -53,7 +53,8 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
 
     if (match) {
 
-        if (match[2] === 'V' || match[2] === 'VERSE') { // VERSE REFERENCE
+        if (/(?<![A-Z])V(?:ER)?(?:SE)?S?\.?/.test(match[2])) { // VERSE REFERENCE
+            console.log(match)
 
             if (currentBook === null || currentChapter === null) { // insufficient context
                 return [];
@@ -66,7 +67,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
         }
         else {
 
-            if (match[2] === 'CH' || match[2] === 'CHAPTER') { // CHAPTER REFERENCE
+            if (/(?<![A-Z])CH(?:AP)?(?:T)?(?:ER)?S?\.?/.test(match[2])) { // CHAPTER REFERENCE
 
                 if (currentBook === null) { // insufficient context
                     return [];
@@ -75,7 +76,6 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                 usfm.book = currentBook;
             }
             else { // FULL REFERENCE
-
                 // book name
                 if (match[1] === undefined) {
                     match[1] = '';
@@ -106,7 +106,6 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     else { // invalid format (may be shorthand reference)
 
         if (currentBook === null) { // insufficient context
-            console.log('sdfuhsdfsdfsdfsfsdf')
             return [];
         }
 

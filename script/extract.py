@@ -20,68 +20,6 @@ class bcolors:
     WARNING = '\033[93m'
     ENDC = '\033[0m'
 
-
-LATIN_1_CHARS = (
-    ('\xe2\x80\x99', "'"),
-    ('\xc3\xa9', 'e'),
-    ('\xe2\x80\x90', '-'),
-    ('\xe2\x80\x91', '-'),
-    ('\xe2\x80\x92', '-'),
-    ('\xe2\x80\x93', '-'),
-    ('\xe2\x80\x94', '-'),
-    ('\xe2\x80\x94', '-'),
-    ('\xe2\x80\x98', "'"),
-    ('\xe2\x80\x9b', "'"),
-    ('\xe2\x80\x9c', '"'),
-    ('\xe2\x80\x9c', '"'),
-    ('\xe2\x80\x9d', '"'),
-    ('\xe2\x80\x9e', '"'),
-    ('\xe2\x80\x9f', '"'),
-    ('\xe2\x80\xa6', '...'),
-    ('\xe2\x80\xb2', "'"),
-    ('\xe2\x80\xb3', "'"),
-    ('\xe2\x80\xb4', "'"),
-    ('\xe2\x80\xb5', "'"),
-    ('\xe2\x80\xb6', "'"),
-    ('\xe2\x80\xb7', "'"),
-    ('\xe2\x81\xba', "+"),
-    ('\xe2\x81\xbb', "-"),
-    ('\xe2\x81\xbc', "="),
-    ('\xe2\x81\xbd', "("),
-    ('\xe2\x81\xbe', ")"),
-
-    ('\xe2\x80\x86', '"'),
-    ('Ä\x92Â', 'Ē'),
-
-    ('×\x90', 'א'),
-    ('×\x91', 'ב'),
-    ('×\x92', 'ג'),
-    ('×\x93', 'ד'),
-    ('×\x94', 'ה'),
-    ('×\x95', 'ו'),
-    ('×\x96', 'ז'),
-    ('×\x97', 'ח'),
-    ('×\x98', 'ט'),
-    ('×\x99', 'י'),
-    ('×\x9a', 'כ'),
-    ('×\x9b', 'ל'),
-    ('×\x9c', 'מ'),
-    ('×\x9d', 'נ'),
-    ('×\x9e', 'ס'),
-    ('×\x9f', 'ע'),
-    ('×\xa0', 'פ'),
-    ('×\xa1', 'צ'),
-    ('×\xa2', 'ק'),
-    ('×\xa3', 'ר'),
-    ('×©×\x81', 'ש'),
-    ('×\xa5', 'ת')
-)
-
-
-current = ''
-headers = []
-
-
 def readFile(paramFile):
     """
     Read a binary file and convert its contents to a string.
@@ -98,7 +36,7 @@ def readFile(paramFile):
         return readString(arrayOfByte)
 
 
-def readString(arrayOfByte, i=3):
+def readString(arrayOfByte, start=3):
     """
     Convert a portion of an array of bytes to a string.
 
@@ -111,6 +49,7 @@ def readString(arrayOfByte, i=3):
     """
 
     byteArray = []
+    i = start
     while (i < len(arrayOfByte)):
         if (len(arrayOfByte) > i + 1):
             j = ((int('0xFF', 16) & arrayOfByte[(i + 1)]) >> 5 | (int('0xFF', 16) & arrayOfByte[(i + 1)]) << 3)
@@ -124,7 +63,9 @@ def readString(arrayOfByte, i=3):
     a = ''.join([(chr(x & 0xFF)) for x in byteArray])
 
     if (current not in a):
-        b = readString(arrayOfByte, 4)
+        b = readString(arrayOfByte, 4) if (start == 3) else None
+        if (b == None):
+            pass
         return b
     return a
 
@@ -160,6 +101,7 @@ def extract(inDir, outDir):
 
     if (not os.path.isdir(outDir)):
         os.mkdir(outDir)  # create
+    open(os.path.join(outDir, f'MONOLITH.html'), 'w').close()
 
     # BODY
     for book in manifest:
@@ -188,17 +130,9 @@ def extract(inDir, outDir):
                 continue
 
             data = data[:data.rindex('</div>')+6]  # remove everything outside of final div
-            chapterLines = data.splitlines()
 
-            out = []
-
-            for line in chapterLines[2:len(chapterLines)-1]:
-                for _hex, _char in LATIN_1_CHARS:
-                    line = line.replace(_hex, _char)
-
-                out.append(line[6:])
-                if (line == '      </div>'):
-                    break
+            # DECODE
+            out = data.encode('latin1').decode('utf-8')
 
             simplify(out, outDir, book['usfm'], current)
 
@@ -227,127 +161,110 @@ def simplify(data, outDir, book, file):  # HTML to JSON
         such as 'div' tags for paragraphs and 'span' tags for content.
     """
 
-    global headers
-
     # STRIP HTML, MAINTAINING PARAGRAPH STRUCTURE
-    text = ''
-    headers = []
-    header = ''
+    html = data.strip()
+    html = re.sub(r'\n\s*', '', html)
 
-    for i in range(2, len(data)-1):
-        cleantext = data[i].strip()
+    # PARSE HTML
+    soup = BeautifulSoup(html, 'html.parser')
+    root = soup.div
 
-        # footnotes
-        note = re.search(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), cleantext)
-        while (note):
-            noteContent = cleantext[note.regs[1][0]:note.regs[1][1]]
+    global verses, verse, div, header
 
-            # squash 'x, x+1' notation
-            commaNotation = re.findall(re.compile(r'(\d+), (?=(\d+))'), noteContent)
-            if (commaNotation):
-                for match in commaNotation:
+    verses = []
+    verse = []
+    div = False
+    header = None
 
-                    initialVerse = int(match[0])
-                    finalVerse = int(match[1])
+    def thisNeedsAName(element, parentClasses=[]):
+        global verses, verse, div, header
 
-                    if (initialVerse + 1 == finalVerse):
-                        noteContent = re.sub(re.compile(f'{initialVerse}, {finalVerse}'), f'{initialVerse}-{finalVerse}', noteContent)
+        newParentClasses = parentClasses.copy()
 
-            cleantext = re.sub(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), f'<span class="note">{noteContent}</span>', cleantext, 1)  # remove footnotes
-            note = re.search(re.compile(r'<span class="note x"><span class="label">#</span><span class=" body">([^#]+?)</span></span>'), cleantext)
+        if (isinstance(element, str)): # NKJV DEU 28:58
+            verses.append({'content': element})
+            return
 
-        # div
-        para = re.match(re.compile(fr'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), cleantext)
-        if (not para):
-            para = re.match(re.compile(fr'<div class="([^>]+)"><span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), cleantext)
-        if (not para):   # heading
-            header = '~'
-            headers.append(re.sub(re.compile('<[^>]+>'), '', cleantext))
-            continue
+        elementClass = element.get('class')[0]
 
-        p = para.regs[0][1]
-        cleantext = re.sub(re.compile(r'<div class="([^>]+)">'), '', cleantext[(para.regs[1][1]+2):p] + header + f'[{cleantext[para.regs[1][0]:para.regs[1][1]]}]' + cleantext[p:], 1)  # <div class='p'><...>1</>... ==> <...>1</>[p]...
-        cleantext = re.sub(re.compile('</div>'), '', cleantext)
+        # leaf node
+        if (len(element.contents) == 1) and (isinstance(element.contents[0], str)):
+            
+            # NEW VERSE
+            if (elementClass == 'label'):
+                newVerseNumber = (int)(element.text)
+                if ((newVerseNumber > len(verses))):
 
-        # content tags
-        cleantext = re.sub(re.compile('<span class="content">'), '<span>', cleantext)
-
-        if (header):
-            header = ''
-        if (cleantext != ''):
-            text += cleantext
-
-    # SPLIT INTO VERSES
-    verses = re.split(re.compile(fr'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+"><span class="label">\d+</span>'), text)
-
-    # formatting
-    def create_node(element):
-        global headers
-
-        result = {}
-        if element.name:
-
-            # CLASS
-            if (element.attrs):
-                result['type'] = element['class']
-
-            # CONTENT
-            if element.string:  # raw text
-                result['content'] = element.string
-
-                if ((element.contents) and (element.contents[0].name) and (element.contents[0].has_attr('class'))):
-                    if ('type' in result):
-                        result['type'].extend(element.contents[0]['class'])  # TODO; prevent duplication
+                    if (len(verses) == 0):  # initial
+                        verses.append([])
                     else:
-                        result['type'] = element.contents[0]['class']
+                        # push and reset
+                        verses.append(verse)
+                        verse = []
+                    
+            else:
+                # paragraph formatting (p, q1, etc.)
+                if (div):
+                    if (elementClass != 'content'):
+                        pass # this should never fire
+                    elementClass = div
+                    div = False
 
-            elif element.contents:  # children
-                children = []
-
-                for child in element.contents:
-
-                    if (child.name):  # child is an element
-                        children.append(create_node(child))
-
+                # verse formatting (wj, nb, etc.)
+                if (parentClasses != []):
+                    if (elementClass != 'content'):
+                        for parentClass in parentClasses:
+                            elementClass += f'{ parentClass}'
                     else:
-                        if ('[' in child) or ('~' in child):  # meta
-                            if ('[' in child):  # new paragraph
-                                para = re.findall(re.compile(r'\[(p|pc|q1|q2|s)\]'), child)[0]
-                                children.append({'type': [para]})
-                            if ('~' in child):  # subheading
-                                children[-1]['header'] = headers[0]
-                                headers = headers[1:]
+                        elementClass = parentClasses[0]
 
-                        else:
-                            children.append({'content': child})
+                section = {}
 
-                if (len(children) > 0):
-                    result['children'] = children
+                if (header is not None):
+                    section['header'] = header
+                    header = None
 
-        return result
+                if (elementClass != 'content'):
+                    if (elementClass not in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']):
+                        pass # this should fire (wj)
+                    section['type'] = elementClass
 
-    for i in range(1, len(verses)):
-        verse = re.sub(re.compile(fr'<span class="verse v\d+" data-usfm="{book}\.\d+\.\d+">'), '', verses[i])  # remove additinal verse markers
+                section['content'] = element.contents[0]
+                
+                verse.append(section)
+                #print(verse[-1]) #temp
 
-        soup = BeautifulSoup(f'<div>{verse}</div>', 'html.parser')
-        root = soup.find('div')
-        node = create_node(root)
-
-        if ('content' in node and 'type' not in node):
-            node = [node]  # {content: ...} --> [{content: ...}]
-
-        if ('children' in node):
-            node = node['children']
-
-        if ('type' in node):
-            node['type'] = ' '.join(node['type'])
+        # non-leaf node
         else:
-            for subnode in node:
-                if ('type' in subnode):
-                    subnode['type'] = ' '.join(subnode['type'])
 
-        # update
-        verses[i] = node
+            # HAEDER
+            if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): #TODO
+                header = element.text
+                return
+
+            # NEW PARAGRAPH
+            if (elementClass in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']): #TODO
+                div = elementClass
+
+            elif (elementClass not in ['version', 'content', 'verse', 'chapter', 'book', 'note']):
+                newParentClasses.append(elementClass)
+
+            # FOOTNOTE
+            if ('note' in elementClass):
+                # TODO; allow nested children with formatting
+                noteContents = element.text.strip()
+                noteContents = re.sub(r'#(?:(\d+):(\d+))?', '', noteContents)
+
+                noteContents = noteContents.replace('–', '-')
+
+                verse.append({'type': 'note', 'content': noteContents})
+
+            else:
+                for child in element.children:
+                    thisNeedsAName(child, newParentClasses)
+    
+    thisNeedsAName(root)
+    verses.append(verse)
 
     # OUT
     outJSON = json.dumps(verses[1:], indent=4)

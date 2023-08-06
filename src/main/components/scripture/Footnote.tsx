@@ -10,6 +10,7 @@ type Footnote = {
     loadPassage: Function;
     currentBook: string;
     currentChapter: number;
+    translation: string;
 }
 
 // popover with passage
@@ -42,10 +43,9 @@ const InnerPopover = React.forwardRef(
  *   - References are automatically formatted and linked to the appropriate passage.
  *   - Hovering over a reference will display the passage in a popover.
  */
-function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footnote) {
+function Footnote({ contents, loadPassage, currentBook, currentChapter, translation }: Footnote) {
     const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
 
-    console.log(contents);
     const data = locateReferences(contents, currentBook, currentChapter);
 
     // format references
@@ -55,7 +55,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footno
             const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
             
             // format passage
-            const notePassage = (<Scripture contents={noteContents} ignoreFootnotes />);
+            const notePassage = (<Scripture contents={noteContents} ignoreFootnotes translation={translation} />);
             // contents of footnote popover
             return (
                 <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
@@ -67,7 +67,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter }: Footno
                 // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
-                let passageContents = await window.electronAPI.readFile(fileName, "Scripture/NKJV");
+                let passageContents = await window.electronAPI.readFile(fileName, `Scripture/${translation}`);
                 passageContents[0][0].chapter = usfm.initialChapter;
 
                 if (!passageContents) {

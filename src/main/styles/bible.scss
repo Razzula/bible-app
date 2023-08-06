@@ -17,19 +17,28 @@
 }
 
 //paragraphs
-span.s { //header
+span.s, span.s1, span.sp, span.ms, span.qa { //header
     font-weight: 700;
     line-height: 1em;
     margin: 1em 0 0 0;
     display: inline-block;
 }
-span.p { //regular paragraph: indent first line
+span.d { //minor header
+    font-style: italic;
+    line-height: 1em;
+    margin: 1em 0 0 0;
+    display: inline-block;
+}
+span.p, span.m { //regular paragraph: indent first line
     text-indent: 1em;
     line-height: 2em;
     margin-top: 16px;
     display: inline-block;
 }
-span.pc {
+span.pc { //centralsie paragraph
+    text-align: center;
+}
+span.pmr { //right-align paragraph
     text-align: center;
 }
 span.q1 {
@@ -39,7 +48,7 @@ span.q1 {
     margin-top: 16px;
     display: inline-block;
 }
-span.q2 {
+span.q2, span.q3 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: 3em;
@@ -51,15 +60,22 @@ span.qs {
     font-style: italic;
     float: right;
 }
+span.qr {
+    float: right;
+}
 
-.it, .sls { //additional words required in English for clarification: italicised
+span.it, span.sls, span.add { //additional words required in English for clarification: italicised
     font-style: italic;
 }
-.sc, .nd, .bd { //covenant name of God: capitalised
+span.sc, span.nd, span.nb, span.bd { //covenant name of God: capitalised
     font-variant: small-caps;
 }
-.wj { //words spoken by Jesus: 'red letter'
+span.wj { //words spoken by Jesus: 'red letter'
     color: #ff3344;
+}
+span.bdit {
+    font-weight: 700;
+    font-style: italic;
 }
 
 .ref {

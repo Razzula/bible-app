@@ -11,6 +11,7 @@ type Scripture = {
     loadPassage?: any;
     passageBook?: string;
     passageChapter?: number;
+    translation: string;
 }
 
 /**
@@ -25,10 +26,10 @@ type Scripture = {
  * 
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
  */
-function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter }: Scripture) {
+function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation }: Scripture) {
 
     // presence check
-    if (contents === null) {
+    if (contents === null || contents === undefined) {
         return (
             <Alert variant="danger">
                 <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
@@ -95,9 +96,8 @@ function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passag
                 return;
             }
 
-            console.log(item);
             return (
-                <Footnote contents={item.content} loadPassage={loadPassage} currentBook={passageBook ?? ''} currentChapter={passageChapter ?? 0} />
+                <Footnote contents={item.content} loadPassage={loadPassage} currentBook={passageBook ?? ''} currentChapter={passageChapter ?? 0} translation={translation} />
             );
         }
 
@@ -114,7 +114,6 @@ function Scripture({ contents, ignoreFootnotes, loadPassage, passageBook, passag
         }
 
         // other formatting
-        console.log(item);
         if (item.children) { // if node is a parent, recursively generate its contents
             return (
                 <span className={`${item.type} ${item.test}`}>{item.children.map(generateContents)}</span>
