@@ -91,7 +91,7 @@ describe('bibleReferences Tests', () => {
     it('Chapter Reference', () => {
       ['Chapter 1', 'Ch. 1'].forEach((reference: string) => {
         const usfm = getUSFM(reference, 'GEN');
-        
+
         expect(usfm[0].book).to.equal('GEN');
         expect(usfm[0].initialChapter).to.equal(1);
       });
@@ -150,6 +150,22 @@ describe('bibleReferences Tests', () => {
       ]);
 
     });
+
+    [
+      'clearly not a reference',
+      'A cubit was about 18 inches or 45 centimeters', // use of numbers
+      'Genesis is the book before Exodus', // use of book names
+    ].forEach((input: string, i: number) => {
+      it(`Illegal input (${i+1})`, () => {
+          const references = locateReferences(input);
+    
+          expect(references).to.deep.equal([
+            [input, false]
+          ]);
+    
+        });
+    });
+
   });
   
 });

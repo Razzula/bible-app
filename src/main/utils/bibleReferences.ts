@@ -54,7 +54,6 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     if (match) {
 
         if (/(?<![A-Z])V(?:ER)?(?:SE)?S?\.?/.test(match[2])) { // VERSE REFERENCE
-            console.log(match)
 
             if (currentBook === null || currentChapter === null) { // insufficient context
                 return [];
@@ -93,6 +92,10 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                         usfm.book = book[0];
                     }
                 });
+
+                if (usfm.book === undefined) { // invalid book name
+                    return [];
+                }
             }
 
             // chapters, verses
@@ -126,7 +129,6 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     }
     else { // additional references
         const additionalReferences = getUSFM(match[7], usfm.book, usfm.initialChapter);
-        console.log(additionalReferences)
         return [usfm, ...additionalReferences];
     }
 }
@@ -192,24 +194,46 @@ export function locateReferences(text: string, currentBook: string | null = null
         // reference
         const displayText = text.slice(matches[i][0], matches[i][1]);
         const usfm = getUSFM(displayText, currentBook, currentChapter);
-        data.push([displayText, usfm[0]]); // reference
+        if (usfm.length !== 0) { // invalid reference
 
-        if (usfm[0].book !== undefined) {
-            currentBook = usfm[0].book;
+            data.push([displayText, usfm[0]]); // reference
+            
+            if (usfm[0].book !== undefined) {
+                currentBook = usfm[0].book;
+            }
+            if (usfm[0].initialChapter !== undefined) {    
+                currentChapter = usfm[0].initialChapter;
+            }
+            
         }
-        if (usfm[0].initialChapter !== undefined) {    
-            currentChapter = usfm[0].initialChapter;
+        else { // invalid reference
+            if (data[data.length-1][1] === false) { // merge with previous
+                data[data.length-1][0] += displayText;
+            }
+            else {
+                data.push([displayText, false]);
+            }
         }
 
         // post-reference
         if (i < matches.length-1) { 
-            data.push([text.slice(matches[i][1], matches[i+1][0]), false]);
+            if (data[data.length-1][1] === false) { // merge with previous
+                data[data.length-1][0] += text.slice(matches[i][1], matches[i+1][0]);
+            }
+            else {
+                data.push([text.slice(matches[i][1], matches[i+1][0]), false]);
+            }
         }
         
     }
     // final
     if (matches[i-1][1] !== text.length) { // ending dud 
-        data.push([text.slice(matches[i-1][1], text.length), false]);
+        if (data[data.length-1][1] === false) { // merge with previous
+            data[data.length-1][0] += text.slice(matches[i-1][1], text.length);
+        }
+        else {
+            data.push([text.slice(matches[i-1][1], text.length), false]);
+        }
     }
 
     return data;
