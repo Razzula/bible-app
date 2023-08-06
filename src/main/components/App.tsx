@@ -259,6 +259,7 @@ function App() {
         setPassageContents(passageContents);
         setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
         
+
         // scroll to verse if specified
         if (usfm.initialVerse) { // might need to move into state
             

@@ -207,7 +207,7 @@ export function locateReferences(text: string, currentBook: string | null = null
             
         }
         else { // invalid reference
-            if (data[data.length-1][1] === false) { // merge with previous
+            if (data.length > 0 && data[data.length-1][1] === false) { // merge with previous
                 data[data.length-1][0] += displayText;
             }
             else {
@@ -235,7 +235,7 @@ export function locateReferences(text: string, currentBook: string | null = null
             data.push([text.slice(matches[i-1][1], text.length), false]);
         }
     }
-
+    
     return data;
 
 }
