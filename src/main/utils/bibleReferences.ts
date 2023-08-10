@@ -273,13 +273,14 @@ export function getReferenceText(referenceData: Array<any>): string {
         // book
         if (reference.book !== currentBook) {
             currentBook = reference.book;
+            let bookName = reference.book;
 
             booksArray.forEach((book: string[]) => { // get human-readable book name
                 if (book.includes(reference.book)) {
-                    reference.book = book[1];
+                    bookName = book[1];
                 }
             });
-            referenceText += `${reference.book.charAt(0)}${reference.book.substr(1).toLowerCase()} `; // format to proper case
+            referenceText += `${bookName.charAt(0)}${bookName.substr(1).toLowerCase()} `; // format to proper case //TODO; numericals
         }
         // chapter
         if (reference.initialChapter !== currentChapter) {

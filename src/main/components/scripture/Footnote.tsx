@@ -3,7 +3,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import { locateReferences }  from '../../utils/bibleReferences';
 
-import Scripture from './Scripture';
+import Passage from './Passage';
 
 type Footnote = {
     contents: string;
@@ -55,7 +55,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
             const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
             
             // format passage
-            const notePassage = (<Scripture contents={noteContents} ignoreFootnotes translation={translation} />);
+            const notePassage = (<Passage contents={noteContents} ignoreFootnotes translation={translation} />);
             // contents of footnote popover
             return (
                 <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
