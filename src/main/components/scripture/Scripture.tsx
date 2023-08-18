@@ -16,10 +16,6 @@ declare global {
     }
 }
 
-interface Licenses {
-    [key: string]: string;
-  }
-
 let store: Store;
 
 const docId = 'article';
@@ -37,7 +33,7 @@ function Scripture() {
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[],[]]);
 
-    const [passages, setPassages]: [Array<JSX.Element>, Function] = useState([]);
+    const [passages, setPassages]: [JSX.Element, Function] = useState(<></>);
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docId));
@@ -197,6 +193,7 @@ function Scripture() {
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number) {
+            console.log(chapterContents)
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
@@ -381,7 +378,7 @@ function Scripture() {
                         {/* <button onClick={() => expandPassage(-1)} className='btn btn-default ellipsis'>...</button><br/> */}
                         {passages}
                         {/* <button onClick={() => expandPassage(1)} className='btn btn-default ellipsis'>...</button><br/> */}
-                        {(passages.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
+                        {(passages.props.children?.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
 
                         {/* SIDENOTES */} {/* TODO; generate dynamically */}
                         

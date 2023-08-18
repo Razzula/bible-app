@@ -23,10 +23,8 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "start": "webpack serve --open --config webpack.dev.js",
-    "build": "yarn run clean; tsc; yarn run build-css; webpack --config webpack.prod.js",
+    "start": "webpack serve --config webpack.dev.js",
     "electron:start": "wait-on tcp:3013 && electron .",
-    "electron:build": "",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
     "test": "mocha 'src/test/**/*.test.ts' --require ts-node/register"
   },

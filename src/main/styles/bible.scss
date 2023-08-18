@@ -64,8 +64,12 @@ span.qr {
     float: right;
 }
 
-span.it, span.sls, span.add { //additional words required in English for clarification: italicised
+span.it, span.sls { //additional words required in English for clarification: italicised
     font-style: italic;
+}
+span.add { //additional content not in original manuscripts
+    font-style: italic;
+    color: #6e6c68;
 }
 span.sc, span.nd, span.nb, span.bd { //covenant name of God: capitalised
     font-variant: small-caps;
