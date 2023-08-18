@@ -29,8 +29,10 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
     ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
+    ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
+    ipcMain.handle('writeFile', (event, fileName, localPath, data) => handleFileWrite(fileName, localPath, data))
+
     createWindow()
 
     app.on('activate', () => {
@@ -59,6 +61,20 @@ async function handleFileRead(fileName, localPath) {
     catch (err) {
         return null;
     }
+
+}
+
+async function handleFileWrite(fileName, localPath, data) {
+
+    const dirName = app.getPath("documents");
+
+    fs.writeFile(path.join(dirName, 'bible-app', localPath, fileName), JSON.stringify(data), (err) => {
+        if (err) {
+            console.error('Error:', err);
+            return false;
+        }
+    });
+    return true;
 
 }
 

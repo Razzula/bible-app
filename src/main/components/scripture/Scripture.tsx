@@ -185,15 +185,10 @@ function Scripture() {
         if (!multiSpanning) {
             element.appendChild(afterSelected);
         }
-        
-        console.log(beforeSelected);
-        console.log(newWrapper);
-        console.log(afterSelected);
 
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number) {
-            console.log(chapterContents)
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
@@ -227,7 +222,6 @@ function Scripture() {
         if (usfm === undefined || usfm === null) {
             return;
         }
-        console.log(usfm)
 
         const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
 

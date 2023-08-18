@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type SidenoteContent = {
     id: string;
     initialNoteContents: string;
+    updateNotesContents: Function;
 }
 
 /**
@@ -14,22 +15,35 @@ type SidenoteContent = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({id, initialNoteContents}: SidenoteContent) {
-    const [temp, setId] = useState(id);
-    const [noteContents, setNoteContents] = useState(initialNoteContents);
+function SidenoteContent({id, initialNoteContents, updateNotesContents}: SidenoteContent) {
+    const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
+    const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
+
+    useEffect(() => {
+        setCurrentNoteContents(initialNoteContents);
+    }, [id, initialNoteContents]);
 
     function handleChange(event: React.ChangeEvent<any>) {
-        setNoteContents(event.currentTarget.value);
+        setCurrentNoteContents(event.currentTarget.value);
+
+        const splitId = id.split(".");
+        updateNotesContents(splitId[splitId.length - 1], event.currentTarget.value, saveNoteContentsCallback); //TODO; only call on deselection
     }
 
-    if (id !== temp) {
-        setId(id);
-        setNoteContents(initialNoteContents);
+    function saveNoteContentsCallback(saveResult: boolean, noteContents: string) {
+        if (saveResult) {
+            setCommittedNoteContents(noteContents);
+        }
+        else {
+            console.log("ERROR: Failed to save note contents.");
+        }
     }
 
+    console.log(committedNoteContents)
     return (
         <div style={{ width: 280, height: 150}}>
-            <textarea value={noteContents} onChange={handleChange} />
+            <span>SAVED = {String(currentNoteContents === committedNoteContents)}</span>
+            <textarea value={currentNoteContents} onChange={handleChange} />
         </div>
     );
 

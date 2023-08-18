@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Alert } from 'react-bootstrap';
 
-import { Store, Sidenote, InlineAnchor, AnchorBase } from 'sidenotes';
+import { Store, Sidenote } from 'sidenotes';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
@@ -9,7 +9,6 @@ import SidenoteContent from '../scripture/SidenoteContent';
 
 import '../../styles/bible.scss';
 import PassageChunk from './PassageChunk';
-import { use } from 'chai';
 
 type Passage = {
     contents: any;
@@ -34,14 +33,15 @@ type Passage = {
 */
 function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation }: Passage) {
     
+    const [sidenotesElements, setSidenotesElements]: [any, Function] = React.useState([]);
     const [notesContents, setNotesContents]: [any, Function] = React.useState([]);
     const [passageContents, setPassageContents]: [any, Function] = React.useState([]);
     const [annotatedVerses, setAnnotatedVerses]: [any, Function] = React.useState(new Set<string>());
-    
+
     useEffect(() => {
         if (contents !== null && contents !== undefined) {
-            loadPassageNotes(`${passageBook}.${passageChapter}`);
             generatePassage();
+            loadPassageNotes(`${passageBook}.${passageChapter}`);
         }
     }, [contents]);
 
@@ -62,27 +62,49 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         const activeVerses = new Set<string>();
 
-        const chapterNotes: [] = await window.electronAPI.readFile(fileName, "notes");
+        const rawNotesContents: [] = await window.electronAPI.readFile(fileName, "notes");
 
-        if (chapterNotes) {
-            const notesContents = chapterNotes.map((noteContents: {verse: string, contents: string}) => {
+        if (rawNotesContents) {
+            const sidenotesElements = rawNotesContents.map((noteContents: {verse: string, contents: string}) => {
 
                 const verse = `${fileName}.${noteContents.verse}`;
                 activeVerses.add(verse)
                 return (
                     <Sidenote key={verse} sidenote={verse} base={fileName}>
-                        <SidenoteContent id={verse} initialNoteContents={noteContents.contents}/>
+                        <SidenoteContent id={verse} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents}/>
                     </Sidenote>
                 );
             });
 
-            setNotesContents(notesContents);
+            setNotesContents(rawNotesContents);
+            setSidenotesElements(sidenotesElements);
         }
         else {
-            setNotesContents(null);
+            setSidenotesElements(null);
         }
         
         setAnnotatedVerses(activeVerses);
+    }
+
+    async function updateNotesContents(id:string, noteContent: string, callback: Function) {
+
+        let newNotesContents: { verse: string; contents: string; }[] = [];
+
+        setNotesContents((currentNotesContents: any) => {
+            // update notes contents
+            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
+                if (String(note.verse) === id) {
+                    note.contents = noteContent;
+                }
+                newNotesContents.push(note);
+            });
+
+            return newNotesContents;
+        });
+
+        // save to file
+        const saveResult = await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+        callback(saveResult, noteContent);
     }
 
     // DYNAMICALLY GENERATE PASSAGE
@@ -142,7 +164,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     
         <div className="sidenotes">
 
-            {notesContents}
+            {sidenotesElements}
 
             {/* <Sidenote sidenote='testR' base={baseAnchor}>
                 <div style={{ width: 280, height: 100}}>right-hand note</div>
