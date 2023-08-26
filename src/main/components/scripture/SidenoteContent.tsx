@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { State } from 'sidenotes/dist/src/store';
+import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
 type SidenoteContent = {
-    id: string;
+    sidenoteID: string;
+    docID?: string;
     initialNoteContents: string;
     updateNotesContents: Function;
 }
@@ -15,19 +19,27 @@ type SidenoteContent = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({id, initialNoteContents, updateNotesContents}: SidenoteContent) {
+function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesContents}: SidenoteContent) {
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
 
+    const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
+    const isSaved = (currentNoteContents === committedNoteContents)
+    const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
+
     useEffect(() => {
         setCurrentNoteContents(initialNoteContents);
-    }, [id, initialNoteContents]);
+    }, [sidenoteID, initialNoteContents]);
+
+    useEffect(() => {
+        if (!isSelected && !isSaved) {
+            const splitID = sidenoteID.split(".");
+            updateNotesContents(splitID[splitID.length - 1], currentNoteContents, saveNoteContentsCallback); //TODO; only call on deselection
+        }
+    }, [isSelected]);
 
     function handleChange(event: React.ChangeEvent<any>) {
         setCurrentNoteContents(event.currentTarget.value);
-
-        const splitId = id.split(".");
-        updateNotesContents(splitId[splitId.length - 1], event.currentTarget.value, saveNoteContentsCallback); //TODO; only call on deselection
     }
 
     function saveNoteContentsCallback(saveResult: boolean, noteContents: string) {
@@ -41,8 +53,8 @@ function SidenoteContent({id, initialNoteContents, updateNotesContents}: Sidenot
 
     console.log(committedNoteContents)
     return (
-        <div style={{ width: 280, height: 150}}>
-            <span>SAVED = {String(currentNoteContents === committedNoteContents)}</span>
+        <div style={{ width: 280, height: 150, backgroundColor: backgroundColour }}>
+            <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
             <textarea value={currentNoteContents} onChange={handleChange} />
         </div>
     );

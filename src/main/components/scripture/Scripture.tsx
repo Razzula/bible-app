@@ -18,7 +18,7 @@ declare global {
 
 let store: Store;
 
-const docId = 'article';
+const docID = 'article';
 const baseAnchor = 'anchor';
 
 /**
@@ -36,7 +36,7 @@ function Scripture() {
     const [passages, setPassages]: [JSX.Element, Function] = useState(<></>);
 
     store = useStore();
-    const deselect = () => store.dispatch(deselectSidenote(docId));
+    const deselect = () => store.dispatch(deselectSidenote(docID));
 
     useEffect(() => {
         getTranslationList();
@@ -193,11 +193,11 @@ function Scripture() {
             return (
                 <>
                 <hr/>
-                <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} />
+                <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} docID={docID} />
                 </>
             );
         }
-        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} />);
+        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} docID={docID} />);
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
@@ -266,7 +266,7 @@ function Scripture() {
                 element.scrollIntoView();
             }
             else {
-                document.getElementById(docId)?.scrollIntoView(); // goto top
+                document.getElementById(docID)?.scrollIntoView(); // goto top
             }
             
             // highlight passage
@@ -284,7 +284,7 @@ function Scripture() {
             
         }
         else {
-            document.getElementById(docId)?.scrollIntoView(); // goto top
+            document.getElementById(docID)?.scrollIntoView(); // goto top
         }
         
         // TODO; validation
@@ -366,7 +366,7 @@ function Scripture() {
             </div>
 
             <div className='scroll'>
-                <article id={docId} onClick={deselect} onMouseUp={handleTextSelection}>
+                <article id={docID} onClick={deselect} onMouseUp={handleTextSelection}>
                     
                         {/* BIBLE */}
                         {/* <button onClick={() => expandPassage(-1)} className='btn btn-default ellipsis'>...</button><br/> */}

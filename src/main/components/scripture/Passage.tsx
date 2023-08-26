@@ -17,6 +17,7 @@ type Passage = {
     passageBook?: string;
     passageChapter?: number;
     translation: string;
+    docID?: string;
 }
 
 /**
@@ -31,7 +32,7 @@ type Passage = {
  * 
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation }: Passage) {
+function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, docID }: Passage) {
     
     const [sidenotesElements, setSidenotesElements]: [any, Function] = React.useState([]);
     const [notesContents, setNotesContents]: [any, Function] = React.useState([]);
@@ -71,7 +72,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                 activeVerses.add(verse)
                 return (
                     <Sidenote key={verse} sidenote={verse} base={fileName}>
-                        <SidenoteContent id={verse} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents}/>
+                        <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents}/>
                     </Sidenote>
                 );
             });
