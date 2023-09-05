@@ -1,6 +1,7 @@
-import React, { useState, cloneElement, useEffect } from 'react';
+import React from 'react';
 
-import Scripture from './scripture/Scripture';
+import Page from './Page';
+import Sidebar from './Sidebar';
 
 import '../styles/dark.scss';
 import '../styles/App.scss';
@@ -13,11 +14,10 @@ function App() {
 
     // GENERATE JSX
     return (
-        <>
-
-            <Scripture />
-            
-        </>
+        <div className='App'>
+            <Sidebar />
+            <Page />
+        </div>
     );
 }
 
