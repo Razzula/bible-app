@@ -8,6 +8,7 @@ type SidenoteContent = {
     docID?: string;
     initialNoteContents: string;
     updateNotesContents: Function;
+    deleteNote: Function;
 }
 
 /**
@@ -19,7 +20,8 @@ type SidenoteContent = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesContents}: SidenoteContent) {
+function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesContents, deleteNote}: SidenoteContent) {
+
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
 
@@ -34,12 +36,17 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
     useEffect(() => {
         if (!isSelected && !isSaved) {
             const splitID = sidenoteID.split(".");
-            updateNotesContents(splitID[splitID.length - 1], currentNoteContents, saveNoteContentsCallback); //TODO; only call on deselection
+            updateNotesContents(splitID[splitID.length - 1], currentNoteContents, saveNoteContentsCallback);
         }
     }, [isSelected]);
 
     function handleChange(event: React.ChangeEvent<any>) {
         setCurrentNoteContents(event.currentTarget.value);
+    }
+
+    function handleDeleteClick() {
+        const splitID = sidenoteID.split(".");
+        deleteNote(splitID[splitID.length - 1]);
     }
 
     function saveNoteContentsCallback(saveResult: boolean, noteContents: string) {
@@ -55,6 +62,7 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
     return (
         <div style={{ width: 280, height: 150, backgroundColor: backgroundColour }}>
             <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
+            <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
             <textarea value={currentNoteContents} onChange={handleChange} />
         </div>
     );

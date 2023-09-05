@@ -72,7 +72,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                 activeVerses.add(verse)
                 return (
                     <Sidenote key={verse} sidenote={verse} base={fileName}>
-                        <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents}/>
+                        <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents} deleteNote={deleteNote}/>
                     </Sidenote>
                 );
             });
@@ -87,11 +87,11 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         setAnnotatedVerses(activeVerses);
     }
 
-    async function updateNotesContents(id:string, noteContent: string, callback: Function) {
+    async function updateNotesContents(id: string, noteContent: string, callback?: Function) {
 
         let newNotesContents: { verse: string; contents: string; }[] = [];
 
-        setNotesContents((currentNotesContents: any) => {
+        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
             // update notes contents
             currentNotesContents.forEach((note: {verse: string, contents: string}) => {
                 if (String(note.verse) === id) {
@@ -105,7 +105,65 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         // save to file
         const saveResult = await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
-        callback(saveResult, noteContent);
+        if (callback) {
+            callback(saveResult, noteContent);
+        }
+    }
+
+    async function deleteNote(id:string) {
+
+        let newNotesContents: { verse: string; contents: string; }[] = [];
+
+        console.log('called on', id);
+
+        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
+            // update notes contents
+            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
+                if (String(note.verse) !== id) {
+                    newNotesContents.push(note);
+                }
+            });
+
+            return newNotesContents;
+        });
+
+        // save to file
+        await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+
+        loadPassageNotes(`${passageBook}.${passageChapter}`);
+
+    }
+
+    async function createNewNote(id:string) {
+
+        let newNotesContents: { verse: string; contents: string; }[] = [];
+
+        console.log('called on', id);
+
+        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
+            // update notes contents
+            newNotesContents = currentNotesContents;
+            newNotesContents.push({
+                verse: id,
+                contents: ""
+            });
+
+            return newNotesContents;
+        });
+
+        // save to file
+        await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+
+        // TODO; fix async issues
+        // TODO; sometimes deletes all notes after manual load
+        loadPassageNotes(`${passageBook}.${passageChapter}`);
+
+        // TODO; add callback to select new note
+
+    }
+
+    function handleNewNoteClick() {
+        createNewNote('10'); // TODO; get verse number from somewhere
     }
 
     // DYNAMICALLY GENERATE PASSAGE
@@ -164,6 +222,8 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} />
     
         <div className="sidenotes">
+
+        <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
 
             {sidenotesElements}
 
