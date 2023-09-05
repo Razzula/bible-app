@@ -46,6 +46,11 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         }
     }, [contents]);
 
+    useEffect(() => {
+        console.log('notesContents', notesContents);
+        renderPassageNotes();
+    }, [notesContents]);
+
     // presence check
     if (contents === null || contents === undefined) {
         return (
@@ -61,29 +66,33 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     // LOAD AND GENERATE PASSAGE NOTES
     async function loadPassageNotes(fileName: string) {
 
-        const activeVerses = new Set<string>();
-
         const rawNotesContents: [] = await window.electronAPI.readFile(fileName, "notes");
 
         if (rawNotesContents) {
-            const sidenotesElements = rawNotesContents.map((noteContents: {verse: string, contents: string}) => {
-
-                const verse = `${fileName}.${noteContents.verse}`;
-                activeVerses.add(verse)
-                return (
-                    <Sidenote key={verse} sidenote={verse} base={fileName}>
-                        <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents} deleteNote={deleteNote}/>
-                    </Sidenote>
-                );
-            });
-
             setNotesContents(rawNotesContents);
-            setSidenotesElements(sidenotesElements);
+            console.log('loaded notes', rawNotesContents);
         }
-        else {
-            setSidenotesElements(null);
-        }
-        
+    }
+
+    async function renderPassageNotes() {
+
+        const activeVerses = new Set<string>();
+        const passage = `${passageBook}.${passageChapter}`;
+
+        const sidenotesElements = notesContents.map((noteContents: {verse: string, contents: string}) => {
+
+            const verse = `${passage}.${noteContents.verse}`;
+            activeVerses.add(verse)
+            return (
+                <Sidenote key={verse} sidenote={verse} base={passage}>
+                    <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents} deleteNote={deleteNote}/>
+                </Sidenote>
+            );
+        });
+
+        console.log(activeVerses);
+
+        setSidenotesElements(sidenotesElements);
         setAnnotatedVerses(activeVerses);
     }
 
@@ -130,8 +139,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         // save to file
         await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
 
-        loadPassageNotes(`${passageBook}.${passageChapter}`);
-
     }
 
     async function createNewNote(id:string) {
@@ -142,10 +149,14 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
             // update notes contents
-            newNotesContents = currentNotesContents;
+            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
+                if (String(note.verse) !== id) {
+                    newNotesContents.push(note);
+                }
+            });
             newNotesContents.push({
                 verse: id,
-                contents: ""
+                contents: "new note"
             });
 
             return newNotesContents;
@@ -154,9 +165,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         // save to file
         await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
 
-        // TODO; fix async issues
         // TODO; sometimes deletes all notes after manual load
-        loadPassageNotes(`${passageBook}.${passageChapter}`);
 
         // TODO; add callback to select new note
 
