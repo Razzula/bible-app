@@ -374,9 +374,6 @@ function Scripture() {
                         {/* <button onClick={() => expandPassage(1)} className='btn btn-default ellipsis'>...</button><br/> */}
                         {(passages.props.children?.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
 
-                        {/* SIDENOTES */} {/* TODO; generate dynamically */}
-                        
-
                 </article>
             </div>
         </>

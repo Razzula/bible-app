@@ -4,6 +4,7 @@ import Footnote from './Footnote';
 
 import '../../styles/bible.scss';
 import { InlineAnchor } from 'sidenotes';
+import { Func } from 'mocha';
 
 type PassageChunk = {
     contents: any;
@@ -13,12 +14,13 @@ type PassageChunk = {
     passageChapter?: number;
     translation: string;
     notedVerses?: Set<string>;
+    setSelectedVerse: Function;
 }
 
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses }: PassageChunk) {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse }: PassageChunk) {
 
     // format paragraphs
     function generateContents(item: any) {
@@ -51,7 +53,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             contents = <span className={`${item.type} ${item.test}`}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
         }
         else {
-            contents = <span className={`${item.type} ${item.test}`}>{item.content}</span>
+            contents = <span className={`${item.type} ${item.test}`} onClick={() => setSelectedVerse(item.test)}>{item.content}</span>
         }
             
         // anchors
@@ -65,6 +67,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
     }
 
+    console.log('generating', passageBook, passageChapter)
     return contents.map((paragraph: Array<{type:string, content:string, test:string}>) => {
 
         // format contents of paragraph
