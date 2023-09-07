@@ -32,6 +32,7 @@ app.whenReady().then(() => {
     ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
     ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
     ipcMain.handle('writeFile', (event, fileName, localPath, data) => handleFileWrite(fileName, localPath, data))
+    ipcMain.handle('setupApp', (event) => handleInitialSetup())
 
     createWindow()
 
@@ -75,7 +76,6 @@ async function handleFileWrite(fileName, localPath, data) {
         }
     });
     return true;
-
 }
 
 async function handleDirectoryScan(localPath) {
@@ -96,7 +96,31 @@ async function handleDirectoryScan(localPath) {
     }
 
     return directories;
+}
 
+async function handleInitialSetup() {
+
+    const dirName = app.getPath("documents");
+
+    const rootDir = path.join(dirName, 'bible-app');
+    createDirectoryIfNotExist(rootDir);
+
+    ['Scripture', 'notes'].forEach(item => {
+        const directoryPath = path.join(rootDir, item);
+        createDirectoryIfNotExist(directoryPath);
+    });
+}
+
+function createDirectoryIfNotExist(dirPath) {
+    fs.access(dirPath, (nonExist) => {
+        if (nonExist) {
+            fs.mkdir(dirPath, (err) => {
+                if (err) {
+                    //throw err;
+                }
+            });
+        }
+    });
 }
 
 //TODO; make `documents/bible-app` dir if not exist

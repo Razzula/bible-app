@@ -45,23 +45,18 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     useEffect(() => {
         if (contents !== null && contents !== undefined) {
-            console.log('LOAD PASSAGE');
             generatePassage();
-            console.log('LOAD NOTES');
             loadPassageNotes(`${passageBook}.${passageChapter}`);
         }
     }, [contents]);
 
     useEffect(() => {
-        console.log('PROCESS PASSAGE');
         setPassageElements(
             <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse}/>
         );
-        console.log('annotatedVerses', annotatedVerses);
     }, [passageContents, annotatedVerses]);
 
     useEffect(() => {
-        console.log('PROCESS NOTES');
         renderPassageNotes();
     }, [notesContents]);
 
@@ -84,7 +79,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         if (rawNotesContents) {
             setNotesContents(rawNotesContents);
-            console.log('loaded notes', rawNotesContents);
         }
     }
 
@@ -105,14 +99,12 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         });
 
         setSidenotesElements(sidenotesElements);
-        console.log('activeVerses', activeVerses);
         setAnnotatedVerses(activeVerses);
     }
 
     async function updateNotesContents(id: string, noteContent: string, callback?: Function) {
 
         let newNotesContents: { verse: string; contents: string; }[] = [];
-        console.log('updating note', id);
 
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
             // update notes contents
@@ -150,27 +142,19 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     }
 
     async function createNewNote(id:string) {
-
-        console.log('creating new note', id);
         
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
             let newNotesContents: { verse: string; contents: string; }[] = [];
             // update notes contents
-            console.log('existing notes:', currentNotesContents.length)
             currentNotesContents.forEach((note: {verse: string, contents: string}) => {
                 if (String(note.verse) !== id) {
-                    console.log('\tpushing', id, note)
                     newNotesContents.push(note);
                 }
             });
-            console.log('\tpushing (NEW)', id)
             newNotesContents.push({
                 verse: id,
                 contents: "new note"
             });
-
-            console.log(newNotesContents);
-            debugger;
 
             window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
             return newNotesContents;
@@ -181,7 +165,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     }
 
     function handleNewNoteClick() {
-        console.log('button clicked');
 
         var selectedText = window.getSelection()?.toString();
         if (selectedText !== '') {
@@ -244,23 +227,30 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     
     return (<>
         {passageElements}
+
+        {(!ignoreFootnotes)
+            ? <>
+                <div className="sidenotes">
+
+                    <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
+
+                    {sidenotesElements}
+
+                    {/* <Sidenote sidenote='testR' base={baseAnchor}>
+                        <div style={{ width: 280, height: 100}}>right-hand note</div>
+                    </Sidenote> */}
+                </div>
+
+                <div className="sidenotes l">
+                    {/* <Sidenote sidenote='testL' base={baseAnchor}>
+                        <div style={{ width: 280, height: 100}}>left-hand note</div>
+                    </Sidenote> */}
+                </div>
+            </>
+            : null
+        }
     
-        <div className="sidenotes">
-
-        <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
-
-            {sidenotesElements}
-
-            {/* <Sidenote sidenote='testR' base={baseAnchor}>
-                <div style={{ width: 280, height: 100}}>right-hand note</div>
-            </Sidenote> */}
-        </div>
-
-        <div className="sidenotes l">
-            {/* <Sidenote sidenote='testL' base={baseAnchor}>
-                <div style={{ width: 280, height: 100}}>left-hand note</div>
-            </Sidenote> */}
-        </div>
+        
     </>);
 }
 

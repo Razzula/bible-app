@@ -96,10 +96,6 @@ function Scripture() {
         setSelectedTranslationLicense((licenses as any)[translation]);
     }
 
-    function handleTextSelection() {
-        const selectedElement = getSelectedElement() as HTMLElement;
-    }
-
     function getSelectedElement() {
         const selection = window.getSelection();
         if (selection) {
@@ -143,51 +139,6 @@ function Scripture() {
         updateSelectedTranslation('NKJV'); //TODO: make this a setting
     }
 
-    function wrapSelectedElement(element: HTMLElement, wrapper: HTMLElement) { // TODO; wrapping a footnote breaks
-        const range = window.getSelection()?.getRangeAt(0);
-        if (!range) {
-            return;
-        }
-
-        const selectedNodes = range.cloneContents().childNodes;
-        if (!selectedNodes || !selectedNodes.length) {
-            return;
-        }
-
-        const startNode = range.startContainer;
-        const startOffset = range.startOffset;
-        const endNode = range.endContainer;
-        const endOffset = range.endOffset;
-
-        const multiSpanning = (range.startContainer !== range.endContainer);
-
-        // create new nodes for the three parts of the original element
-        const beforeSelected = document.createTextNode(
-            startNode.textContent?.substring(0, startOffset) ?? ""
-        );
-        const afterSelected = document.createTextNode(
-            endNode.textContent?.substring(endOffset) ?? ""
-        );
-        
-        // move the selected nodes to a new wrapper element
-        const newWrapper = wrapper.cloneNode() as HTMLElement;
-        while (selectedNodes.length) {
-            newWrapper.appendChild(selectedNodes[0]);
-        }
-
-        // clear the selection
-        range.deleteContents();
-        element.innerHTML = "";
-
-        // rebuild the original element with the three parts
-        element.appendChild(beforeSelected);
-        element.appendChild(newWrapper);
-        if (!multiSpanning) {
-            element.appendChild(afterSelected);
-        }
-
-    }
-
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number) {
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
@@ -211,7 +162,7 @@ function Scripture() {
     }
 
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false) {
- 
+
         const chaptersContents = [];
         
         if (Array.isArray(usfm)) { // TODO; TEMP
@@ -249,9 +200,9 @@ function Scripture() {
         const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book, usfm.initialChapter));
 
         setPassages(
-            <AnchorBase anchor={baseAnchor} className="base">
+            <>
                 {[passageContents]}
-            </AnchorBase>
+            </>
         );
         setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
         
@@ -338,11 +289,15 @@ function Scripture() {
         // generate passage and merge into current
         if (delta === 1) {
             const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
+            
+            setPassages(<>{passages}{extraPassageContents}</>);
         }
         else { // TODO; fix verse numbers
             extraContents = extraContents.reverse()
             extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
             const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
+        
+            setPassages(<>{extraPassageContents}{passages}</>);
         }
     }
 
@@ -366,12 +321,14 @@ function Scripture() {
             </div>
 
             <div className='scroll'>
-                <article id={docID} onClick={deselect} onMouseUp={handleTextSelection}>
+                <article id={docID} onClick={deselect}>
                     
                         {/* BIBLE */}
-                        {/* <button onClick={() => expandPassage(-1)} className='btn btn-default ellipsis'>...</button><br/> */}
-                        {passages}
-                        {/* <button onClick={() => expandPassage(1)} className='btn btn-default ellipsis'>...</button><br/> */}
+                        <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length == 0} className='btn btn-default ellipsis'>...</button><br/>
+                        <AnchorBase anchor={baseAnchor} className="base">
+                            {passages}
+                        </AnchorBase>
+                        <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length == 0} className='btn btn-default ellipsis'>...</button><br/>
                         {(passages.props.children?.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
 
                 </article>

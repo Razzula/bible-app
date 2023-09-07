@@ -12,6 +12,8 @@ import '../styles/App.scss';
  */
 function App() {
 
+    window.electronAPI.setupApp();
+
     // GENERATE JSX
     return (
         <div className='App'>
