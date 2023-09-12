@@ -3,12 +3,27 @@ import { useSelector } from 'react-redux';
 import { State } from 'sidenotes/dist/src/store';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
+import {$getRoot, $getSelection} from 'lexical';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import {InitialEditorStateType, LexicalComposer} from '@lexical/react/LexicalComposer';
+import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
+import {ContentEditable} from '@lexical/react/LexicalContentEditable';
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
+
+import '../../styles/editor.scss';
+
 type SidenoteContent = {
     sidenoteID: string;
     docID?: string;
-    initialNoteContents: string;
+    initialNoteContents: any;
     updateNotesContents: Function;
     deleteNote: Function;
+}
+
+const theme = {
+    // Theme styling goes here
 }
 
 /**
@@ -30,6 +45,7 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
     const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
 
     useEffect(() => {
+        //const temp = JSON.parse(initialNoteContents);
         setCurrentNoteContents(initialNoteContents);
     }, [sidenoteID, initialNoteContents]);
 
@@ -40,8 +56,12 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
         }
     }, [isSelected]);
 
-    function handleChange(event: React.ChangeEvent<any>) {
-        setCurrentNoteContents(event.currentTarget.value);
+    function handleChange(editorState: any) {
+        var temp = editorState.toJSON();
+        //debugger;
+        setCurrentNoteContents(temp);
+        // const editorStateJSON = editorState.toJSON()
+        // setCurrentNoteContents(JSON.stringify(editorStateJSON));
     }
 
     function handleDeleteClick() {
@@ -58,12 +78,32 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
         }
     }
 
+    function onError(error: any) {
+        console.error(error);
+    }
+
     console.log(committedNoteContents)
+
     return (
         <div style={{ width: 280, height: 150, backgroundColor: backgroundColour }}>
             <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
             <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
-            <textarea value={currentNoteContents} onChange={handleChange} />
+            {/* <textarea value={currentNoteContents} onChange={handleChange} /> */}
+
+            <LexicalComposer initialConfig={{
+                namespace: 'name',
+                onError: onError,
+                editorState: JSON.stringify(initialNoteContents)
+            }}>
+                <div className="editor-container">
+                    <PlainTextPlugin
+                    contentEditable={<ContentEditable className="editor-input" />}
+                    placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
+                    ErrorBoundary={LexicalErrorBoundary}
+                    />
+                </div>
+                <OnChangePlugin onChange={handleChange} />
+            </LexicalComposer>
         </div>
     );
 

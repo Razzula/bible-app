@@ -4,9 +4,11 @@
   "main": "public/main.js",
   "homepage": "./",
   "dependencies": {
+    "@lexical/react": "^0.12.2",
     "bootstrap": "^5.2.3",
     "chai": "^4.3.7",
     "dotenv": "^16.0.3",
+    "lexical": "^0.12.2",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "react-bootstrap": "^2.7.2",
