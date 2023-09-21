@@ -186,7 +186,7 @@ function Scripture() {
             // TODO; prevent multiple reads of current file
             
             // load contents externally from files
-            const chapterContents = await window.electronAPI.readFile(fileName,`Scripture/${selectedTranslation}`); // TODO; single-chapter books // TODO; make NKJV
+            const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books // TODO; make NKJV
             if (chapterContents) {
                 chapterContents[0][0].chapter = chapter;
             }
@@ -255,7 +255,7 @@ function Scripture() {
         extraChapter = Number(extraChapter) + delta
 
         const fileName = `${usfm.book}.${extraChapter}`
-        const chapterContents = await window.electronAPI.readFile(fileName,`Scripture/${selectedTranslation}`);
+        const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation);
         if (chapterContents) {
             chapterContents[0][0].chapter = extraChapter;
         }

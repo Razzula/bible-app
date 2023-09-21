@@ -46,7 +46,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     useEffect(() => {
         if (contents !== null && contents !== undefined) {
             generatePassage();
-            loadPassageNotes(`${passageBook}.${passageChapter}`);
+            loadPassageNotes(`${passageBook}`, `${passageChapter}`);
         }
     }, [contents]);
 
@@ -64,18 +64,18 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     if (contents === null || contents === undefined) {
         return (
             <Alert variant="danger">
-                <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+                <Alert.Heading>404</Alert.Heading>
                 <p>
-                    Change this and that and try again.
+                    Error: {passageBook} {passageChapter} not found.
                 </p>
             </Alert>
         );
     }
     
     // LOAD AND GENERATE PASSAGE NOTES
-    async function loadPassageNotes(fileName: string) {
+    async function loadPassageNotes(book: string, chapter: string) {
 
-        const rawNotesContents: [] = await window.electronAPI.readFile(fileName, "notes");
+        const rawNotesContents: [] = await window.electronAPI.loadNotes(book, chapter);
 
         if (rawNotesContents) {
             setNotesContents(rawNotesContents);
@@ -104,9 +104,14 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     async function updateNotesContents(id: string, noteContent: string, callback?: Function) {
 
-        let newNotesContents: { verse: string; contents: string; }[] = [];
-
+        const newNoteContents = {
+            verse: id,
+            contents: noteContent
+        };
+        
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
+
+            let newNotesContents: { verse: string; contents: string; }[] = [];
             // update notes contents
             currentNotesContents.forEach((note: {verse: string, contents: string}) => {
                 if (String(note.verse) === id) {
@@ -119,7 +124,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         });
 
         // save to file
-        const saveResult = await window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+        const saveResult = await window.electronAPI.saveNote(`${id}.note`, passageBook, String(passageChapter), newNoteContents);
         if (callback) {
             callback(saveResult, noteContent);
         }
@@ -136,29 +141,35 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                 }
             });
 
-            window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+            // TODO; electron function to delete note
             return newNotesContents;
         });
+
+        window.electronAPI.deleteNote(`${id}.note`, passageBook, String(passageChapter));
     }
 
     async function createNewNote(id:string) {
         
+        const newNoteContents = {
+            verse: id,
+            contents: {"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"new note","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}
+        };
+
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
-            let newNotesContents: { verse: string; contents: string; }[] = [];
+            let newNotesContents: { verse: string; contents: any; }[] = [];
             // update notes contents
             currentNotesContents.forEach((note: {verse: string, contents: string}) => {
                 if (String(note.verse) !== id) {
                     newNotesContents.push(note);
                 }
             });
-            newNotesContents.push({
-                verse: id,
-                contents: "new note"
-            });
 
-            window.electronAPI.writeFile(`${passageBook}.${passageChapter}`, "notes", newNotesContents);
+            newNotesContents.push(newNoteContents);
+
             return newNotesContents;
         });
+
+        window.electronAPI.saveNote(`${id}.note`, passageBook, String(passageChapter), newNoteContents);
 
         // TODO; sometimes deletes all notes after manual load
         // TODO; add callback to select new note

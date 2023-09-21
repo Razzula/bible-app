@@ -67,7 +67,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
                 // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
-                let passageContents = await window.electronAPI.readFile(fileName, `Scripture/${translation}`);
+                let passageContents = await window.electronAPI.loadScripture(fileName, translation);
                 passageContents[0][0].chapter = usfm.initialChapter;
 
                 if (!passageContents) {

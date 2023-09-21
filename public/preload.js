@@ -2,7 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
     getDirectories: (localPath) => ipcRenderer.invoke('getDirectories', localPath),
-    readFile: (fileName, localPath) => ipcRenderer.invoke('readFile', fileName, localPath),
-    writeFile: (fileName, localPath, data) => ipcRenderer.invoke('writeFile', fileName, localPath, data),
+    loadScripture: (fileName, translation) => ipcRenderer.invoke('loadScripture', fileName, translation),
+    loadNotes: (book, chapter) => ipcRenderer.invoke('loadNotes', book, chapter),
+    saveNote: (fileName, book, chapter, data) => ipcRenderer.invoke('saveNote', fileName, book, chapter, data),
+    deleteNote: (fileName, book, chapter) => ipcRenderer.invoke('deleteNote', fileName, book, chapter),
     setupApp: () => ipcRenderer.invoke('setupApp')
 });

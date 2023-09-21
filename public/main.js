@@ -29,10 +29,12 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
-    ipcMain.handle('readFile', (event, fileName, localPath) => handleFileRead(fileName, localPath))
-    ipcMain.handle('writeFile', (event, fileName, localPath, data) => handleFileWrite(fileName, localPath, data))
     ipcMain.handle('setupApp', (event) => handleInitialSetup())
+    ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
+    ipcMain.handle('loadNotes', (event, book, chapter) => handleLoadNotes(book, chapter))
+    ipcMain.handle('saveNote', (event, fileName, book, chapter, data) => handleSaveNote(fileName, book, chapter, data))
+    ipcMain.handle('deleteNote', (event, fileName, book, chapter) => handleDeleteNote(fileName, book, chapter))
+    ipcMain.handle('loadScripture', (event, fileName, localPath) => handleLoadScripture(fileName, localPath))
 
     createWindow()
 
@@ -52,7 +54,7 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-async function handleFileRead(fileName, localPath) {
+async function readFile(fileName, localPath) {
 
     const dirName = app.getPath("documents");
 
@@ -65,11 +67,27 @@ async function handleFileRead(fileName, localPath) {
 
 }
 
-async function handleFileWrite(fileName, localPath, data) {
+async function writeFile(fileName, localPath, data) {
 
-    const dirName = app.getPath("documents");
+    const rootDir = app.getPath("documents");
 
-    fs.writeFile(path.join(dirName, 'bible-app', localPath, fileName), JSON.stringify(data), (err) => {
+    const localDir = path.join(rootDir, 'bible-app', localPath);
+    createDirectoryIfNotExist(localDir);
+
+    fs.writeFile(path.join(localDir, fileName), JSON.stringify(data), (err) => {
+        if (err) {
+            console.error('Error:', err);
+            return false;
+        }
+    });
+    return true;
+}
+
+async function deleteFile(fileName, localPath) {
+
+    const rootDir = app.getPath("documents");
+
+    fs.unlink(path.join(rootDir, 'bible-app', localPath, fileName), (err) => {
         if (err) {
             console.error('Error:', err);
             return false;
@@ -98,6 +116,54 @@ async function handleDirectoryScan(localPath) {
     return directories;
 }
 
+async function handleSaveNote(fileName, book, chapter, data) {
+    return await writeFile(
+        fileName,
+        path.join('notes', book, chapter),
+        data
+    );
+}
+
+async function handleLoadNotes(book, chapter) {
+
+    const notes = [];
+    const localPath = path.join('notes', book, chapter);
+
+    let fileNames = [];
+    try {
+        fileNames = fs.readdirSync(path.join(app.getPath("documents"), 'bible-app', localPath));
+    }
+    catch (err) {
+        console.error('Error:', err);
+        return notes;
+    }
+
+    for await (const fileName of fileNames) {
+        const fileContents = await readFile(fileName, path.join('notes', book, chapter));
+    
+        if (fileContents) {
+            notes.push(fileContents);
+        }
+    }
+            
+    return notes;
+}
+
+async function handleDeleteNote(fileName, book, chapter) {
+    return await deleteFile(
+        fileName,
+        path.join('notes', book, chapter)
+    );
+}
+
+async function handleLoadScripture(fileName, localPath, data) {
+    return await readFile(
+        fileName,
+        path.join('Scripture', localPath),
+        data
+    );
+}
+
 async function handleInitialSetup() {
 
     const dirName = app.getPath("documents");
@@ -112,15 +178,12 @@ async function handleInitialSetup() {
 }
 
 function createDirectoryIfNotExist(dirPath) {
-    fs.access(dirPath, (nonExist) => {
-        if (nonExist) {
-            fs.mkdir(dirPath, (err) => {
-                if (err) {
-                    //throw err;
-                }
-            });
-        }
-    });
-}
 
-//TODO; make `documents/bible-app` dir if not exist
+    try {
+        fs.accessSync(dirPath, fs.constants.F_OK);
+    }
+    catch (err) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+}
