@@ -86,25 +86,29 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
 
     return (
         <div style={{ width: 280, height: 150, backgroundColor: backgroundColour }}>
-            <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
-            <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
-            {/* <textarea value={currentNoteContents} onChange={handleChange} /> */}
+            <div>
+                <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
+                <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
+                {/* <textarea value={currentNoteContents} onChange={handleChange} /> */}
+            </div>
 
-            <LexicalComposer initialConfig={{
-                namespace: 'name',
-                onError: onError,
-                editorState: JSON.stringify(initialNoteContents)
-            }}>
-                <div className="editor-container">
-                    <RichTextPlugin
-                    contentEditable={<ContentEditable className="editor-input" />}
-                    placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
-                    ErrorBoundary={LexicalErrorBoundary}
-                    />
-                </div>
-                <OnChangePlugin onChange={handleChange} />
-                <HistoryPlugin />
-            </LexicalComposer>
+            <div style={{ height: 112 }}>
+                <LexicalComposer initialConfig={{
+                    namespace: 'name',
+                    onError: onError,
+                    editorState: JSON.stringify(initialNoteContents)
+                }}>
+                    <div className="editor-container">
+                        <RichTextPlugin
+                        contentEditable={<ContentEditable className="editor-input" />}
+                        placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
+                        ErrorBoundary={LexicalErrorBoundary}
+                        />
+                    </div>
+                    <OnChangePlugin onChange={handleChange} />
+                    <HistoryPlugin />
+                </LexicalComposer>
+            </div>
         </div>
     );
 
