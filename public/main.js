@@ -31,9 +31,9 @@ function createWindow () {
 app.whenReady().then(() => {
     ipcMain.handle('setupApp', (event) => handleInitialSetup())
     ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
-    ipcMain.handle('loadNotes', (event, book, chapter) => handleLoadNotes(book, chapter))
-    ipcMain.handle('saveNote', (event, fileName, book, chapter, data) => handleSaveNote(fileName, book, chapter, data))
-    ipcMain.handle('deleteNote', (event, fileName, book, chapter) => handleDeleteNote(fileName, book, chapter))
+    ipcMain.handle('loadNotes', (event, group, book, chapter) => handleLoadNotes(group, book, chapter))
+    ipcMain.handle('saveNote', (event, fileName, group, book, chapter, data) => handleSaveNote(fileName, group, book, chapter, data))
+    ipcMain.handle('deleteNote', (event, fileName, group, book, chapter) => handleDeleteNote(fileName, group, book, chapter))
     ipcMain.handle('loadScripture', (event, fileName, localPath) => handleLoadScripture(fileName, localPath))
 
     createWindow()
@@ -116,18 +116,18 @@ async function handleDirectoryScan(localPath) {
     return directories;
 }
 
-async function handleSaveNote(fileName, book, chapter, data) {
+async function handleSaveNote(fileName, group, book, chapter, data) {
     return await writeFile(
         fileName,
-        path.join('notes', book, chapter),
+        path.join('notes', group, book, chapter),
         data
     );
 }
 
-async function handleLoadNotes(book, chapter) {
+async function handleLoadNotes(group, book, chapter) {
 
     const notes = [];
-    const localPath = path.join('notes', book, chapter);
+    const localPath = path.join('notes', group, book, chapter);
 
     let fileNames = [];
     try {
@@ -139,9 +139,10 @@ async function handleLoadNotes(book, chapter) {
     }
 
     for await (const fileName of fileNames) {
-        const fileContents = await readFile(fileName, path.join('notes', book, chapter));
+        const fileContents = await readFile(fileName, localPath);
     
         if (fileContents) {
+            fileContents.id = fileName;
             notes.push(fileContents);
         }
     }
@@ -149,10 +150,10 @@ async function handleLoadNotes(book, chapter) {
     return notes;
 }
 
-async function handleDeleteNote(fileName, book, chapter) {
+async function handleDeleteNote(fileName, group, book, chapter) {
     return await deleteFile(
         fileName,
-        path.join('notes', book, chapter)
+        path.join('notes', group, book, chapter)
     );
 }
 

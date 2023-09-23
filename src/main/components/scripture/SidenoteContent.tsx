@@ -16,6 +16,7 @@ import '../../styles/editor.scss';
 
 type SidenoteContent = {
     sidenoteID: string;
+    passageName: string;
     docID?: string;
     initialNoteContents: any;
     updateNotesContents: Function;
@@ -35,12 +36,12 @@ const theme = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesContents, deleteNote}: SidenoteContent) {
+function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote}: SidenoteContent) {
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
 
-    const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
+    const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, passageName));
     const isSaved = (currentNoteContents === committedNoteContents)
     const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
 
@@ -51,22 +52,21 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
 
     useEffect(() => {
         if (!isSelected && !isSaved) {
-            const splitID = sidenoteID.split(".");
-            updateNotesContents(splitID[splitID.length - 1], currentNoteContents, saveNoteContentsCallback);
+            debugger;
+            const passageNameSplit = passageName.split('.');
+            updateNotesContents(sidenoteID, passageNameSplit[passageNameSplit.length - 1], currentNoteContents, saveNoteContentsCallback);
         }
     }, [isSelected]);
 
     function handleChange(editorState: any) {
         var temp = editorState.toJSON();
-        //debugger;
         setCurrentNoteContents(temp);
         // const editorStateJSON = editorState.toJSON()
         // setCurrentNoteContents(JSON.stringify(editorStateJSON));
     }
 
     function handleDeleteClick() {
-        const splitID = sidenoteID.split(".");
-        deleteNote(splitID[splitID.length - 1]);
+        deleteNote(sidenoteID);
     }
 
     function saveNoteContentsCallback(saveResult: boolean, noteContents: string) {
@@ -85,14 +85,14 @@ function SidenoteContent({sidenoteID, docID, initialNoteContents, updateNotesCon
     console.log(committedNoteContents)
 
     return (
-        <div style={{ width: 280, height: 150, backgroundColor: backgroundColour }}>
+        <div style={{ width: 280, height: 'auto', backgroundColor: backgroundColour }}>
             <div>
                 <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
                 <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
                 {/* <textarea value={currentNoteContents} onChange={handleChange} /> */}
             </div>
 
-            <div style={{ height: 112 }}>
+            <div style={{ height: 'auto' }}>
                 <LexicalComposer initialConfig={{
                     namespace: 'name',
                     onError: onError,

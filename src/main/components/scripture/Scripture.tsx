@@ -116,7 +116,7 @@ function Scripture() {
     }
 
     async function getTranslationList() {
-        const translations = await window.electronAPI.getDirectories(`Scripture`);
+        const translations = await window.electronAPI.getDirectories('Scripture');
 
         if (translations.length === 0) {
             console.log('No translations found');
@@ -313,7 +313,7 @@ function Scripture() {
                 {/* SEARCH BAR */}
                 <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
                 {/* TRANSLATION SELECT */}
-                <select value={selectedTranslation}className="select" onChange={handleTranslationSelectChange}>
+                <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
                     {translationsList}
                 </select>
                 {/* SEARCH BUTTON */}

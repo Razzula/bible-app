@@ -5,7 +5,8 @@ import { Store, Sidenote } from 'sidenotes';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
-import SidenoteContent from '../scripture/SidenoteContent';
+import SidenoteContent from './SidenoteContent';
+import SidenotesContainer from './SidenotesContainer';
 
 import '../../styles/bible.scss';
 import PassageChunk from './PassageChunk';
@@ -38,27 +39,33 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     const [passageElements, setPassageElements]: [any, Function] = React.useState([]);
 
     const [notesContents, setNotesContents]: [any, Function] = React.useState([]);
-    const [sidenotesElements, setSidenotesElements]: [any, Function] = React.useState([]);
 
     const [annotatedVerses, setAnnotatedVerses]: [any, Function] = React.useState(new Set<string>());
     const [selectedVerse, setSelectedVerse]: [any, Function] = React.useState(null);
 
+    const [noteGroupsList, setNoteGroupsList] = React.useState('');
+    const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
+
+    useEffect(() => {
+        getNoteGroupsList();
+    }, []);
+
     useEffect(() => {
         if (contents !== null && contents !== undefined) {
             generatePassage();
-            loadPassageNotes(`${passageBook}`, `${passageChapter}`);
+            loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
         }
     }, [contents]);
+
+    useEffect(() => {
+        loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+    }, [selectedNoteGroup]);
 
     useEffect(() => {
         setPassageElements(
             <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse}/>
         );
     }, [passageContents, annotatedVerses]);
-
-    useEffect(() => {
-        renderPassageNotes();
-    }, [notesContents]);
 
     // presence check
     if (contents === null || contents === undefined) {
@@ -73,48 +80,32 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     }
     
     // LOAD AND GENERATE PASSAGE NOTES
-    async function loadPassageNotes(book: string, chapter: string) {
+    async function loadPassageNotes(group: string, book: string, chapter: string) {
 
-        const rawNotesContents: [] = await window.electronAPI.loadNotes(book, chapter);
+        if (group == null || group.trim() === '') {
+            return;
+        }
+
+        const rawNotesContents: [] = await window.electronAPI.loadNotes(group, book, chapter);
 
         if (rawNotesContents) {
             setNotesContents(rawNotesContents);
         }
     }
 
-    async function renderPassageNotes() {
-
-        const activeVerses = new Set<string>();
-        const passage = `${passageBook}.${passageChapter}`;
-
-        const sidenotesElements = notesContents.map((noteContents: {verse: string, contents: string}) => {
-
-            const verse = `${passage}.${noteContents.verse}`;
-            activeVerses.add(verse)
-            return (
-                <Sidenote key={verse} sidenote={verse} base={passage}>
-                    <SidenoteContent sidenoteID={verse} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={updateNotesContents} deleteNote={deleteNote}/>
-                </Sidenote>
-            );
-        });
-
-        setSidenotesElements(sidenotesElements);
-        setAnnotatedVerses(activeVerses);
-    }
-
-    async function updateNotesContents(id: string, noteContent: string, callback?: Function) {
+    async function updateNotesContents(id: string, verse: string, selectedNoteGroup: string, noteContent: string, callback?: Function) {
 
         const newNoteContents = {
-            verse: id,
+            verse: verse,
             contents: noteContent
         };
         
-        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
+        setNotesContents((currentNotesContents: { id: string; verse: string; contents: string; }[]) => { // TODO; this type is being reused a lot
 
-            let newNotesContents: { verse: string; contents: string; }[] = [];
+            let newNotesContents: { id: string; verse: string; contents: string; }[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
-                if (String(note.verse) === id) {
+            currentNotesContents.forEach((note: {id: string; verse: string, contents: string}) => {
+                if (note.id === id) {
                     note.contents = noteContent;
                 }
                 newNotesContents.push(note);
@@ -124,13 +115,14 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         });
 
         // save to file
-        const saveResult = await window.electronAPI.saveNote(`${id}.note`, passageBook, String(passageChapter), newNoteContents);
+        debugger;
+        const saveResult = await window.electronAPI.saveNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter), newNoteContents);
         if (callback) {
             callback(saveResult, noteContent);
         }
     }
 
-    async function deleteNote(id:string) {
+    async function deleteNote(id:string, selectedNoteGroup: string) {
 
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
             let newNotesContents: { verse: string; contents: string; }[] = [];
@@ -145,13 +137,16 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             return newNotesContents;
         });
 
-        window.electronAPI.deleteNote(`${id}.note`, passageBook, String(passageChapter));
+        window.electronAPI.deleteNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter));
     }
 
-    async function createNewNote(id:string) {
+    async function createNewNote(id: string, selectedNoteGroup: string) {
+
+        const temp = selectedVerse.split('.');
+        const verse = temp[temp.length - 1];
         
         const newNoteContents = {
-            verse: id,
+            verse: verse,
             contents: {"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"new note","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}
         };
 
@@ -159,7 +154,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             let newNotesContents: { verse: string; contents: any; }[] = [];
             // update notes contents
             currentNotesContents.forEach((note: {verse: string, contents: string}) => {
-                if (String(note.verse) !== id) {
+                if (String(note.verse) !== verse) {
                     newNotesContents.push(note);
                 }
             });
@@ -169,19 +164,10 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             return newNotesContents;
         });
 
-        window.electronAPI.saveNote(`${id}.note`, passageBook, String(passageChapter), newNoteContents);
+        window.electronAPI.saveNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter), newNoteContents);
 
         // TODO; sometimes deletes all notes after manual load
         // TODO; add callback to select new note
-    }
-
-    function handleNewNoteClick() {
-
-        var selectedText = window.getSelection()?.toString();
-        if (selectedText !== '') {
-            const id = selectedVerse.split('.');
-            createNewNote(id[id.length - 1]);
-        }
     }
 
     // DYNAMICALLY GENERATE PASSAGE
@@ -235,28 +221,24 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         setPassageContents(paragraphs);
     }
+
+    async function getNoteGroupsList() {
+        const noteGroups = await window.electronAPI.getDirectories('notes');
+
+        const noteGroupsList = noteGroups.map((translation: string) => {
+            return <option key={translation} value={translation}>{translation}</option>;
+        });
+
+        setNoteGroupsList(noteGroupsList);
+    }
     
     return (<>
         {passageElements}
 
         {(!ignoreFootnotes)
             ? <>
-                <div className="sidenotes">
-
-                    <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
-
-                    {sidenotesElements}
-
-                    {/* <Sidenote sidenote='testR' base={baseAnchor}>
-                        <div style={{ width: 280, height: 100}}>right-hand note</div>
-                    </Sidenote> */}
-                </div>
-
-                <div className="sidenotes l">
-                    {/* <Sidenote sidenote='testL' base={baseAnchor}>
-                        <div style={{ width: 280, height: 100}}>left-hand note</div>
-                    </Sidenote> */}
-                </div>
+                <SidenotesContainer position='' noteGroupsList={noteGroupsList} passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} />
+                {/* <SidenotesContainer position=' l' noteGroupsList={noteGroupsList} passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} /> */}
             </>
             : null
         }
