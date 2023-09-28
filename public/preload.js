@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     loadNotes: (group, book, chapter) => ipcRenderer.invoke('loadNotes', group, book, chapter),
     saveNote: (fileName, group, book, chapter, data) => ipcRenderer.invoke('saveNote', fileName, group, book, chapter, data),
     deleteNote: (fileName, group, book, chapter) => ipcRenderer.invoke('deleteNote', fileName, group, book, chapter),
+    loadDocument: (documentName) => ipcRenderer.invoke('loadDocument', documentName),
     setupApp: () => ipcRenderer.invoke('setupApp')
 });

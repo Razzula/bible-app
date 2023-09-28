@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Page from './Page';
-import Sidebar from './Sidebar';
 
 import '../styles/dark.scss';
 import '../styles/App.scss';
@@ -16,10 +15,7 @@ function App() {
 
     // GENERATE JSX
     return (
-        <div className='App'>
-            <Sidebar />
-            <Page />
-        </div>
+        <Page />
     );
 }
 

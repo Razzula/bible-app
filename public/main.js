@@ -35,6 +35,7 @@ app.whenReady().then(() => {
     ipcMain.handle('saveNote', (event, fileName, group, book, chapter, data) => handleSaveNote(fileName, group, book, chapter, data))
     ipcMain.handle('deleteNote', (event, fileName, group, book, chapter) => handleDeleteNote(fileName, group, book, chapter))
     ipcMain.handle('loadScripture', (event, fileName, localPath) => handleLoadScripture(fileName, localPath))
+    ipcMain.handle('loadDocument', (event, fileName) => handleLoadDocument(fileName))
 
     createWindow()
 
@@ -165,6 +166,13 @@ async function handleLoadScripture(fileName, localPath, data) {
     );
 }
 
+async function handleLoadDocument(filename) {
+
+    const fileContents = await readFile(filename, 'documents');
+            
+    return fileContents;
+}
+
 async function handleInitialSetup() {
 
     const dirName = app.getPath("documents");
@@ -172,7 +180,7 @@ async function handleInitialSetup() {
     const rootDir = path.join(dirName, 'bible-app');
     createDirectoryIfNotExist(rootDir);
 
-    ['Scripture', 'notes'].forEach(item => {
+    ['Scripture', 'notes', 'documents'].forEach(item => {
         const directoryPath = path.join(rootDir, item);
         createDirectoryIfNotExist(directoryPath);
     });

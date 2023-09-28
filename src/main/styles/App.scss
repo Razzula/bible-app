@@ -24,8 +24,16 @@
 
 .sidebar {
     width: 48px;
-    position: fixed;
+    flex: 0 0 auto;
+    height: 100vh;
     top: 0;
     left: 0;
     bottom: 0;
+}
+
+.sidepanel {
+}
+
+Window {
+    display: flex;
 }

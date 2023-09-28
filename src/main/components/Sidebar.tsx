@@ -1,15 +1,17 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 
-function Sidebar() {
+type Sidebar = {
+    handleButtonClick: (button: string) => void;
+}
+
+function Sidebar({handleButtonClick}: Sidebar) {
 
     return (
         <div className="sidebar">
-            <Nav defaultActiveKey="/home" className="flex-column">
-                {/* <Nav.Link href="/home">H</Nav.Link>
-                <Nav.Link href="/about">A</Nav.Link>
-                <Nav.Link href="/services">S</Nav.Link> */}
-            </Nav>
+            <button onClick={() => handleButtonClick('scripture')}>Scripture</button>
+            <button onClick={() => handleButtonClick('document')}>Document</button>
+            <button onClick={() => handleButtonClick('settings')}>Settings</button>
         </div>
     );
 

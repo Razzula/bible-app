@@ -1,12 +1,28 @@
 import React from 'react';
 
 import Scripture from './scripture/Scripture';
+import Document from './Document';
 
-function Window() {
+type Window = {
+    windowToLoad: string;
+}
 
-    return (
-        <Scripture />
-    );
+function Window({windowToLoad}: Window) {
+
+    switch (windowToLoad) {
+        case 'scripture':
+            return (
+                <Scripture />
+            );
+        case 'document':
+            return (
+                <Document initialContents={null} />
+            );
+        default:
+            return (
+                null
+            );
+    }
 
 }
 
