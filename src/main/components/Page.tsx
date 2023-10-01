@@ -17,11 +17,11 @@ function Page() {
         setSelectedPanel(button);
     }
 
-    function createNewTab(type: string) {
-        //TODO: check if tab already exists, if so, switch to it
+    function createNewTab(type: string, data: string) {
+        //TODO: replace with uuid
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
-            newWindowsList.set(type, <Window windowToLoad={type} />);
+            newWindowsList.set(data, <Window windowToLoad={type} data={data} />);
 
             return newWindowsList;
         });

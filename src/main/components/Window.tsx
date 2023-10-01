@@ -5,14 +5,15 @@ import Document from './Document';
 
 type Window = {
     windowToLoad: string;
+    data: string;
 }
 
-function Window({windowToLoad}: Window) {
+function Window({windowToLoad, data}: Window) {
 
     switch (windowToLoad) {
         case 'scripture':
             return (
-                <Scripture />
+                <Scripture queryToLoad={data} />
             );
         case 'document':
             return (

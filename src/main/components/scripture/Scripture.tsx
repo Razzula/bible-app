@@ -21,11 +21,15 @@ let store: Store;
 const docID = 'article';
 const baseAnchor = 'anchor';
 
+type Scripture = {
+    queryToLoad?: string;
+}
+
 /**
  * A React component to display the main application.
  * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
  */
-function Scripture() {
+function Scripture({queryToLoad}: Scripture) {
     const [searchQuery, setSearchQuery] = useState('');
     const [translationsList, setTranslationsList] = useState('');
     const [selectedTranslation, setSelectedTranslation] = useState('');
@@ -41,6 +45,13 @@ function Scripture() {
     useEffect(() => {
         getTranslationList();
     }, []);
+
+    useEffect(() => {
+        if (queryToLoad !== undefined) {
+            setSearchQuery(queryToLoad);
+            loadPassageFromString(queryToLoad);
+        }
+    }, [queryToLoad]);
 
     useEffect(() => {
         loadPassageFromString(searchQuery);
