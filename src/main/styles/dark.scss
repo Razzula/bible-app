@@ -15,7 +15,7 @@ body{
     border-radius: 4px;
 }
 
-.sidebar {
+.sidebar, .tab {
     background-color: #292a2d;
     border-color: #464c4e;
     color: #ffffff;
@@ -34,4 +34,8 @@ body{
     background-color: #430c11;
     border: 2px solid #bc1e2e;
     color: #df7a83;
+}
+
+.tab-close-button {
+    color: #9d9c9e;
 }

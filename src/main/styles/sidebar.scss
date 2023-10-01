@@ -1,0 +1,29 @@
+.sidebar {
+    width: 48px;
+    flex: 0 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-container {
+    flex: 1; /* Expand to fill available space (pushes bottom container to the bottom) */
+}
+
+.bottom-container {
+    display: flex;
+    flex-direction: column-reverse; /* Stack buttons in this container bottom-up */
+}
+
+.sidebar-button {
+    background-color: #555;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    margin: 2px 0; /* Adjust the margin as needed */
+    cursor: pointer;
+    width: 48px;
+}
+.sidebar-button.selected {
+    border-left: 2px solid #2d75ca;
+}

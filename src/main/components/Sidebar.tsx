@@ -1,18 +1,49 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 
+import '../styles/sidebar.scss';
+
 type Sidebar = {
-    handleButtonClick: (button: string) => void;
+    updateSelectedPanel: Function
 }
 
-function Sidebar({handleButtonClick}: Sidebar) {
+function Sidebar({updateSelectedPanel}: Sidebar) {
+
+    const [selectedButton, setSelectedButton]: [string | undefined, Function] = React.useState(undefined);
+
+    function handleButtonClick(button: string) {
+        setSelectedButton((currentSelection: string | undefined) => {
+            const selection = (button === currentSelection) ? undefined : button;
+
+            updateSelectedPanel(selection);
+            return selection;
+
+        });
+    }
 
     return (
         <div className="sidebar">
-            <button onClick={() => handleButtonClick('scripture')}>Scripture</button>
-            <button onClick={() => handleButtonClick('document')}>Document</button>
-            <button onClick={() => handleButtonClick('settings')}>Settings</button>
+            <div className="top-container">
+                <SidebarButton buttonName='scripture' isSelected={selectedButton === 'scripture'} handleButtonClick={handleButtonClick} />
+                <SidebarButton buttonName='document' isSelected={selectedButton === 'document'} handleButtonClick={handleButtonClick} />
+            </div>
+
+            <div className="bottom-container">
+                <button className='sidebar-button'>Settings</button>
+            </div>
         </div>
+    );
+
+}
+
+function SidebarButton({buttonName, isSelected, handleButtonClick}: {buttonName: string, isSelected: boolean, handleButtonClick: Function}) {
+
+    const className = isSelected ? 'sidebar-button selected' : 'sidebar-button';
+
+    return (
+        <button onClick={() => handleButtonClick(buttonName)} className={className}>
+            {buttonName}
+        </button>
     );
 
 }

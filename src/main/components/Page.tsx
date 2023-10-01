@@ -1,27 +1,46 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Window from './Window';
 import Tabbar from './Tabbar';
 import Sidebar from './Sidebar';
+import Sidepanel from './Sidepanel';
 
 function Page() {
 
-    const [activeWindow, setActiveWindow] = React.useState('scripture');
+    const [windowsList, setWindowsList] = React.useState(new Map<string, JSX.Element>());
 
-    // TODO: handle tab 
-    
-    function handleSidebarButtonClick(button: string) {
-        setActiveWindow(button);
+    const [activeWindow, setActiveWindow]: [Window| null, Function] = React.useState(null); //temp name
+
+    const [selectedPanel, setSelectedPanel]: [string | undefined, Function] = React.useState(undefined);
+
+    function updateSelectedPanel(button?: string) {
+        setSelectedPanel(button);
+    }
+
+    function createNewTab(type: string) {
+        //TODO: check if tab already exists, if so, switch to it
+        setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
+            const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
+            newWindowsList.set(type, <Window windowToLoad={type} />);
+
+            return newWindowsList;
+        });
+    }
+
+    function selectTab(tabWindow: string) {
+        setActiveWindow(windowsList.get(tabWindow));
     }
 
     return (
         <div className='page' style={{display:'flex'}}>
-            <Sidebar handleButtonClick={handleSidebarButtonClick} />
-            {/* TODO: Sidepanel */}
+            <Sidebar updateSelectedPanel={updateSelectedPanel} />
+            <Sidepanel panelType={selectedPanel} createNewTab={createNewTab} />
+
             <div style={{flex: 1}}>
-                <Tabbar />
+                <Tabbar activeTabs={windowsList} selectTab={selectTab} />
                 {/* TODO: place Windows in container */}
-                <Window windowToLoad={activeWindow} />
+                {/* <Window windowToLoad={activeWindow} /> */}
+                {activeWindow}
             </div>
         </div>
     );
