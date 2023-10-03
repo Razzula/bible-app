@@ -19,6 +19,7 @@ type Passage = {
     passageChapter?: number;
     translation: string;
     docID?: string;
+    selectedNoteGroup?: string;
 }
 
 /**
@@ -33,7 +34,7 @@ type Passage = {
  * 
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, docID }: Passage) {
+function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID }: Passage) {
     
     const [passageContents, setPassageContents]: [any, Function] = React.useState([]);
     const [passageElements, setPassageElements]: [any, Function] = React.useState([]);
@@ -43,22 +44,19 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     const [annotatedVerses, setAnnotatedVerses]: [any, Function] = React.useState(new Set<string>());
     const [selectedVerse, setSelectedVerse]: [any, Function] = React.useState(null);
 
-    const [noteGroupsList, setNoteGroupsList] = React.useState('');
-    const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
+    const shouldLoadNotes = (contents !== null && contents !== undefined && selectedNoteGroup !== undefined);
 
     useEffect(() => {
-        getNoteGroupsList();
-    }, []);
-
-    useEffect(() => {
-        if (contents !== null && contents !== undefined) {
+        if (shouldLoadNotes) {
             generatePassage();
             loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
         }
     }, [contents]);
 
-    useEffect(() => {
-        loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+    useEffect(() => { //DEBUG
+        if (shouldLoadNotes) {
+            loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+        }
     }, [selectedNoteGroup]);
 
     useEffect(() => {
@@ -221,24 +219,14 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         setPassageContents(paragraphs);
     }
-
-    async function getNoteGroupsList() {
-        const noteGroups = await window.electronAPI.getDirectories('notes');
-
-        const noteGroupsList = noteGroups.map((translation: string) => {
-            return <option key={translation} value={translation}>{translation}</option>;
-        });
-
-        setNoteGroupsList(noteGroupsList);
-    }
     
     return (<>
         {passageElements}
 
-        {(!ignoreFootnotes)
+        {(!ignoreFootnotes && shouldLoadNotes)
             ? <>
-                <SidenotesContainer position='' noteGroupsList={noteGroupsList} passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} />
-                {/* <SidenotesContainer position=' l' noteGroupsList={noteGroupsList} passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} /> */}
+                <SidenotesContainer position='' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID} setAnnotatedVerses={setAnnotatedVerses} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} />
+                {/* <SidenotesContainer position=' l' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} /> */}
             </>
             : null
         }

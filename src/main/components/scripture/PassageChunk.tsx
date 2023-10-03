@@ -67,7 +67,6 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
     }
 
-    console.log('generating', passageBook, passageChapter)
     return contents.map((paragraph: Array<{type:string, content:string, test:string}>) => {
 
         // format contents of paragraph

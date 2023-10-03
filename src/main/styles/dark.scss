@@ -21,7 +21,7 @@ body{
     color: #ffffff;
 }
 
-.btn:disabled {
+.btn:disabled, .select:disabled {
     border: none;
     opacity: 10%;
 }

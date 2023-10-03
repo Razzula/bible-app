@@ -9,13 +9,11 @@ import '../../styles/sidenotes.scss';
 type SidenotesContainer = {
     position: string;
 
-    noteGroupsList: any;
     passage: string;
     notesContents: any;
-    defaultGroup: string;
+    selectedNoteGroup: string;
     docID?: string;
 
-    setParentSelectedNoteGroup: Function;
     setAnnotatedVerses: Function;
     createNewNote: Function;
     updateNotesContents: Function;
@@ -29,22 +27,21 @@ type SidenotesContainer = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenotesContainer({ position, noteGroupsList, passage, notesContents, defaultGroup, docID, setAnnotatedVerses, setParentSelectedNoteGroup, createNewNote, updateNotesContents, deleteNote }: SidenotesContainer) {
+function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, setAnnotatedVerses, createNewNote, updateNotesContents, deleteNote }: SidenotesContainer) {
 
-    const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
+    // const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
 
     const [sidenotesElements, setSidenotesElements]: [any, Function] = React.useState([]);
 
-    useEffect(() => {
-        updateSelectedNoteGroup(defaultGroup);
-    }, []);
+    // useEffect(() => {
+    //     updateSelectedNoteGroup(defaultGroup);
+    // }, []);
 
     useEffect(() => {
         renderPassageNotes();
     }, [notesContents]);
 
     async function renderPassageNotes() {
-        console.log(notesContents);
 
         const activeVerses = new Set<string>();
 
@@ -67,7 +64,7 @@ function SidenotesContainer({ position, noteGroupsList, passage, notesContents, 
         updateNotesContents(id, verse, selectedNoteGroup, noteContent, callback);
     }
 
-    function handleDeleteNote(id:string) {
+    function handleDeleteNote(id: string) {
         deleteNote(id, selectedNoteGroup);
     }
 
@@ -80,22 +77,9 @@ function SidenotesContainer({ position, noteGroupsList, passage, notesContents, 
         }
     }
 
-    function handleNotesSelectChange(event: React.ChangeEvent<any>) {
-        updateSelectedNoteGroup(event.currentTarget.value);
-    }
-
-    function updateSelectedNoteGroup(notesGroupName: string) {
-        setSelectedNoteGroup(notesGroupName);
-        setParentSelectedNoteGroup(notesGroupName);
-    }
-
     return (
         <div className={`sidenotes${position}`}>
 
-            {/* NOTE GROUP SELECT */}
-            <select className="select" onChange={handleNotesSelectChange}>
-                {noteGroupsList}
-            </select>
             {/* NEW NOTE BUTTON */}
             <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
 

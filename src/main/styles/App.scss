@@ -4,10 +4,27 @@
     max-height: calc(100vh - 32px - 32px - 38px - 16px); // allow room for tabbar and input-group
 }
 
+.banner {
+    display: flex;
+}
+
 .input-group {
-    width: 50%;
+    width: auto;
+}
+.main {
+    min-width: 880px;
+    margin-left: none;
+    margin-right: none;
+}
+.side {
     margin-left: auto;
     margin-right: auto;
+}
+
+@media screen and (max-width: 1170px) {
+    .side {
+        display: none;
+    }
 }
 
 .btn.ellipsis {

@@ -37,14 +37,27 @@ function Scripture({queryToLoad}: Scripture) {
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[],[]]);
 
+    // const [passagesContents, setPassagesContents]: [any[], Function] = useState([]);
     const [passages, setPassages]: [JSX.Element, Function] = useState(<></>);
+
+    const [noteGroupsList, setNoteGroupsList] = React.useState('');
+    const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docID));
 
     useEffect(() => {
         getTranslationList();
+        getNoteGroupsList();
+        setSelectedNoteGroup('GROUP'); //TEMP
     }, []);
+
+    // useEffect(() => {
+    //     generatePassage(passagesContents,);
+    // }, [passagesContents]);
+
+    useEffect(() => {
+    }, [selectedNoteGroup]);
 
     useEffect(() => {
         if (queryToLoad !== undefined) {
@@ -55,7 +68,7 @@ function Scripture({queryToLoad}: Scripture) {
 
     useEffect(() => {
         loadPassageFromString(searchQuery);
-    }, [selectedTranslation]);
+    }, [selectedTranslation, selectedNoteGroup]); //TODO: this is horribly ineffecient. we should cache the contents, usfm, etc. and reuse them
     
     function handleSearch() {
         void loadPassageFromString(searchQuery, true);
@@ -130,7 +143,6 @@ function Scripture({queryToLoad}: Scripture) {
         const translations = await window.electronAPI.getDirectories('Scripture');
 
         if (translations.length === 0) {
-            console.log('No translations found');
             setPassages(
                 <Alert variant="danger">
                     <Alert.Heading>404</Alert.Heading>
@@ -150,16 +162,26 @@ function Scripture({queryToLoad}: Scripture) {
         updateSelectedTranslation('NKJV'); //TODO: make this a setting
     }
 
+    async function getNoteGroupsList() {
+        const noteGroups = await window.electronAPI.getDirectories('notes');
+
+        const noteGroupsList = noteGroups.map((translation: string) => {
+            return <option key={translation} value={translation}>{translation}</option>;
+        });
+
+        setNoteGroupsList(noteGroupsList);
+    }
+
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number) {
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
-                <hr/>
-                <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} docID={docID} />
+                    <hr/>
+                    <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} />
                 </>
             );
         }
-        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} docID={docID} />);
+        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} />);
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false) {
@@ -206,6 +228,8 @@ function Scripture({queryToLoad}: Scripture) {
             deselect();
     
         }
+
+        // setPassagesContents(chaptersContents);
 
         // TOOO; better way to do this
         const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book, usfm.initialChapter));
@@ -312,23 +336,47 @@ function Scripture({queryToLoad}: Scripture) {
         }
     }
 
+    function handleNoteGroupSelectChange(event: React.ChangeEvent<any>) {
+        setSelectedNoteGroup(event.currentTarget.value);
+    }
+
     // GENERATE JSX
     return (
         <>
 
             {/* BANNER */}
-            <div className="input-group">
-                <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
-                <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
+            <div className="banner">
+                <div className="input-group side">
+                    {/* NOTE GROUP SELECT */}
+                    <select className="select">
+                        {noteGroupsList}
+                    </select>
+                    {/* NEW NOTE BUTTON */}
+                    <button disabled={true} className='btn btn-default'>New Note</button>
+                </div>
 
-                {/* SEARCH BAR */}
-                <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
-                {/* TRANSLATION SELECT */}
-                <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
-                    {translationsList}
-                </select>
-                {/* SEARCH BUTTON */}
-                <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
+                <div className="input-group main">
+                    <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
+                    <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
+
+                    {/* SEARCH BAR */}
+                    <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
+                    {/* TRANSLATION SELECT */}
+                    <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
+                        {translationsList}
+                    </select>
+                    {/* SEARCH BUTTON */}
+                    <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
+                </div>
+
+                <div className="input-group side">
+                    {/* NOTE GROUP SELECT */}
+                    <select className="select" onChange={handleNoteGroupSelectChange}>
+                        {noteGroupsList}
+                    </select>
+                    {/* NEW NOTE BUTTON */}
+                    <button disabled={true} className='btn btn-default'>New Note</button>
+                </div>
             </div>
 
             <div className='scroll'>

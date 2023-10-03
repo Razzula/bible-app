@@ -8,7 +8,7 @@ const combinedReducers: Reducer = combineReducers({
 }) as Reducer;
 
 function rootReducer(state: State | undefined, action: SidenotesUIActions): State {
-  console.log('New Action: ', action);
+  // console.log('New Action: ', action);
   return combinedReducers(state, action);
 }
 

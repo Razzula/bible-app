@@ -42,12 +42,13 @@ function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, u
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
 
     const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, passageName));
-    const isSaved = (currentNoteContents === committedNoteContents)
+    const isSaved = (currentNoteContents === committedNoteContents);
     const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
 
     useEffect(() => {
         //const temp = JSON.parse(initialNoteContents);
         setCurrentNoteContents(initialNoteContents);
+        setCommittedNoteContents(initialNoteContents);
     }, [sidenoteID, initialNoteContents]);
 
     useEffect(() => {
