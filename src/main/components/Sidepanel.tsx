@@ -1,13 +1,14 @@
 import React from 'react';
 
 import Accordion from 'react-bootstrap/Accordion';
+import { WindowTypes } from '../utils/enums';
 
 import '../styles/sidepanel.scss'
 
 import manifest from '../../../public/manifest.json';
 
 type Sidepanel = {
-    panelType?: string;
+    panelType?: symbol;
     createNewTab: Function;
 }
 
@@ -30,7 +31,7 @@ function Sidepanel({panelType, createNewTab} : Sidepanel) {
                     <ul className='list-unstyled'>
                         {bookData.chapters.map((verseCount, index) => {
                             return (
-                                <li onClick={() => createNewTab('scripture', `${bookData['usfm']}.${index + 1}`)}>{index + 1}</li>
+                                <li onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</li>
                             );
                         })}
                     </ul>
@@ -39,12 +40,25 @@ function Sidepanel({panelType, createNewTab} : Sidepanel) {
         );
     });
 
-    contents = <>
-        <button onClick={() => createNewTab(panelType, `New ${panelType}`)}>new {panelType}</button>
-        <Accordion>
-            {panelType === 'scripture' ? navStructure : null}
-        </Accordion>
-    </>;
+    contents = (() => { //TODO: this is horrible, fix it
+        switch (panelType) {
+            case WindowTypes.Scripture.Type:
+                return <>
+                    <button onClick={() => createNewTab(panelType, WindowTypes.Scripture.Name)}>new</button>
+                    <Accordion>
+                        {navStructure}
+                    </Accordion>
+                </>;
+
+            case WindowTypes.Document.Type:
+                return <>
+                    <button onClick={() => createNewTab(panelType, WindowTypes.Document.Name)}>new</button>
+                </>;
+
+            default:
+                return null;
+        }
+    })();
 
     return (
         <div className="sidepanel">

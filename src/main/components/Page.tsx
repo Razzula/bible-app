@@ -11,17 +11,17 @@ function Page() {
 
     const [activeWindow, setActiveWindow]: [Window| null, Function] = React.useState(null); //temp name
 
-    const [selectedPanel, setSelectedPanel]: [string | undefined, Function] = React.useState(undefined);
+    const [selectedPanel, setSelectedPanel]: [symbol | undefined, Function] = React.useState(undefined);
 
-    function updateSelectedPanel(button?: string) {
+    function updateSelectedPanel(button?: symbol) {
         setSelectedPanel(button);
     }
 
-    function createNewTab(type: string, data: string) {
+    function createNewTab(type: symbol, name: string) {
         //TODO: replace with uuid
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
-            newWindowsList.set(data, <Window windowToLoad={type} data={data} />);
+            newWindowsList.set(name, <Window windowToLoad={type} data={name} />);
 
             return newWindowsList;
         });
