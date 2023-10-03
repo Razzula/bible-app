@@ -7,12 +7,14 @@
 }
 
 .top-container {
-    flex: 1; /* Expand to fill available space (pushes bottom container to the bottom) */
+    flex: 1;
+    /* Expand to fill available space (pushes bottom container to the bottom) */
 }
 
 .bottom-container {
     display: flex;
-    flex-direction: column-reverse; /* Stack buttons in this container bottom-up */
+    flex-direction: column-reverse;
+    /* Stack buttons in this container bottom-up */
 }
 
 .sidebar-button {
@@ -20,10 +22,12 @@
     color: #fff;
     border: none;
     padding: 10px;
-    margin: 2px 0; /* Adjust the margin as needed */
+    margin: 2px 0;
+    /* Adjust the margin as needed */
     cursor: pointer;
     width: 48px;
 }
+
 .sidebar-button.selected {
     border-left: 2px solid #2d75ca;
 }

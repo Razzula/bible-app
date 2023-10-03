@@ -8,7 +8,8 @@
     user-select: none;
     color: #9c9386;
 }
-.label.chapter { 
+
+.label.chapter {
     top: 0em;
     bottom: -0.1em;
     font-size: 24px;
@@ -17,30 +18,45 @@
 }
 
 //paragraphs
-span.s, span.s1, span.sp, span.ms, span.qa { //header
+span.s,
+span.s1,
+span.sp,
+span.ms,
+span.qa {
+    //header
     font-weight: 700;
     line-height: 1em;
     margin: 1em 0 0 0;
     display: inline-block;
 }
-span.d { //minor header
+
+span.d {
+    //minor header
     font-style: italic;
     line-height: 1em;
     margin: 1em 0 0 0;
     display: inline-block;
 }
-span.p, span.m { //regular paragraph: indent first line
+
+span.p,
+span.m {
+    //regular paragraph: indent first line
     text-indent: 1em;
     line-height: 2em;
     margin-top: 16px;
     display: inline-block;
 }
-span.pc { //centralsie paragraph
+
+span.pc {
+    //centralsie paragraph
     text-align: center;
 }
-span.pmr { //right-align paragraph
+
+span.pmr {
+    //right-align paragraph
     text-align: center;
 }
+
 span.q1 {
     line-height: 2em;
     padding-left: 2em;
@@ -48,7 +64,9 @@ span.q1 {
     margin-top: 16px;
     display: inline-block;
 }
-span.q2, span.q3 {
+
+span.q2,
+span.q3 {
     line-height: 2em;
     padding-left: 2em;
     text-indent: 3em;
@@ -60,23 +78,36 @@ span.qs {
     font-style: italic;
     float: right;
 }
+
 span.qr {
     float: right;
 }
 
-span.it, span.sls { //additional words required in English for clarification: italicised
+span.it,
+span.sls {
+    //additional words required in English for clarification: italicised
     font-style: italic;
 }
-span.add { //additional content not in original manuscripts
+
+span.add {
+    //additional content not in original manuscripts
     font-style: italic;
     color: #6e6c68;
 }
-span.sc, span.nd, span.nb, span.bd { //covenant name of God: capitalised
+
+span.sc,
+span.nd,
+span.nb,
+span.bd {
+    //covenant name of God: capitalised
     font-variant: small-caps;
 }
-span.wj { //words spoken by Jesus: 'red letter'
+
+span.wj {
+    //words spoken by Jesus: 'red letter'
     color: #ff3344;
 }
+
 span.bdit {
     font-weight: 700;
     font-style: italic;
@@ -85,9 +116,11 @@ span.bdit {
 .ref {
     cursor: pointer;
 }
+
 .ref.internal {
     color: #ff3344;
 }
+
 .ref.external {
     color: #9900FF;
 }
@@ -96,6 +129,7 @@ span.bdit {
 .note::before {
     background-image: url("https://www.bible.com/static-assets/footnote.png");
 }
+
 .note:before {
     // background-image: url(/static-assets/footnote.png);
     background-repeat: no-repeat;
@@ -109,6 +143,7 @@ span.bdit {
     opacity: .6;
     width: 12px;
 }
+
 .popover {
     max-width: 800px;
     padding: 0;
@@ -119,11 +154,12 @@ span.bdit {
     font-size: .875rem;
     text-align: center;
     padding-top: 1em;
-}   
+}
 
 .blink {
     animation: blinker 4s linear 1;
 }
+
 @keyframes blinker {
     30% {
         color: yellow;

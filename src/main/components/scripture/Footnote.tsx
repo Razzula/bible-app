@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { locateReferences }  from '../../utils/bibleReferences';
+import { locateReferences } from '../../utils/bibleReferences';
 
 import Passage from './Passage';
 
-type Footnote = {
+type FootnoteProps = {
     contents: string;
-    loadPassage: Function;
+    loadPassage: (usfm: any, isFootnote: boolean) => void;
     currentBook: string;
     currentChapter: number;
     translation: string;
 }
 
 // popover with passage
-const InnerPopover = React.forwardRef(
+const InnerPopover = forwardRef(
     ({ popper, children, show: _, ...props }: any, ref: any) => {
-        React.useEffect(() => {
+        useEffect(() => {
             popper.scheduleUpdate(); // update positioning
         }, [children, popper]);
 
         return (
             <Popover ref={ref} body {...props}>
-                    {children}
+                {children}
             </Popover>
         );
     },
@@ -43,8 +43,8 @@ const InnerPopover = React.forwardRef(
  *   - References are automatically formatted and linked to the appropriate passage.
  *   - Hovering over a reference will display the passage in a popover.
  */
-function Footnote({ contents, loadPassage, currentBook, currentChapter, translation }: Footnote) {
-    const [noteContents, setNoteContents]: [string|undefined, Function]  = useState();
+function Footnote({ contents, loadPassage, currentBook, currentChapter, translation }: FootnoteProps): JSX.Element {
+    const [noteContents, setNoteContents]: [string | undefined, Function] = useState();
 
     const data = locateReferences(contents, currentBook, currentChapter);
 
@@ -53,7 +53,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
         if (ref[1]) {
 
             const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
-            
+
             // format passage
             const notePassage = (<Passage contents={noteContents} ignoreFootnotes translation={translation} />);
             // contents of footnote popover
@@ -63,7 +63,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
                 </OverlayTrigger>
             );
 
-            async function updatePopoverContents() {
+            async function updatePopoverContents(): Promise<any> {
                 // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
@@ -89,7 +89,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
                     }
                 }
 
-                passageContents = passageContents.slice(initalVerse-1, finalVerse);
+                passageContents = passageContents.slice(initalVerse - 1, finalVerse);
                 passageContents[0][0].verse = initalVerse;
 
                 setNoteContents(passageContents);
@@ -106,11 +106,11 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
             </Popover.Body>
         </Popover>
     );
-    
+
     // footnote
     return (
         <OverlayTrigger trigger="click" rootClose placement="top" overlay={footnotePopover}>
-            <span className="note"/>
+            <span className="note" />
         </OverlayTrigger>
     );
 

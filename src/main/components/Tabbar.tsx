@@ -2,26 +2,24 @@ import React from 'react';
 
 import '../styles/tabbar.scss'
 
-type Tabbar = {
+type TabbarProps = {
     activeTabs: Map<string, JSX.Element>;
-    selectTab: Function;
-    closeTab: Function;
+    selectTab: (tabName: string) => void;
+    closeTab: (tabName: string) => void;
     selectedTab?: string;
 }
 
-function Tabbar({activeTabs, selectedTab, selectTab, closeTab}: Tabbar) {
+function Tabbar({ activeTabs, selectedTab, selectTab, closeTab }: TabbarProps): JSX.Element {
 
-    // const [selectedTab, setSelectedTab]: [string | undefined, Function] = React.useState(undefined);
+    // const [selectedTab, setSelectedTab]: [string | undefined, Function] = useState(undefined);
 
     const tabs = Array.from(activeTabs.keys()).map((tabName) => {
         return (
-            <Tab tabName={tabName} selectTab={handleTabClick} closeTab={closeTab} isSelected={tabName == selectedTab} />
+            <Tab key={tabName} tabName={tabName} selectTab={handleTabClick} closeTab={closeTab} isSelected={tabName === selectedTab} />
         );
     })
 
-    function handleTabClick(tabName: string) {
-        // setSelectedTab(tabName);
-
+    function handleTabClick(tabName: string): void {
         selectTab(tabName);
     }
 
@@ -32,14 +30,14 @@ function Tabbar({activeTabs, selectedTab, selectTab, closeTab}: Tabbar) {
     );
 }
 
-type Tab = {
+type TabProps = {
     tabName: string;
-    selectTab: Function;
-    closeTab: Function;
+    selectTab: (tabName: string) => void;
+    closeTab: (tabName: string) => void;
     isSelected: boolean;
 }
 
-function Tab({tabName, selectTab, closeTab, isSelected}: Tab) {
+function Tab({ tabName, selectTab, closeTab, isSelected }: TabProps): JSX.Element {
 
     const className = isSelected ? 'tab selected' : 'tab';
 

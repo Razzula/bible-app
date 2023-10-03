@@ -5,12 +5,12 @@ import { WindowTypes } from '../utils/enums';
 import Scripture from './scripture/Scripture';
 import Document from './Document';
 
-type Window = {
+type WindowProps = {
     windowToLoad: symbol;
     data: string;
 }
 
-function Window({windowToLoad, data}: Window) {
+function Window({ windowToLoad, data }: WindowProps): JSX.Element | null {
 
     switch (windowToLoad) {
         case WindowTypes.Scripture.Type:

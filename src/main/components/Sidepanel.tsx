@@ -7,12 +7,12 @@ import '../styles/sidepanel.scss'
 
 import manifest from '../../../public/manifest.json';
 
-type Sidepanel = {
+type SidepanelProps = {
     panelType?: symbol;
-    createNewTab: Function;
+    createNewTab: (panelType: symbol, data: string) => void;
 }
 
-function Sidepanel({panelType, createNewTab} : Sidepanel) {
+function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | null {
 
     let contents: JSX.Element | null = null;
 
@@ -23,15 +23,16 @@ function Sidepanel({panelType, createNewTab} : Sidepanel) {
     const navStructure = manifest.map((bookData, count) => {
 
         const title = bookData['full-title'] ? bookData['full-title'] : bookData['title'];
+        const key = String(count);
 
         return (
-            <Accordion.Item eventKey={String(count)}>
+            <Accordion.Item key={key} eventKey={key}>
                 <Accordion.Header>{title}</Accordion.Header>
                 <Accordion.Body>
                     <ul className='list-unstyled'>
                         {bookData.chapters.map((verseCount, index) => {
                             return (
-                                <li onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</li>
+                                <li key={index} onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</li>
                             );
                         })}
                     </ul>

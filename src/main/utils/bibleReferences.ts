@@ -1,4 +1,3 @@
-import { ref } from 'sidenotes/dist/src/connect';
 import books from '../../../public/books.json';
 const booksArray: any = books;
 
@@ -49,7 +48,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
      * 7: additional references (optional)
      */
 
-   const usfm: any = {};
+    const usfm: any = {};
 
     if (match) {
 
@@ -61,7 +60,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
 
             usfm.book = currentBook;
             usfm.initialChapter = currentChapter;
-            usfm.initialVerse =  Number(match[3]);
+            usfm.initialVerse = Number(match[3]);
             usfm.finalVerse = Number(match[6]);
         }
         else {
@@ -86,7 +85,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                     }
                 }
                 const bookName = match[1] + match[2];
-            
+
                 booksArray.forEach((book: string[]) => {
                     if (book.includes(bookName)) {
                         usfm.book = book[0];
@@ -100,11 +99,11 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
 
             // chapters, verses
             usfm.initialChapter = Number(match[3]);
-            usfm.initialVerse =  Number(match[4]);
+            usfm.initialVerse = Number(match[4]);
             usfm.finalVerse = Number(match[5]);
             usfm.finalChapter = Number(match[6]);
         }
-        
+
     }
     else { // invalid format (may be shorthand reference)
 
@@ -120,9 +119,9 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
 
         // chapters, verses
         usfm.initialChapter = Number(match[1]) || currentChapter;
-        usfm.initialVerse =  Number(match[2]);
+        usfm.initialVerse = Number(match[2]);
         usfm.finalVerse = Number(match[3]);
-    } 
+    }
 
     if (match[7] === undefined) {
         return [usfm];
@@ -159,7 +158,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
  *   - locateReferences("No references here.") returns:
  *     [["No references here.", false]]
  */
-export function locateReferences(text: string, currentBook: string | null = null, currentChapter = NaN) {
+export function locateReferences(text: string, currentBook: string | null = null, currentChapter = NaN): Array<any> {
 
     if (text === '') {
         return [];
@@ -197,18 +196,18 @@ export function locateReferences(text: string, currentBook: string | null = null
         if (usfm.length !== 0) { // invalid reference
 
             data.push([displayText, usfm[0]]); // reference
-            
+
             if (usfm[0].book !== undefined) {
                 currentBook = usfm[0].book;
             }
-            if (usfm[0].initialChapter !== undefined) {    
+            if (usfm[0].initialChapter !== undefined) {
                 currentChapter = usfm[0].initialChapter;
             }
-            
+
         }
         else { // invalid reference
-            if (data.length > 0 && data[data.length-1][1] === false) { // merge with previous
-                data[data.length-1][0] += displayText;
+            if (data.length > 0 && data[data.length - 1][1] === false) { // merge with previous
+                data[data.length - 1][0] += displayText;
             }
             else {
                 data.push([displayText, false]);
@@ -216,26 +215,26 @@ export function locateReferences(text: string, currentBook: string | null = null
         }
 
         // post-reference
-        if (i < matches.length-1) { 
-            if (data[data.length-1][1] === false) { // merge with previous
-                data[data.length-1][0] += text.slice(matches[i][1], matches[i+1][0]);
+        if (i < matches.length - 1) {
+            if (data[data.length - 1][1] === false) { // merge with previous
+                data[data.length - 1][0] += text.slice(matches[i][1], matches[i + 1][0]);
             }
             else {
-                data.push([text.slice(matches[i][1], matches[i+1][0]), false]);
+                data.push([text.slice(matches[i][1], matches[i + 1][0]), false]);
             }
         }
-        
+
     }
     // final
-    if (matches[i-1][1] !== text.length) { // ending dud 
-        if (data[data.length-1][1] === false) { // merge with previous
-            data[data.length-1][0] += text.slice(matches[i-1][1], text.length);
+    if (matches[i - 1][1] !== text.length) { // ending dud 
+        if (data[data.length - 1][1] === false) { // merge with previous
+            data[data.length - 1][0] += text.slice(matches[i - 1][1], text.length);
         }
         else {
-            data.push([text.slice(matches[i-1][1], text.length), false]);
+            data.push([text.slice(matches[i - 1][1], text.length), false]);
         }
     }
-    
+
     return data;
 
 }
@@ -287,7 +286,7 @@ export function getReferenceText(referenceData: Array<any>): string {
             referenceText += reference.initialChapter;
             currentChapter = reference.initialChapter;
         }
-        
+
         // verses
         if (!Number.isNaN(reference.initialVerse)) {
             referenceText += `:${reference.initialVerse}`;

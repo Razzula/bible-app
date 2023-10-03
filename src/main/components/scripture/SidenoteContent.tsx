@@ -3,29 +3,27 @@ import { useSelector } from 'react-redux';
 import { State } from 'sidenotes/dist/src/store';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
-import {$getRoot, $getSelection} from 'lexical';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {InitialEditorStateType, LexicalComposer} from '@lexical/react/LexicalComposer';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
-import {ContentEditable} from '@lexical/react/LexicalContentEditable';
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import '../../styles/editor.scss';
 
-type SidenoteContent = {
+type SidenoteContentProps = {
     sidenoteID: string;
     passageName: string;
     docID?: string;
     initialNoteContents: any;
-    updateNotesContents: Function;
-    deleteNote: Function;
+    updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
+    deleteNote: (sidenoteID: string) => void;
 }
 
-const theme = {
-    // Theme styling goes here
-}
+// const theme = {
+//     // Theme styling goes here
+// }
 
 /**
  * A React component to display and edit the contents of a sidenote.
@@ -36,7 +34,7 @@ const theme = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote}: SidenoteContent) {
+function SidenoteContent({ sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote }: SidenoteContentProps): JSX.Element {
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
@@ -53,24 +51,23 @@ function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, u
 
     useEffect(() => {
         if (!isSelected && !isSaved) {
-            debugger;
             const passageNameSplit = passageName.split('.');
             updateNotesContents(sidenoteID, passageNameSplit[passageNameSplit.length - 1], currentNoteContents, saveNoteContentsCallback);
         }
     }, [isSelected]);
 
-    function handleChange(editorState: any) {
-        var temp = editorState.toJSON();
+    function handleChange(editorState: any): void {
+        const temp = editorState.toJSON();
         setCurrentNoteContents(temp);
         // const editorStateJSON = editorState.toJSON()
         // setCurrentNoteContents(JSON.stringify(editorStateJSON));
     }
 
-    function handleDeleteClick() {
+    function handleDeleteClick(): void {
         deleteNote(sidenoteID);
     }
 
-    function saveNoteContentsCallback(saveResult: boolean, noteContents: string) {
+    function saveNoteContentsCallback(saveResult: boolean, noteContents: string): void {
         if (saveResult) {
             setCommittedNoteContents(noteContents);
         }
@@ -79,7 +76,7 @@ function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, u
         }
     }
 
-    function onError(error: any) {
+    function onError(error: any): void {
         console.error(error);
     }
 
@@ -96,14 +93,14 @@ function SidenoteContent({sidenoteID, passageName, docID, initialNoteContents, u
             <div style={{ height: 'auto' }}>
                 <LexicalComposer initialConfig={{
                     namespace: 'name',
-                    onError: onError,
+                    onError,
                     editorState: JSON.stringify(initialNoteContents)
                 }}>
                     <div className="editor-container">
                         <RichTextPlugin
-                        contentEditable={<ContentEditable className="editor-input" />}
-                        placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
-                        ErrorBoundary={LexicalErrorBoundary}
+                            contentEditable={<ContentEditable className="editor-input" />}
+                            placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
+                            ErrorBoundary={LexicalErrorBoundary}
                         />
                     </div>
                     <OnChangePlugin onChange={handleChange} />

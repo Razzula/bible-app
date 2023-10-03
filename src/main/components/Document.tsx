@@ -1,8 +1,6 @@
-import React, { useState, cloneElement, useEffect } from 'react';
+import React from 'react';
 
-import { $getRoot, $getSelection } from 'lexical';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { InitialEditorStateType, LexicalComposer } from '@lexical/react/LexicalComposer';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
@@ -12,7 +10,7 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import '../styles/document.scss'
 import '../styles/editor.scss';
 
-type Document = {
+type DocumentProps = {
     initialContents: any;
 }
 
@@ -20,9 +18,9 @@ type Document = {
  * A React component to display ...
  * @returns {JSX.Element}
  */
-function Document({ initialContents }: Document): JSX.Element {
+function Document({ initialContents }: DocumentProps): JSX.Element {
 
-    function onError(error: any) {
+    function onError(error: any): void {
         console.error(error);
     }
 
@@ -32,7 +30,7 @@ function Document({ initialContents }: Document): JSX.Element {
             <div className='document'>
                 <LexicalComposer initialConfig={{
                     namespace: 'name',
-                    onError: onError,
+                    onError,
                     // editorState: JSON.stringify(initialNoteContents)
                 }}>
                     <div className="editor-container">

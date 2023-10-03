@@ -1,19 +1,18 @@
-import React from 'react';
-import { Nav } from 'react-bootstrap';
+import React, { useState } from 'react';
 
 import { WindowTypes } from '../utils/enums';
 
 import '../styles/sidebar.scss';
 
-type Sidebar = {
-    updateSelectedPanel: Function
+type SidebarProps = {
+    updateSelectedPanel: (panelType: symbol | undefined) => void;
 }
 
-function Sidebar({updateSelectedPanel}: Sidebar) {
+function Sidebar({ updateSelectedPanel }: SidebarProps): JSX.Element {
 
-    const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = React.useState(undefined);
+    const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = useState(undefined);
 
-    function handleButtonClick(button: symbol) {
+    function handleButtonClick(button: symbol): void {
         setSelectedButton((currentSelection: symbol | undefined) => {
             const selection = (button === currentSelection) ? undefined : button;
 
@@ -38,7 +37,7 @@ function Sidebar({updateSelectedPanel}: Sidebar) {
 
 }
 
-function SidebarButton({buttonType, selectedButton, handleButtonClick}: {buttonType: any, selectedButton: any, handleButtonClick: Function}) {
+function SidebarButton({ buttonType, selectedButton, handleButtonClick }: { buttonType: any, selectedButton: any, handleButtonClick: Function }) {
 
     const className = (selectedButton === buttonType) ? 'sidebar-button selected' : 'sidebar-button';
 

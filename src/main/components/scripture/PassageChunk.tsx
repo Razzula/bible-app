@@ -4,9 +4,8 @@ import Footnote from './Footnote';
 
 import '../../styles/bible.scss';
 import { InlineAnchor } from 'sidenotes';
-import { Func } from 'mocha';
 
-type PassageChunk = {
+type PassageChunkProps = {
     contents: any;
     ignoreFootnotes?: boolean;
     loadPassage?: any;
@@ -20,14 +19,14 @@ type PassageChunk = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse }: PassageChunk) {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse }: PassageChunkProps): JSX.Element {
 
     // format paragraphs
-    function generateContents(item: any) {
+    function generateContents(item: any): JSX.Element | null {
         // footnotes
         if (item.type === 'note') {
             if (ignoreFootnotes) {
-                return;
+                return null;
             }
 
             return (
@@ -55,7 +54,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         else {
             contents = <span className={`${item.type} ${item.test}`} onClick={() => setSelectedVerse(item.test)}>{item.content}</span>
         }
-            
+
         // anchors
         if (notedVerses !== undefined && notedVerses?.has(item.test)) {
             return (
@@ -67,7 +66,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
     }
 
-    return contents.map((paragraph: Array<{type:string, content:string, test:string}>) => {
+    return contents.map((paragraph: Array<{ type: string, content: string, test: string }>) => {
 
         // format contents of paragraph
         const paraContent = paragraph.map(generateContents);
@@ -82,7 +81,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
                 <span className={paraType}>
                     {paraContent}
                 </span>
-                <br/>
+                <br />
             </>
         );
     });

@@ -6,7 +6,7 @@ import SidenoteContent from '../scripture/SidenoteContent';
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
 
-type SidenotesContainer = {
+type SidenotesContainerProps = {
     position: string;
 
     passage: string;
@@ -15,9 +15,9 @@ type SidenotesContainer = {
     docID?: string;
 
     setAnnotatedVerses: Function;
-    createNewNote: Function;
-    updateNotesContents: Function;
-    deleteNote: Function;
+    createNewNote: (id: string, selectedNoteGroup: string) => void;
+    updateNotesContents: (id: string, verse: string, selectedNoteGroup: string, noteContents: string, callback?: Function) => void;
+    deleteNote: (id: string, selectedNoteGroup: string) => void;
 }
 
 /**
@@ -27,11 +27,11 @@ type SidenotesContainer = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, setAnnotatedVerses, createNewNote, updateNotesContents, deleteNote }: SidenotesContainer) {
+function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, setAnnotatedVerses, createNewNote, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
 
-    // const [selectedNoteGroup, setSelectedNoteGroup] = React.useState('');
+    // const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
 
-    const [sidenotesElements, setSidenotesElements]: [any, Function] = React.useState([]);
+    const [sidenotesElements, setSidenotesElements]: [any, Function] = useState([]);
 
     // useEffect(() => {
     //     updateSelectedNoteGroup(defaultGroup);
@@ -41,17 +41,17 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
         renderPassageNotes();
     }, [notesContents]);
 
-    async function renderPassageNotes() {
+    function renderPassageNotes(): void {
 
         const activeVerses = new Set<string>();
 
-        const sidenotesElements = notesContents.map((noteContents: {id: string, verse: string, contents: string}) => {
+        const sidenotesElements = notesContents.map((noteContents: { id: string, verse: string, contents: string }) => {
 
             const passageName = `${passage}.${noteContents.verse}`;
             activeVerses.add(passageName)
             return (
                 <Sidenote key={passageName} sidenote={passageName} base={passage}>
-                    <SidenoteContent sidenoteID={noteContents.id} passageName={passageName} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}/>
+                    <SidenoteContent sidenoteID={noteContents.id} passageName={passageName} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote} />
                 </Sidenote>
             );
         });
@@ -60,17 +60,17 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
         setAnnotatedVerses(activeVerses);
     }
 
-    function handleUpdateNotesContents(id: string, verse: string, noteContent: string, callback?: Function) {
+    function handleUpdateNotesContents(id: string, verse: string, noteContent: string, callback?: Function): void {
         updateNotesContents(id, verse, selectedNoteGroup, noteContent, callback);
     }
 
-    function handleDeleteNote(id: string) {
+    function handleDeleteNote(id: string): void {
         deleteNote(id, selectedNoteGroup);
     }
 
-    function handleNewNoteClick() {
+    function handleNewNoteClick(): void {
 
-        var selectedText = window.getSelection()?.toString();
+        const selectedText = window.getSelection()?.toString();
         if (selectedText !== '') {
             const id = crypto.randomUUID();
             createNewNote(id, selectedNoteGroup);

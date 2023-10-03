@@ -42,7 +42,7 @@ describe('bibleReferences Tests', () => {
 
       expect(usfm[0].book).to.equal('GEN');
       expect(usfm[0].initialChapter).to.equal(1);
-      expect(usfm[0]['finalChapter']).to.equal(2);
+      expect(usfm[0].finalChapter).to.equal(2);
     });
 
     it('Verse Spanning Reference', () => {
@@ -156,16 +156,16 @@ describe('bibleReferences Tests', () => {
       'A cubit was about 18 inches or 45 centimeters', // use of numbers
       'Genesis is the book before Exodus', // use of book names
     ].forEach((input: string, i: number) => {
-      it(`Illegal input (${i+1})`, () => {
-          const references = locateReferences(input);
-    
-          expect(references).to.deep.equal([
-            [input, false]
-          ]);
-    
-        });
+      it(`Illegal input (${i + 1})`, () => {
+        const references = locateReferences(input);
+
+        expect(references).to.deep.equal([
+          [input, false]
+        ]);
+
+      });
     });
 
   });
-  
+
 });

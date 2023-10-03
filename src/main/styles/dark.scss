@@ -1,4 +1,4 @@
-body{
+body {
     background-color: #101212;
     color: #ffffff;
 }
@@ -7,7 +7,13 @@ body{
     margin: 2em 0 1em 0;
 }
 
-.form-control, .select, .btn, .popover, .popover-body, input[type]:focus, .tabbar {
+.form-control,
+.select,
+.btn,
+.popover,
+.popover-body,
+input[type]:focus,
+.tabbar {
     background-color: #161819;
     border-color: #464c4e;
     color: #ffffff;
@@ -15,13 +21,15 @@ body{
     border-radius: 4px;
 }
 
-.sidebar, .tab {
+.sidebar,
+.tab {
     background-color: #292a2d;
     border-color: #464c4e;
     color: #ffffff;
 }
 
-.btn:disabled, .select:disabled {
+.btn:disabled,
+.select:disabled {
     border: none;
     opacity: 10%;
 }

@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
-
-import { Store, Sidenote } from 'sidenotes';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
-import SidenoteContent from './SidenoteContent';
 import SidenotesContainer from './SidenotesContainer';
 
 import '../../styles/bible.scss';
 import PassageChunk from './PassageChunk';
 
-type Passage = {
+type PassageProps = {
     contents: any;
     ignoreFootnotes?: boolean;
     loadPassage?: any;
@@ -34,34 +31,34 @@ type Passage = {
  * 
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID }: Passage) {
-    
-    const [passageContents, setPassageContents]: [any, Function] = React.useState([]);
-    const [passageElements, setPassageElements]: [any, Function] = React.useState([]);
+function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID }: PassageProps): JSX.Element {
 
-    const [notesContents, setNotesContents]: [any, Function] = React.useState([]);
+    const [passageContents, setPassageContents]: [any, Function] = useState([]);
+    const [passageElements, setPassageElements]: [any, Function] = useState([]);
 
-    const [annotatedVerses, setAnnotatedVerses]: [any, Function] = React.useState(new Set<string>());
-    const [selectedVerse, setSelectedVerse]: [any, Function] = React.useState(null);
+    const [notesContents, setNotesContents]: [any, Function] = useState([]);
+
+    const [annotatedVerses, setAnnotatedVerses]: [any, Function] = useState(new Set<string>());
+    const [selectedVerse, setSelectedVerse]: [any, Function] = useState(null);
 
     const shouldLoadNotes = (contents !== null && contents !== undefined && selectedNoteGroup !== undefined);
 
     useEffect(() => {
         if (shouldLoadNotes) {
             generatePassage();
-            loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+            void loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
         }
     }, [contents]);
 
     useEffect(() => { //DEBUG
         if (shouldLoadNotes) {
-            loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+            void loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
         }
     }, [selectedNoteGroup]);
 
     useEffect(() => {
         setPassageElements(
-            <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse}/>
+            <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} />
         );
     }, [passageContents, annotatedVerses]);
 
@@ -76,9 +73,9 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             </Alert>
         );
     }
-    
+
     // LOAD AND GENERATE PASSAGE NOTES
-    async function loadPassageNotes(group: string, book: string, chapter: string) {
+    async function loadPassageNotes(group: string, book: string, chapter: string): Promise<void> {
 
         if (group == null || group.trim() === '') {
             return;
@@ -91,18 +88,18 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         }
     }
 
-    async function updateNotesContents(id: string, verse: string, selectedNoteGroup: string, noteContent: string, callback?: Function) {
+    async function updateNotesContents(id: string, verse: string, selectedNoteGroup: string, noteContent: string, callback?: Function): Promise<void> {
 
         const newNoteContents = {
-            verse: verse,
+            verse,
             contents: noteContent
         };
-        
+
         setNotesContents((currentNotesContents: { id: string; verse: string; contents: string; }[]) => { // TODO; this type is being reused a lot
 
-            let newNotesContents: { id: string; verse: string; contents: string; }[] = [];
+            const newNotesContents: { id: string; verse: string; contents: string; }[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: {id: string; verse: string, contents: string}) => {
+            currentNotesContents.forEach((note: { id: string; verse: string, contents: string }) => {
                 if (note.id === id) {
                     note.contents = noteContent;
                 }
@@ -113,19 +110,18 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         });
 
         // save to file
-        debugger;
         const saveResult = await window.electronAPI.saveNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter), newNoteContents);
         if (callback) {
             callback(saveResult, noteContent);
         }
     }
 
-    async function deleteNote(id:string, selectedNoteGroup: string) {
+    function deleteNote(id: string, selectedNoteGroup: string): void {
 
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
-            let newNotesContents: { verse: string; contents: string; }[] = [];
+            const newNotesContents: { verse: string; contents: string; }[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
+            currentNotesContents.forEach((note: { verse: string, contents: string }) => {
                 if (String(note.verse) !== id) {
                     newNotesContents.push(note);
                 }
@@ -138,20 +134,20 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         window.electronAPI.deleteNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter));
     }
 
-    async function createNewNote(id: string, selectedNoteGroup: string) {
+    function createNewNote(id: string, selectedNoteGroup: string): void {
 
         const temp = selectedVerse.split('.');
         const verse = temp[temp.length - 1];
-        
+
         const newNoteContents = {
-            verse: verse,
-            contents: {"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"new note","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}
+            verse,
+            contents: { "root": { "children": [{ "children": [{ "detail": 0, "format": 0, "mode": "normal", "style": "", "text": "new note", "type": "text", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1 } }
         };
 
         setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
-            let newNotesContents: { verse: string; contents: any; }[] = [];
+            const newNotesContents: { verse: string; contents: any; }[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: {verse: string, contents: string}) => {
+            currentNotesContents.forEach((note: { verse: string, contents: string }) => {
                 if (String(note.verse) !== verse) {
                     newNotesContents.push(note);
                 }
@@ -169,7 +165,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     }
 
     // DYNAMICALLY GENERATE PASSAGE
-    function generatePassage() {
+    function generatePassage(): void {
         // split content into paragraphs
         const paragraphs = [];
         let temp = [];
@@ -185,7 +181,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             for (let ii = 0; ii < contents[i].length; ii++) { // iterate through verse sections
 
                 const section = contents[i][ii];
-                
+
                 if (section.type === 'p' || section.type === 'q1' || section.type === 'q2' || section.type === 'pc' || section.type === 'qs') { // new paragraph
                     if (temp.length !== 0) { // store previous sections as a paragraph
                         paragraphs.push(temp);
@@ -194,9 +190,9 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                 }
                 // header
                 if (section.header != null) {
-                    paragraphs.push([{"type":"s", "content":section.header}]);
+                    paragraphs.push([{ "type": "s", "content": section.header }]);
                 }
-                
+
                 // verse numbers
                 if (ii === 0) {
                     if (section.verse) {
@@ -204,14 +200,14 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                     }
                     if (section.chapter) {
                         // use chapter number instead of verse
-                        temp.push({"type":"label chapter", "content":section.chapter});
+                        temp.push({ "type": "label chapter", "content": section.chapter });
                     }
                     else {
-                        temp.push({"type":"label", "content":verse+i});
-                    }   
+                        temp.push({ "type": "label", "content": verse + i });
+                    }
                 }
-                
-                section.test = `${passageBook}.${passageChapter}.${verse+i}`; // TODO; rename 'verse'->'initialVerse', 'test'->'verse'
+
+                section.test = `${passageBook}.${passageChapter}.${verse + i}`; // TODO; rename 'verse'->'initialVerse', 'test'->'verse'
                 temp.push(section);
             };
         }
@@ -219,7 +215,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
         setPassageContents(paragraphs);
     }
-    
+
     return (<>
         {passageElements}
 
@@ -230,8 +226,8 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             </>
             : null
         }
-    
-        
+
+
     </>);
 }
 
