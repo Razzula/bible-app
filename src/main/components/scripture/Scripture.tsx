@@ -49,7 +49,6 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     useEffect(() => {
         void getTranslationList();
         void getNoteGroupsList();
-        setSelectedNoteGroup('GROUP'); //TEMP
     }, []);
 
     // useEffect(() => {
@@ -143,11 +142,12 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     async function getNoteGroupsList(): Promise<void> {
         const noteGroups = await window.electronAPI.getDirectories('notes');
 
-        const noteGroupsList = noteGroups.map((translation: string) => {
-            return <option key={translation} value={translation}>{translation}</option>;
+        const noteGroupsList = noteGroups.map((noteGroupName: string) => {
+            return <option key={noteGroupName} value={noteGroupName}>{noteGroupName}</option>;
         });
 
         setNoteGroupsList(noteGroupsList);
+        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key : ''); // TODO: make this a setting
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number): JSX.Element {
@@ -326,7 +326,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
             <div className="banner">
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
-                    <select className="select">
+                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
                     </select>
                     {/* NEW NOTE BUTTON */}
@@ -349,7 +349,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
-                    <select className="select" onChange={handleNoteGroupSelectChange}>
+                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
                     </select>
                     {/* NEW NOTE BUTTON */}
