@@ -1,20 +1,19 @@
 # bible-app
-## Installation
 
+## Installation
 ### Prerequisites
 
 [Node.js & npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 Yarn: `npm install --global yarn`
 
 ### Dependencies
-
-1. ` yarn install `
-
+1.  ` yarn install `
 2. Requires Bible contents as specially-formatted JSON files in `Documents\bible-app\Scripture\...\`, with the naming convention `BOOK.CHAPTER` (where `BOOK` is the USFM shorthand, such as `GEN` for Genesis).
 
-	`GEN.1`, `GEN.2`, `DEU.28` and  `MAT.5` are provided as examples in [`./example/Scripture`](/example/Scripture/). The helper script, `setup.bat` will copy any included examples into the correct directory for use.
+`GEN.1`, `GEN.2`, `DEU.28` and `MAT.5` are provided as examples in [`./example/Scripture/...`](/example/Scripture/). The helper script, `setup.bat` will copy any included examples into the correct directory for use.
+(If your Documents folder is not located at `...\Users\USERNAME\Documents`, you will need to edit the script to point to the correct location, or manually copy the files.)
 
-	See [`./script`](/script) for information on how to generate these files.
+See [`./script`](/script) for information on how to generate these files.
 
 ###  ~~Building~~ Running
 
@@ -23,8 +22,8 @@ Yarn: `npm install --global yarn`
 The file `launcher.bat` can be used to pull and run the latest deployment version (latest commit in `master`).
 
 ## License
-
 ### GNU GPLv3
+
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 See [LICENSE.md](https://github.com/Razzula/ible-app/blob/main/LICENSE.md) for details.
