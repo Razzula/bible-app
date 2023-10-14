@@ -46,8 +46,13 @@
     padding-bottom: 0px;
 }
 
-li {
+.chapter-button {
     color: #1ca1de;
     text-decoration-line: underline;
     cursor: pointer;
+}
+
+.chapters-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
 }

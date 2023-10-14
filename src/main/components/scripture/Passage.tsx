@@ -41,13 +41,18 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     const [annotatedVerses, setAnnotatedVerses]: [any, Function] = useState(new Set<string>());
     const [selectedVerse, setSelectedVerse]: [any, Function] = useState(null);
 
-    const shouldLoadNotes = (contents !== null && contents !== undefined && selectedNoteGroup !== undefined);
+    const shouldLoad = (contents !== null && contents !== undefined);
+    const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
 
     useEffect(() => {
-        if (shouldLoadNotes) {
+        if (shouldLoad) {
             generatePassage();
-            void loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+            
+            if (shouldLoadNotes) {
+                void loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
+            }
         }
+
     }, [contents]);
 
     useEffect(() => { //DEBUG
@@ -170,6 +175,8 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         const paragraphs = [];
         let temp = [];
 
+        console.log(contents);
+
         let verse = 1;
         for (let i = 0; i < contents.length; i++) { // iterate through verses
 
@@ -213,6 +220,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         }
         paragraphs.push(temp);
 
+        console.log(paragraphs);
         setPassageContents(paragraphs);
     }
 

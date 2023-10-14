@@ -29,13 +29,13 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
             <Accordion.Item key={key} eventKey={key}>
                 <Accordion.Header>{title}</Accordion.Header>
                 <Accordion.Body>
-                    <ul className='list-unstyled'>
+                    <div className='chapters-grid'>
                         {bookData.chapters.map((verseCount, index) => {
                             return (
-                                <li key={index} onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</li>
+                                <span className='chapter-button' key={index} onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</span>
                             );
                         })}
-                    </ul>
+                    </div>
                 </Accordion.Body>
             </Accordion.Item>
         );
