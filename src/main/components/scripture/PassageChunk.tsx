@@ -48,11 +48,14 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
         // other formatting
         let contents;
+        let className = (item.type !== undefined) && !(item.type.includes('p') || item.type.includes('q1') || item.type.includes('q2') || item.type.includes('pc') || item.type.includes('qs')) // not a paragraph
+            ? `${item.type} ${item.test}` : item.test;
+
         if (item.children) { // if node is a parent, recursively generate its contents
-            contents = <span className={`${item.type} ${item.test}`}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
+            contents = <span className={className}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
         }
         else {
-            contents = <span className={`${item.type} ${item.test}`} onClick={() => setSelectedVerse(item.test)}>{item.content}</span>
+            contents = <span className={className} onClick={() => setSelectedVerse(item.test)}>{item.content}</span>
         }
 
         // anchors

@@ -96,12 +96,20 @@ def extract(inDir, outDir):
 
     root = os.path.dirname(__file__)
 
-    with open(os.path.join(root, '..', 'public', 'manifest.json'), 'r') as f:
+    with open(os.path.join(root, '..', '..', 'public', 'manifest.json'), 'r') as f:
         manifest = json.load(f)
 
     if (not os.path.isdir(outDir)):
         os.mkdir(outDir)  # create
     open(os.path.join(outDir, f'MONOLITH.html'), 'w').close()
+
+    # DEBUG
+    # manifest = [{
+    #     "usfm": "MAT",
+    #     "title": "Matthew",
+    #     "prefix": "The Gospel According to",
+    #     "chapters": [25, 23, 17, 25, 48, 34, 29, 34, 38, 42, 30, 50, 58, 36, 39, 28, 27, 35, 30, 34, 46, 46, 39, 51, 46, 75, 66, 20]
+    # }]
 
     # BODY
     for book in manifest:
@@ -113,6 +121,8 @@ def extract(inDir, outDir):
         for chapter in range(len(book['chapters']) + 1):
             if (chapter == 0):
                 chapter = 'INTRO'
+            # if (book['usfm'] == 'MAT' and chapter == 5): # DEBUG
+            #     pass
 
             current = f'{book["usfm"]}.{chapter}'
 
@@ -126,7 +136,7 @@ def extract(inDir, outDir):
 
             data = readFile(fileName)
             if not data:
-                print(f'{bcolors.ERROR}error: could not read {fileName}{bcolors.ENDC}')
+                print(f'\t{bcolors.ERROR}error: could not read {fileName}{bcolors.ENDC}')
                 continue
 
             data = data[:data.rindex('</div>')+6]  # remove everything outside of final div
@@ -208,13 +218,14 @@ def simplify(data, outDir, book, file):  # HTML to JSON
                     if (elementClass != 'content'):
                         pass # this should never fire
                     elementClass = div
+                    #verse.append({ "type": "p", "content": " " })
                     div = False
 
                 # verse formatting (wj, nb, etc.)
                 if (parentClasses != []):
                     if (elementClass != 'content'):
                         for parentClass in parentClasses:
-                            elementClass += f'{ parentClass}'
+                            elementClass += f' {parentClass}'
                     else:
                         elementClass = parentClasses[0]
 
@@ -237,7 +248,7 @@ def simplify(data, outDir, book, file):  # HTML to JSON
         # non-leaf node
         else:
 
-            # HAEDER
+            # HEADER
             if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): #TODO
                 header = element.text
                 return
@@ -257,6 +268,9 @@ def simplify(data, outDir, book, file):  # HTML to JSON
 
                 noteContents = noteContents.replace('–', '-')
 
+                if (div):
+                    verse.append({ "type": div, "content": "" })
+                    div = False
                 verse.append({'type': 'note', 'content': noteContents})
 
             else:
@@ -299,3 +313,8 @@ def main(args):
 
 if __name__ == "__main__":
     main(sys.argv)
+
+    # # DEBUGGING
+    # for translation in ['NKJV', 'ESV']:
+    #     root = os.path.join(os.path.dirname(__file__), translation)
+    #     extract(os.path.join(root, 'source'), os.path.join(root, translation))

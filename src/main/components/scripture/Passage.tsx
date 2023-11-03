@@ -175,8 +175,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         const paragraphs = [];
         let temp = [];
 
-        console.log(contents);
-
         let verse = 1;
         for (let i = 0; i < contents.length; i++) { // iterate through verses
 
@@ -189,14 +187,17 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
                 const section = contents[i][ii];
 
-                if (section.type === 'p' || section.type === 'q1' || section.type === 'q2' || section.type === 'pc' || section.type === 'qs') { // new paragraph
-                    if (temp.length !== 0) { // store previous sections as a paragraph
-                        paragraphs.push(temp);
+                console.log(section);
+                if (section.type) {
+                    if (section.type.includes('p') || section.type.includes('q1') || section.type.includes('q2') || section.type.includes('pc') || section.type.includes('qs')) { // new paragraph
+                        if (temp.length !== 0) { // store previous sections as a paragraph
+                            paragraphs.push(temp);
+                        }
+                        temp = []; // begin new paragraph
                     }
-                    temp = []; // begin new paragraph
                 }
                 // header
-                if (section.header != null) {
+                if (section.header) {
                     paragraphs.push([{ "type": "s", "content": section.header }]);
                 }
 
@@ -219,8 +220,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             };
         }
         paragraphs.push(temp);
-
-        console.log(paragraphs);
         setPassageContents(paragraphs);
     }
 

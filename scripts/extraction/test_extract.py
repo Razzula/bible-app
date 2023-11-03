@@ -17,17 +17,17 @@ def setup_teardown_module():
 
     # SETUP
     try:
-        with open(os.path.join(os.path.dirname(__file__), '..', 'public', 'manifest.json'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'manifest.json'), 'r') as f:
             manifest = json.load(f)
     except FileNotFoundError:
         assert False, 'manifest.json not found'
 
-    assert os.path.isdir(os.path.join(directory, 'original')), 'Scripture directory does not exist'
-    extract(os.path.join(directory, 'original'), os.path.join(directory, '_test'))
+    assert os.path.isdir(os.path.join(directory, 'source')), 'Scripture directory does not exist'
+    extract(os.path.join(directory, 'source'), os.path.join(directory, '_test'))
 
     yield  # RUN TESTS
 
-    # TEARDOWN
+    # TEARDOWN  
     shutil.rmtree(os.path.join(directory, '_test'))
 
 
