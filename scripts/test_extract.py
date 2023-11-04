@@ -13,11 +13,11 @@ def setup_teardown_module():
     global manifest
     global directory
 
-    directory = os.path.join(os.path.dirname(__file__), 'NKJV')
+    directory = os.path.join(os.path.dirname(__file__), 'data', 'NKJV')
 
     # SETUP
     try:
-        with open(os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'manifest.json'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'public', 'manifest.json'), 'r') as f:
             manifest = json.load(f)
     except FileNotFoundError:
         assert False, 'manifest.json not found'
@@ -47,6 +47,8 @@ def test_fileShape(setup_teardown_module):
 
 
 def test_fileContents(setup_teardown_module):
+
+    # this doesn't test formatting or notes' contents, just the body's plaintext content
 
     test = 'GEN.1'
     expected = [

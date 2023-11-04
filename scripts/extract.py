@@ -96,12 +96,12 @@ def extract(inDir, outDir):
 
     root = os.path.dirname(__file__)
 
-    with open(os.path.join(root, '..', '..', 'public', 'manifest.json'), 'r') as f:
+    with open(os.path.join(root, '..', 'public', 'manifest.json'), 'r') as f:
         manifest = json.load(f)
 
     if (not os.path.isdir(outDir)):
         os.mkdir(outDir)  # create
-    open(os.path.join(outDir, f'MONOLITH.html'), 'w').close()
+    # open(os.path.join(outDir, f'MONOLITH.html'), 'w').close()
 
     # DEBUG
     # manifest = [{
@@ -316,5 +316,5 @@ if __name__ == "__main__":
 
     # # DEBUGGING
     # for translation in ['NKJV', 'ESV']:
-    #     root = os.path.join(os.path.dirname(__file__), translation)
+    #     root = os.path.join(os.path.dirname(__file__), 'data', translation)
     #     extract(os.path.join(root, 'source'), os.path.join(root, translation))
