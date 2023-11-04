@@ -1,3 +1,22 @@
+import json
+import os
+import json
+
+
+def tokenisePassage(passage, verse, translation):
+
+    with open(os.path.join(os.path.dirname(__file__), 'data', translation, translation, passage), 'r') as f:
+        data = json.load(f)
+    scripture = data[verse - 1]
+
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'strongs', f'{passage}.json'), 'r') as f:
+        data = json.load(f)
+    strongs = data[str(verse)]
+
+    if (scripture and strongs):
+        return tokenise(scripture, strongs)
+    return None
+
 
 def tokenise(scripture, strongs):
 
@@ -14,14 +33,14 @@ def tokenise(scripture, strongs):
             pass
 
         tokenCandidates = chunk['content'].split(' ') # TODO handle (most) punctuation as individual tokens
-        for index, candidateToken in enumerate(tokenCandidates):
+        for candidateTokenIndex, candidateToken in enumerate(tokenCandidates):
             if (candidateToken.strip() == ''):
                 continue
 
             token = {}
 
             # reconstruct
-            if (chunk.get('header') and index == 0): # this assumes there will never be a heading mid-verse
+            if (chunk.get('header') and candidateTokenIndex == 0): # this assumes there will never be a heading mid-verse
                 token['header'] = chunk['header']
 
             if (chunk.get('type')):
@@ -34,7 +53,7 @@ def tokenise(scripture, strongs):
     pass
 
     # COUNT NUMBER OF OCCURRENCES OF EACH TOKEN
-    tokenCounts = {}
+    tokenCounts = {} # { token: (scriptureCount, strongsCount) }
 
     for token in tokens:
 
@@ -42,81 +61,103 @@ def tokenise(scripture, strongs):
         if (token.get('type') == 'note'):
             continue
 
-        tokenContent = token['content']
+        tokenContent = token['content'].lower().strip('.,;:?!')
         exisitngCount = tokenCounts.get(tokenContent)
 
         if (exisitngCount):
-            tokenCounts[tokenContent] = exisitngCount + 1
+            tokenCounts[tokenContent] = (exisitngCount[0] + 1, exisitngCount[1])
         else:
-            tokenCounts[tokenContent] = 1
+            tokenCounts[tokenContent] = (1, 0)
+
+    for token in strongs.values():
+
+        tokenContent = simplifyToken(token)
+        for word in tokenContent.split(' '):
+
+            exisitngCount = tokenCounts.get(word)
+
+            if (exisitngCount):
+                tokenCounts[word] = (exisitngCount[0], exisitngCount[1] + 1)
+            else:
+                tokenCounts[word] = (0, 1)
 
     # LINK ANY WHOLE, EXACT, UNIQUE MATCHES
-    for trueToken, trueTokenValue in strongs.items():
+    for strongsTokenID, strongsToken in strongs.items():
 
-        if (trueTokenValue.get('eng') == '-'): # TODO use None instead
+        if (strongsToken.get('eng') == '-'): # TODO use None instead
             continue
 
-        for index, data in enumerate(tokens):
+        for scriptureIndex, scriptureToken in enumerate(tokens):
 
-            # skip notes
-            if (data.get('type') == 'note'):
+            if (tokenIsDirty(scriptureToken)):
                 continue
 
-            if (tokenCounts[data['content']] > 1): # UNIQUE
-                continue
-
-            # ignore punctuation
-            dataRaw = data['content'].strip('.,;:?!') # TODO make more robust
-
-            if (trueTokenValue['eng'] == dataRaw): # WHOLE, EXACT
-                # update data to be tokenised
-                data['token'] = trueToken
-                tokens[index] = data
+            if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # ensure UNIQUE
+                if (equals(scriptureToken, strongsToken)): # ensure WHOLE, EXACT
+                    # update data to be tokenised
+                    scriptureToken['token'] = strongsTokenID
+                    tokens[scriptureIndex] = scriptureToken
+                    continue
     pass
 
     # LINK DETERMINERS
-        # this doesn't occur in this use case
-        # (may never occur in Hebrew?)
-        # (may still occur in Greek?)
+    for strongsTokenID, strongsToken in strongs.items():
+        # we are assuming that the token `the` and `[object]` are always subsequent
+        # is this safe?
+
+        if (simplifyToken(strongsToken) == 'the'): # TODO expand
+
+            # find token that matches the next strongs token
+            # e.g. in ['the', 'world'], find 'world'
+            for scriptureIndex, scriptureToken in enumerate(tokens):
+
+                if (scriptureToken.get('token') == str(int(strongsTokenID) + 1)): # assumption (see above)
+                    # find the corresponding determiner
+                    i = 0
+                    while (scriptureIndex - i > 1):
+                        i += 1
+                        previousToken = tokens[scriptureIndex - i]
+                        if (previousToken.get('type') == 'note'): # skip notes
+                            continue
+                        if (previousToken.get('token')): # don't overwrite existing tokens
+                            break
+
+                        if (equals(previousToken, strongsToken)):
+                            tokens[scriptureIndex - i]['token'] = strongsTokenID
+                        break
     pass
 
     # LINK UNIQUE, INCOMPLETE MATCHES
-    for trueToken, trueTokenValue in strongs.items():
+    for strongsTokenID, strongsToken in strongs.items():
 
-        if (trueTokenValue.get('eng') == '-'): # TODO use None instead
+        if (strongsToken.get('eng') == '-'): # TODO use None instead
             continue
+        pass
 
-        for index, data in enumerate(tokens):
+        for scriptureIndex, scriptureToken in enumerate(tokens):
 
-            # skip notes
-            if (data.get('type') == 'note'):
+            if (tokenIsDirty(scriptureToken)):
                 continue
 
-            if (tokenCounts[data['content']] > 1): # UNIQUE
-                continue
-
-            # ignore punctuation
-            dataRaw = data['content'].strip('.,;:?!') # TODO make more robust
-
-            if (dataRaw in trueTokenValue['eng']): # WHOLE, EXACT
-                # update data to be tokenised
-                data['token'] = trueToken
-                tokens[index] = data
+            if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # ensure UNIQUE
+                if (contains(strongsToken, scriptureToken, mustMatchWholeWord=True)): # WHOLE, EXACT
+                    # update data to be tokenised
+                    scriptureToken['token'] = strongsTokenID
+                    tokens[scriptureIndex] = scriptureToken
     pass
 
     # BRIDGE GAPS
-    token = None
+    currentToken = None
     chasm = []
-    for index, data in enumerate(tokens):
+    for scriptureIndex, scriptureToken in enumerate(tokens):
 
-        # skip notes
-        if (data.get('type') == 'note'):
+        if (tokenIsDirty(scriptureToken)):
             continue
 
-        newToken = data.get('token')
-        if (newToken):
-            if (token != newToken):
-                token = newToken
+        scriptureTokenID = scriptureToken.get('token')
+        if (scriptureTokenID):
+            if (token != scriptureTokenID):
+                token = scriptureTokenID
                 # clear chasm
                 chasm = []
             else:
@@ -124,52 +165,55 @@ def tokenise(scripture, strongs):
                 for chasmIndex in chasm:
                     tokens[chasmIndex]['token'] = token
         else:
-            chasm.append(index)
+            chasm.append(scriptureIndex)
     pass
 
     # LINK EMBEDDED DETERMINERS
-    for index, data in enumerate(tokens):
+    for scriptureIndex, scriptureToken in enumerate(tokens):
 
-        # skip notes
-        if (data.get('type') == 'note'):
+        if (tokenIsDirty(scriptureToken)):
             continue
 
-        if (data.get('content') == 'the'): # TODO expand
-            if (len(tokens) > index + 1):
-                tokenCandidate = tokens[index + 1].get('token')
-                if (tokenCandidate):
-                    tokens[index]['token'] = tokenCandidate
+        if (simplifyToken(scriptureToken) == 'the'): # TODO expand
+            if (len(tokens) > scriptureIndex + 1):
+                tokenCandidateID = tokens[scriptureIndex + 1].get('token')
+                if (tokenCandidateID):
+                    tokens[scriptureIndex]['token'] = tokenCandidateID
     pass
 
     # ABSORB LOOSE TOKENS
         # ARE ANY TRUE TOKENS NOT USED?
     pass
 
+    # CHECK STATUS
     for token in tokens:
-        # skip notes
-        if (token.get('type') == 'note'):
+        if (tokenIsDirty(token)):
             continue
-        if (not token.get('token')):
-            pass # FAILURE
+        pass # FAILURE
+        break
 
     # RECONSTRUCT TOKENS
     # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
     # it may be possible to reconstruct the scripture into some larger tokens, which would reduce the number of individual tokens
     newToken = {}
     newTokens = []
-    currentToken = None
+    currentToken = -1 # cannot use 'None', as a note will have this token
 
     for token in tokens:
-        if (currentToken != token.get('token')): # new token
+
+        newTokenID = token.get('token')
+        if (currentToken != newTokenID): # new token
                 if (newToken != {}):
                     newTokens.append(newToken)
 
                 newToken = token
-                currentToken = token.get('token')
+                currentToken = newTokenID
         else: # same token as previous
             if (token.get('type') == newToken.get('type')):
                 newToken['content'] += f' {token["content"]}' # TODO this may not be ideal
-    newTokens.append(newToken)
+
+    if (newToken != {}): # append last token
+        newTokens.append(newToken)
     pass
 
     return newTokens
@@ -177,28 +221,54 @@ def tokenise(scripture, strongs):
     # TODO
     # - make use of NKJV italics markers
 
-scripture = [ #NKJV
-    { "header": "The History of Creation", "type": "p", "content": "In the " },
-    { "type": "note", "content": "Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)" },
-    { "content": "beginning " },
-    { "type": "note", "content": "Gen. 2:4; (Ps. 8:3; 89:11; 90:2); Is. 44:24; Acts 17:24; Rom. 1:20; (Heb. 1:2; 11:3); Rev. 4:11" },
-    { "content": "God created the heavens and the earth. " }
-]
+def equals(scriptureToken, strongsToken):
+    return simplifyToken(scriptureToken) == simplifyToken(strongsToken)
+
+def contains(strongsToken, scriptureToken, mustMatchWholeWord=False): # this is imperfect
+    if (mustMatchWholeWord):
+        strongsContainer = simplifyToken(strongsToken).split(' ')
+    else:
+        strongsContainer = simplifyToken(strongsToken)
+
+    return simplifyToken(scriptureToken) in strongsContainer
+
+def simplifyToken(token):
+    if (token.get('content')):
+        return token['content'].lower().strip('.,;:?!')
+    elif (token.get('eng')):
+        return token['eng'].lower().strip('.,;:?!')
+    return None
+
+def tokenIsDirty(token):
+    return (token.get('type') == 'note') or token.get('token')
+        # TODO use an array for more cases instead of just 'note'
+
+## GEN.1.1
+# scripture = [ #NKJV
+#     { "header": "The History of Creation", "type": "p", "content": "In the " },
+#     { "type": "note", "content": "Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)" },
+#     { "content": "beginning " },
+#     { "type": "note", "content": "Gen. 2:4; (Ps. 8:3; 89:11; 90:2); Is. 44:24; Acts 17:24; Rom. 1:20; (Heb. 1:2; 11:3); Rev. 4:11" },
+#     { "content": "God created the heavens and the earth. " }
+# ]
 # scripture = [ #ESV
 #     { "header": "The Creation of the World", "type": "p", "content": " " },
 #     { "content": "In the " },
 #     { "type": "note", "content": "Job 38:4-7; Ps. 33:6; 136:5; Isa. 42:5; 45:18; John 1:1-3; Acts 14:15; 17:24; Col. 1:16, 17; Heb. 1:10; 11:3; Rev. 4:11" },
 #     { "content": "beginning, God created the heavens and the earth. " }
 # ]
-strongs = { 
-    "0": { "strongs": "7225", "eng": "In the beginning" },
-    "1": { "strongs": "1254", "eng": "created" },
-    "2": { "strongs": "430", "eng": "God" },
-    "3": { "strongs": "853", "eng": "-" },
-    "4": { "strongs": "8064", "eng": "the heavens" },
-    "5": { "strongs": "853", "eng": "and" },
-    "6": { "strongs": "776", "eng": "the earth" }
-}
+# strongs = { 
+#     "0": { "strongs": "7225", "eng": "In the beginning" },
+#     "1": { "strongs": "1254", "eng": "created" },
+#     "2": { "strongs": "430", "eng": "God" },
+#     "3": { "strongs": "853", "eng": "-" },
+#     "4": { "strongs": "8064", "eng": "the heavens" },
+#     "5": { "strongs": "853", "eng": "and" },
+#     "6": { "strongs": "776", "eng": "the earth" }
+# }
 
 if __name__ == "__main__":
-    tokenise(scripture, strongs)
+    # tokenisePassage('GEN.1', 1, 'NKJV')
+    # tokenisePassage('GEN.1', 1, 'ESV')
+    # tokenisePassage('EST.8', 9, 'NKJV')
+    tokenisePassage('JHN.3', 16, 'NKJV')
