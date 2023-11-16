@@ -1,7 +1,14 @@
 import json
 import os
-import json
+from nltk.stem import WordNetLemmatizer
+from enum import Enum
 
+class MatchStrictness(Enum):
+    IDENTICAL = 1
+    LEMMAS = 2
+    SYNONYMS = 3
+
+lemmas = {}
 
 def tokenisePassage(passage, verse, translation):
 
@@ -32,7 +39,7 @@ def tokenise(scripture, strongs):
         if (chunk.get('content') == ' '):
             pass
 
-        tokenCandidates = chunk['content'].split(' ') # TODO handle (most) punctuation as individual tokens
+        tokenCandidates = chunk['content'].split(' ')
         for candidateTokenIndex, candidateToken in enumerate(tokenCandidates):
             if (candidateToken.strip() == ''):
                 continue
@@ -44,7 +51,7 @@ def tokenise(scripture, strongs):
                 token['header'] = chunk['header']
 
             if (chunk.get('type')):
-                token['type'] = chunk['type']
+                token['type'] = chunk['type'] # TODO cannot split paragraphs into multiple
 
             token['content'] = candidateToken
 
@@ -54,157 +61,75 @@ def tokenise(scripture, strongs):
 
     # COUNT NUMBER OF OCCURRENCES OF EACH TOKEN
     tokenCounts = {} # { token: (scriptureCount, strongsCount) }
+    lemmaCounts = {}
 
     for token in tokens:
-
         # skip notes
         if (token.get('type') == 'note'):
             continue
 
         tokenContent = token['content'].lower().strip('.,;:?!')
-        exisitngCount = tokenCounts.get(tokenContent)
 
+        # genuine content
+        exisitngCount = tokenCounts.get(tokenContent)
         if (exisitngCount):
             tokenCounts[tokenContent] = (exisitngCount[0] + 1, exisitngCount[1])
         else:
             tokenCounts[tokenContent] = (1, 0)
+
+        # lemmas
+        for lemma in lemmatizeWord(tokenContent):
+            exisitngCount = lemmaCounts.get(lemma)
+            if (exisitngCount):
+                lemmaCounts[lemma] = (exisitngCount[0] + 1, exisitngCount[1])
+            else:
+                lemmaCounts[lemma] = (1, 0)
 
     for token in strongs.values():
 
         tokenContent = simplifyToken(token)
         for word in tokenContent.split(' '):
 
+            # genuine content
             exisitngCount = tokenCounts.get(word)
-
             if (exisitngCount):
                 tokenCounts[word] = (exisitngCount[0], exisitngCount[1] + 1)
             else:
                 tokenCounts[word] = (0, 1)
 
-    # LINK ANY WHOLE, EXACT, UNIQUE MATCHES
-    for strongsTokenID, strongsToken in strongs.items():
+            # lemmas
+            for lemma in lemmatizeWord(word):
+                exisitngCount = lemmaCounts.get(lemma)
+                if (exisitngCount):
+                    lemmaCounts[lemma] = (exisitngCount[0], exisitngCount[1] + 1)
+                else:
+                    lemmaCounts[lemma] = (0, 1)
 
-        if (strongsToken.get('eng') == '-'): # TODO use None instead
-            continue
-
-        for scriptureIndex, scriptureToken in enumerate(tokens):
-
-            if (tokenIsDirty(scriptureToken)):
-                continue
-
-            if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # ensure UNIQUE
-                if (equals(scriptureToken, strongsToken)): # ensure WHOLE, EXACT
-                    # update data to be tokenised
-                    scriptureToken['token'] = strongsTokenID
-                    tokens[scriptureIndex] = scriptureToken
-                    continue
-    pass
-
-    # LINK DETERMINERS
-    for strongsTokenID, strongsToken in strongs.items():
-        # we are assuming that the token `the` and `[object]` are always subsequent
-        # is this safe?
-
-        if (simplifyToken(strongsToken) == 'the'): # TODO expand
-
-            # find token that matches the next strongs token
-            # e.g. in ['the', 'world'], find 'world'
-            for scriptureIndex, scriptureToken in enumerate(tokens):
-
-                if (scriptureToken.get('token') == str(int(strongsTokenID) + 1)): # assumption (see above)
-                    # find the corresponding determiner
-                    i = 0
-                    while (scriptureIndex - i > 1):
-                        i += 1
-                        previousToken = tokens[scriptureIndex - i]
-                        if (previousToken.get('type') == 'note'): # skip notes
-                            continue
-                        if (previousToken.get('token')): # don't overwrite existing tokens
-                            break
-
-                        if (equals(previousToken, strongsToken)):
-                            tokens[scriptureIndex - i]['token'] = strongsTokenID
-                        break
-    pass
-
-    # LINK UNIQUE, INCOMPLETE MATCHES
-    for strongsTokenID, strongsToken in strongs.items():
-
-        if (strongsToken.get('eng') == '-'): # TODO use None instead
-            continue
-        pass
-
-        for scriptureIndex, scriptureToken in enumerate(tokens):
-
-            if (tokenIsDirty(scriptureToken)):
-                continue
-
-            if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # ensure UNIQUE
-                if (contains(strongsToken, scriptureToken, mustMatchWholeWord=True)): # WHOLE, EXACT
-                    # update data to be tokenised
-                    scriptureToken['token'] = strongsTokenID
-                    tokens[scriptureIndex] = scriptureToken
-    pass
-
-    # BRIDGE GAPS
-    currentToken = None
-    chasm = []
-    for scriptureIndex, scriptureToken in enumerate(tokens):
-
-        if (tokenIsDirty(scriptureToken)):
-            continue
-
-        scriptureTokenID = scriptureToken.get('token')
-        if (scriptureTokenID):
-            if (token != scriptureTokenID):
-                token = scriptureTokenID
-                # clear chasm
-                chasm = []
-            else:
-                # link chasm
-                for chasmIndex in chasm:
-                    tokens[chasmIndex]['token'] = token
-        else:
-            chasm.append(scriptureIndex)
-    pass
-
-    # LINK EMBEDDED DETERMINERS
-    for scriptureIndex, scriptureToken in enumerate(tokens):
-
-        if (tokenIsDirty(scriptureToken)):
-            continue
-
-        if (simplifyToken(scriptureToken) == 'the'): # TODO expand
-            if (len(tokens) > scriptureIndex + 1):
-                tokenCandidateID = tokens[scriptureIndex + 1].get('token')
-                if (tokenCandidateID):
-                    tokens[scriptureIndex]['token'] = tokenCandidateID
-    pass
-
-    # ABSORB LOOSE TOKENS
-        # ARE ANY TRUE TOKENS NOT USED?
-    pass
+    ABSTRACT_TOKENS = tokeniseAbstract(tokens, strongs, tokenCounts, lemmaCounts)
+    for token in ABSTRACT_TOKENS:
+        if ((tokenID := token.get('token')) != None):
+            tokens[token['index']]['token'] = tokenID
 
     # CHECK STATUS
     for token in tokens:
         if (tokenIsDirty(token)):
             continue
         pass # FAILURE
-        break
 
     # RECONSTRUCT TOKENS
     # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
     # it may be possible to reconstruct the scripture into some larger tokens, which would reduce the number of individual tokens
     newToken = {}
-    newTokens = []
-    currentToken = -1 # cannot use 'None', as a note will have this token
+    final_tokens = []
+    currentToken = -1 # cannot use 'None', as notes will have this token
 
     for token in tokens:
 
         newTokenID = token.get('token')
+
         if (currentToken != newTokenID): # new token
                 if (newToken != {}):
-                    newTokens.append(newToken)
+                    final_tokens.append(newToken)
 
                 newToken = token
                 currentToken = newTokenID
@@ -213,13 +138,237 @@ def tokenise(scripture, strongs):
                 newToken['content'] += f' {token["content"]}' # TODO this may not be ideal
 
     if (newToken != {}): # append last token
-        newTokens.append(newToken)
+        final_tokens.append(newToken)
     pass
 
-    return newTokens
+    return final_tokens
 
-    # TODO
-    # - make use of NKJV italics markers
+def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
+
+    # abstract tokens
+    working_tokens = []
+    for tokenIndex, token in enumerate(TRUE_TOKENS):
+        if (not tokenIsDirty(token)):
+            new_token = token.copy()
+            new_token['index'] = tokenIndex
+            working_tokens.append(new_token)
+
+    # DO TWO SWEEPS: FIRST USING LITERAL COMPARISON, THEN EXPANDING ACCEPTANCE CRITERIA TO INCLUDE SYNONYMS
+    for matchTolerance in [MatchStrictness.IDENTICAL, MatchStrictness.LEMMAS, MatchStrictness.SYNONYMS]:
+        pass
+
+        # LINK ANY WHOLE, EXACT, UNIQUE MATCHES
+        for strongsTokenID, strongsToken in strongs.items():
+
+            if (strongsToken.get('eng') == '-'):
+                continue
+            pass
+
+            for scriptureIndex, scriptureToken in enumerate(working_tokens):
+
+                if (tokenIsDirty(scriptureToken)):
+                    continue
+
+                if (matchTolerance == MatchStrictness.IDENTICAL):
+                    if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # UNIQUE
+                        if (equals(scriptureToken, strongsToken)): # WHOLE, EXACT
+                            # update data to be tokenised
+                            scriptureToken['token'] = strongsTokenID
+                            working_tokens[scriptureIndex] = scriptureToken
+                            continue
+
+                else:
+                    if (tokenCounts.get(simplifyToken(strongsToken))): # WHOLE
+                        synonym = synonymous(scriptureToken, strongsToken, matchTolerance) # EXACT
+                        if (synonym):
+
+                            if (matchTolerance == MatchStrictness.LEMMAS): # TODO this is kinda bad
+                                if (len(synonym) > 1):
+                                    pass # will this ever occur?
+                                for lemma in synonym:
+                                    if (lemmaCounts[lemma] == (1, 1)): # UNIQUE
+                                        # update data to be tokenised
+                                        scriptureToken['token'] = strongsTokenID
+                                        working_tokens[scriptureIndex] = scriptureToken
+                                        continue
+
+                            elif (matchTolerance == MatchStrictness.SYNONYMS):
+                                if (tokenCounts[synonym][0] == 1 and tokenCounts[simplifyToken(strongsToken)][1] == 1): # UNIQUE
+                                    # update data to be tokenised
+                                    scriptureToken['token'] = strongsTokenID
+                                    working_tokens[scriptureIndex] = scriptureToken
+                                    continue
+        pass
+
+        # LINK DETERMINERS
+        for strongsTokenID, strongsToken in strongs.items():
+            # we are assuming that the token `the` and `[object]` are always subsequent
+            # is this safe?
+
+            if (simplifyToken(strongsToken) == 'the'): # TODO expand
+
+                # find token that matches the next strongs token
+                # e.g. in ['the', 'world'], find 'world'
+                for scriptureIndex, scriptureToken in enumerate(working_tokens):
+
+                    if (scriptureToken.get('token') == str(int(strongsTokenID) + 1)): # assumption (see above)
+                        # find the corresponding determiner
+                        i = 0
+                        while (scriptureIndex - i > 1):
+                            i += 1
+                            previousToken = working_tokens[scriptureIndex - i]
+                            if (previousToken.get('type') == 'note'): # skip notes
+                                continue
+                            if (previousToken.get('token')): # don't overwrite existing tokens
+                                break
+
+                            if (equals(previousToken, strongsToken)):
+                                working_tokens[scriptureIndex - i]['token'] = strongsTokenID
+                            break
+        pass
+
+        # LINK UNIQUE, INCOMPLETE MATCHES
+        for strongsTokenID, strongsToken in strongs.items():
+
+            if (strongsToken.get('eng') == '-'):
+                continue
+            pass
+
+            for scriptureIndex, scriptureToken in enumerate(working_tokens):
+
+                if (tokenIsDirty(scriptureToken)):
+                    continue
+
+                if (matchTolerance == MatchStrictness.IDENTICAL):
+                    if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # UNIQUE
+                        if (contains(strongsToken, scriptureToken, mustMatchWholeWord=True)):
+                            # update data to be tokenised
+                            scriptureToken['token'] = strongsTokenID
+                            working_tokens[scriptureIndex] = scriptureToken
+                            continue
+
+                elif (matchTolerance == MatchStrictness.LEMMAS):
+                    pass # TODO
+
+                elif (matchTolerance == MatchStrictness.SYNONYMS):
+                    for subword in simplifyToken(strongsToken).split(' '): # INCOMPLETE
+                        synonym = synonymous(scriptureToken, subword, matchTolerance)
+                        if (synonym):
+                            if (tokenCounts[synonym][0] == 1 and tokenCounts[subword][1] == 1): # UNIQUE
+                                # update data to be tokenised
+                                scriptureToken['token'] = strongsTokenID
+                                working_tokens[scriptureIndex] = scriptureToken
+                                continue
+        pass
+
+        # BRIDGE GAPS
+        currentToken = None
+        chasm = []
+        for scriptureIndex, scriptureToken in enumerate(working_tokens):
+
+            if (scriptureToken.get('type') == 'note'):
+                continue
+
+            scriptureTokenID = scriptureToken.get('token')
+            if (scriptureTokenID != None):
+                if (currentToken != scriptureTokenID): # TODO does this work?
+                    currentToken = scriptureTokenID
+                    # clear chasm
+                    chasm = []
+                else:
+                    # link chasm
+                    for chasmIndex in chasm:
+                        working_tokens[chasmIndex]['token'] = currentToken
+            else:
+                chasm.append(scriptureIndex)
+        pass
+
+        # LINK EMBEDDED DETERMINERS
+        for scriptureIndex, scriptureToken in enumerate(working_tokens):
+
+            if (tokenIsDirty(scriptureToken)):
+                continue
+
+            if (simplifyToken(scriptureToken) == 'the'): # TODO expand
+                if (len(working_tokens) > scriptureIndex + 1):
+                    tokenCandidateID = working_tokens[scriptureIndex + 1].get('token')
+                    if (tokenCandidateID):
+                        working_tokens[scriptureIndex]['token'] = tokenCandidateID
+        pass
+
+        # REVERT ANOMALIES
+        # compare tokens with their neighbours, if one is drastically different, revert it
+        for tokenIndex, scriptureToken in enumerate(working_tokens):
+
+            token = scriptureToken.get('token')
+            if (not token):
+                continue
+
+            deltas = []
+
+            for i in range(1, 3):
+                # check previous tokens
+                if (tokenIndex - i > 0):
+                    previousToken = working_tokens[tokenIndex - i].get('token')
+                    if (previousToken):
+                        deltas.append(abs(int(token) - int(previousToken)) - i)
+
+                # check next tokens
+                if (tokenIndex + i < len(working_tokens)):
+                    nextToken = working_tokens[tokenIndex + i].get('token')
+                    if (nextToken):
+                        deltas.append(abs(int(token) - int(nextToken)) - i)
+
+            if (deltas != []):
+                delta = sum(deltas) / len(deltas)
+                if (delta > 6): # TODO is this a good threshold?
+                    working_tokens[tokenIndex]['token'] = None
+        pass
+    pass
+
+    # HANDLE NON-UNIQUE TOKENS
+    deltas = {}
+    for tokenIndex, scriptureToken in enumerate(working_tokens):
+        if (tokenIsDirty(scriptureToken)):
+            continue
+
+        # TODO could we do a uniqueness check initally to prevent re-treading all the time?
+        localDeltas = []
+        
+        for strongsTokenID, strongsToken in strongs.items():
+            if (strongsToken.get('eng') == '-'):
+                continue
+
+            for word in strongsToken['eng'].split(' '):
+                if (equals(scriptureToken, word)):
+                    localDeltas.append(int(strongsTokenID))
+
+        if (localDeltas):
+            deltas[tokenIndex] = localDeltas
+
+    for tokenIndex, canidateTokens in deltas.items():
+        bestCandidateToken = None
+        for candidateToken in canidateTokens:
+            if (bestCandidateToken == None):
+                bestCandidateToken = candidateToken
+            elif (abs(tokenIndex - candidateToken) < abs(tokenIndex - bestCandidateToken)):
+                bestCandidateToken = candidateToken
+
+        working_tokens[tokenIndex]['token'] = bestCandidateToken
+    pass
+
+    # REVERT AGAIN ?
+
+    # ABSORB LOOSE TOKENS
+        # ARE ANY TRUE TOKENS NOT USED?
+    pass
+
+    return working_tokens
+
+    # TODO: possible improvements
+    # - make use of some markers (wj tags, for instance) ?
+    # - make use of capitalisation ('Him' != 'him' see Matthew 9:9)
+    # - use a better distance metric (exclude tags, '-', etc. instead of using indexes)
 
 def equals(scriptureToken, strongsToken):
     return simplifyToken(scriptureToken) == simplifyToken(strongsToken)
@@ -233,15 +382,59 @@ def contains(strongsToken, scriptureToken, mustMatchWholeWord=False): # this is 
     return simplifyToken(scriptureToken) in strongsContainer
 
 def simplifyToken(token):
-    if (token.get('content')):
+    if isinstance(token, str):
+        return token.lower().strip('.,;:?!')
+    
+    elif (token.get('content')): # scripture
         return token['content'].lower().strip('.,;:?!')
-    elif (token.get('eng')):
+    
+    elif (token.get('eng')): # strongs
         return token['eng'].lower().strip('.,;:?!')
+    
     return None
 
+def synonymous(scriptureToken, strongsToken, matchTolerance):
+    strongsWord = simplifyToken(strongsToken)
+
+    if (matchTolerance == MatchStrictness.LEMMAS):
+        if (lemmas := (list(lemmatizeWord(simplifyToken(scriptureToken)) & lemmatizeWord(strongsWord)))):
+            return lemmas
+                    
+    if (matchTolerance == MatchStrictness.SYNONYMS):
+        synonyms = thesaurus.get(strongsWord)
+        if (synonyms):
+            for synonymList in synonyms: # list of synonyms for the strongs word
+                for synonym in synonymList:
+                    if (equals(scriptureToken, synonym)):
+                        return synonym
+                    
+    return False
+
 def tokenIsDirty(token):
-    return (token.get('type') == 'note') or token.get('token')
+    return (token.get('type') in ['note', 'it']) or (token.get('token') != None)
         # TODO use an array for more cases instead of just 'note'
+
+def lemmatizeWord(word):
+
+    # global lemmas
+    # if (lemma := lemmas.get(word)): # check cache
+    #     return lemma
+
+    lemmatizer = WordNetLemmatizer()
+    pos_tags = ['v', 'n', 'a', 'r']  # verb, noun, adjective, adverb
+
+    temp_lemmas = set()
+
+    for pos_tag in pos_tags:
+        if (lemma := lemmatizer.lemmatize(word, pos_tag)) != word:
+            temp_lemmas.add(lemma)
+
+    if (temp_lemmas != []):
+        # lemmas[word] = temp_lemmas
+        return temp_lemmas
+    
+    # lemmas[word] = [word]
+    return set(word)
 
 ## GEN.1.1
 # scripture = [ #NKJV
@@ -267,8 +460,11 @@ def tokenIsDirty(token):
 #     "6": { "strongs": "776", "eng": "the earth" }
 # }
 
+with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 'r') as f:
+    thesaurus = json.load(f)
+
 if __name__ == "__main__":
-    # tokenisePassage('GEN.1', 1, 'NKJV')
+    tokenisePassage('GEN.1', 1, 'NKJV')
     # tokenisePassage('GEN.1', 1, 'ESV')
     # tokenisePassage('EST.8', 9, 'NKJV')
-    tokenisePassage('JHN.3', 16, 'NKJV')
+    # tokenisePassage('JHN.3', 16, 'NKJV')
