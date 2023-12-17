@@ -34,6 +34,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     const [translationsList, setTranslationsList] = useState('');
     const [selectedTranslation, setSelectedTranslation] = useState('');
     const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
+    const [showFootnotes, setShowFootnotes] = useState(true)
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[], []]);
 
@@ -318,6 +319,14 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         setSelectedNoteGroup(event.currentTarget.value);
     }
 
+    function handleCheckboxChange(event: ChangeEvent<any>): void {
+        setShowFootnotes(event.currentTarget.checked);
+    }
+
+    const containerStyle: any = {
+        '--note-display': showFootnotes ? 'inline' : 'none'
+    };
+
     // GENERATE JSX
     return (
         <>
@@ -333,18 +342,29 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                     <button disabled className='btn btn-default'>New Note</button>
                 </div>
 
-                <div className="input-group main">
-                    <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
-                    <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
+                <div>
+                    {/* MAIN CONTROLS */}
+                    <div className="input-group main">
+                        <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
+                        <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
 
-                    {/* SEARCH BAR */}
-                    <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-                    {/* TRANSLATION SELECT */}
-                    <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
-                        {translationsList}
-                    </select>
-                    {/* SEARCH BUTTON */}
-                    <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
+                        {/* SEARCH BAR */}
+                        <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+                        {/* TRANSLATION SELECT */}
+                        <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
+                            {translationsList}
+                        </select>
+                        {/* SEARCH BUTTON */}
+                        <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
+                    </div>
+
+                    {/* SUB CONTROLS */}
+                    <div className="">
+                        <label>
+                            <input type="checkbox" className="" onChange={handleCheckboxChange} defaultChecked={showFootnotes} />
+                            Show Footnotes
+                        </label>
+                    </div>
                 </div>
 
                 <div className="input-group side">
@@ -357,15 +377,15 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                 </div>
             </div>
 
-            <div className='scroll'>
+            <div className='scroll' style={containerStyle as any}>
                 <article id={docID} onClick={deselect}>
 
                     {/* BIBLE */}
-                    <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br />
                     <AnchorBase anchor={baseAnchor} className="base">
+                        <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br/>
                         {passages}
+                        <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button>
                     </AnchorBase>
-                    <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br />
                     {(passages.props.children?.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
 
                 </article>

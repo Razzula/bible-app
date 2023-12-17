@@ -127,6 +127,9 @@ span.bdit {
 }
 
 //footnotes
+.note {
+    display: var(--note-display, inline);
+}
 .note::before {
     background-image: url("https://www.bible.com/static-assets/footnote.png");
 }
