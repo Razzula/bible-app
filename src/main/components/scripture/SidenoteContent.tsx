@@ -80,8 +80,6 @@ function SidenoteContent({ sidenoteID, passageName, docID, initialNoteContents, 
         console.error(error);
     }
 
-    console.log(committedNoteContents)
-
     return (
         <div style={{ width: 280, height: 'auto', backgroundColor: backgroundColour }}>
             <div>

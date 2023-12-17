@@ -19,6 +19,12 @@ type PassageProps = {
     selectedNoteGroup?: string;
 }
 
+type Note = {
+    id: string;
+    verse: string;
+    contents: any;
+}
+
 /**
  * A React component to display scripture.
  * 
@@ -33,13 +39,13 @@ type PassageProps = {
 */
 function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID }: PassageProps): JSX.Element {
 
-    const [passageContents, setPassageContents]: [any, Function] = useState([]);
-    const [passageElements, setPassageElements]: [any, Function] = useState([]);
+    const [passageContents, setPassageContents]: [any, (a: any) => void] = useState([]);
+    const [passageElements, setPassageElements]: [any, (a: any) => void] = useState([]);
 
-    const [notesContents, setNotesContents]: [any, Function] = useState([]);
+    const [notesContents, setNotesContents]: [any, (a: any) => void] = useState([]);
 
-    const [annotatedVerses, setAnnotatedVerses]: [any, Function] = useState(new Set<string>());
-    const [selectedVerse, setSelectedVerse]: [any, Function] = useState(null);
+    const [annotatedVerses, setAnnotatedVerses]: [any, (a: any) => void] = useState(new Set<string>());
+    const [selectedVerse, setSelectedVerse]: [any, (a: any) => void] = useState(null);
 
     const shouldLoad = (contents !== null && contents !== undefined);
     const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
@@ -100,11 +106,11 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             contents: noteContent
         };
 
-        setNotesContents((currentNotesContents: { id: string; verse: string; contents: string; }[]) => { // TODO; this type is being reused a lot
+        setNotesContents((currentNotesContents: Note[]) => {
 
-            const newNotesContents: { id: string; verse: string; contents: string; }[] = [];
+            const newNotesContents: Note[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: { id: string; verse: string, contents: string }) => {
+            currentNotesContents.forEach((note: Note) => {
                 if (note.id === id) {
                     note.contents = noteContent;
                 }
@@ -123,19 +129,19 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     function deleteNote(id: string, selectedNoteGroup: string): void {
 
-        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
-            const newNotesContents: { verse: string; contents: string; }[] = [];
+        setNotesContents((currentNotesContents: Note[]) => {
+            const newNotesContents: Note[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: { verse: string, contents: string }) => {
-                if (String(note.verse) !== id) {
+            currentNotesContents.forEach((note: Note) => {
+                if (note.id !== id) {
                     newNotesContents.push(note);
                 }
             });
 
-            // TODO; electron function to delete note
             return newNotesContents;
         });
-
+        
+        // electron function to delete note
         window.electronAPI.deleteNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter));
     }
 
@@ -144,16 +150,17 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         const temp = selectedVerse.split('.');
         const verse = temp[temp.length - 1];
 
-        const newNoteContents = {
+        const newNoteContents: Note = {
+            id,
             verse,
-            contents: { "root": { "children": [{ "children": [{ "detail": 0, "format": 0, "mode": "normal", "style": "", "text": "new note", "type": "text", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1 } }
+            contents: { "root": { "children": [{ "children": [{ "detail": 0, "format": 0, "mode": "normal", "style": "", "text": "new note", "type": "text", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1 } } //TODO this should probably be extracted somewhere
         };
 
-        setNotesContents((currentNotesContents: { verse: string; contents: string; }[]) => {
-            const newNotesContents: { verse: string; contents: any; }[] = [];
+        setNotesContents((currentNotesContents: Note[]) => {
+            const newNotesContents: Note[] = [];
             // update notes contents
-            currentNotesContents.forEach((note: { verse: string, contents: string }) => {
-                if (String(note.verse) !== verse) {
+            currentNotesContents.forEach((note: Note) => {
+                if (note.id !== id) {
                     newNotesContents.push(note);
                 }
             });
@@ -164,13 +171,11 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         });
 
         window.electronAPI.saveNote(`${id}`, selectedNoteGroup, passageBook, String(passageChapter), newNoteContents);
-
-        // TODO; sometimes deletes all notes after manual load
-        // TODO; add callback to select new note
     }
 
     // DYNAMICALLY GENERATE PASSAGE
     function generatePassage(): void {
+
         // split content into paragraphs
         const paragraphs = [];
         let temp = [];
@@ -183,11 +188,10 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
             }
 
             // content
-            for (let ii = 0; ii < contents[i].length; ii++) { // iterate through verse sections
+            for (let ii = 0; ii < contents[i].length; ii++) { // iterate through verse sub-sections
 
                 const section = contents[i][ii];
 
-                console.log(section);
                 if (section.type) {
                     if (section.type.includes('p') || section.type.includes('q1') || section.type.includes('q2') || section.type.includes('pc') || section.type.includes('qs')) { // new paragraph
                         if (temp.length !== 0) { // store previous sections as a paragraph
@@ -215,7 +219,8 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                     }
                 }
 
-                section.test = `${passageBook}.${passageChapter}.${verse + i}`; // TODO; rename 'verse'->'initialVerse', 'test'->'verse'
+                section.id = `${passageBook}.${passageChapter}.${verse + i}`; // TODO; rename 'verse'->'initialVerse' //TODO support multiple chapters
+                // console.log('passage', section.id);
                 temp.push(section);
             };
         }

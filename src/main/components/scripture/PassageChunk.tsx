@@ -16,13 +16,20 @@ type PassageChunkProps = {
     setSelectedVerse: Function;
 }
 
+type Verse = {
+    id: string,
+    type: string,
+    content: string,
+    children?: any //TODO
+}
+
 /**
  * TODO
  */
 function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse }: PassageChunkProps): JSX.Element {
 
     // format paragraphs
-    function generateContents(item: any): JSX.Element | null {
+    function generateContents(item: Verse): JSX.Element | null {
         // footnotes
         if (item.type === 'note') {
             if (ignoreFootnotes) {
@@ -49,19 +56,19 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         // other formatting
         let contents;
         let className = (item.type !== undefined) && !(item.type.includes('p') || item.type.includes('q1') || item.type.includes('q2') || item.type.includes('pc') || item.type.includes('qs')) // not a paragraph
-            ? `${item.type} ${item.test}` : item.test;
+            ? `${item.type} ${item.id}` : item.id;
 
         if (item.children) { // if node is a parent, recursively generate its contents
             contents = <span className={className}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
         }
         else {
-            contents = <span className={className} onClick={() => setSelectedVerse(item.test)}>{item.content}</span>
+            contents = <span className={className} onMouseDown={() => {setSelectedVerse(item.id)}} onMouseUp={() => setSelectedVerse(item.id)}>{item.content}</span>
         }
 
         // anchors
-        if (notedVerses !== undefined && notedVerses?.has(item.test)) {
+        if (notedVerses !== undefined && notedVerses?.has(item.id)) {
             return (
-                <InlineAnchor sidenote={item.test}>{contents}</InlineAnchor>
+                <InlineAnchor sidenote={item.id}>{contents}</InlineAnchor>
             );
         }
         else {
@@ -69,7 +76,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
     }
 
-    return contents.map((paragraph: Array<{ type: string, content: string, test: string }>) => {
+    return contents.map((paragraph: Array<Verse>) => {
 
         // format contents of paragraph
         const paraContent = paragraph.map(generateContents);

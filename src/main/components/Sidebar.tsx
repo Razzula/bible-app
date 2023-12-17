@@ -6,9 +6,10 @@ import '../styles/sidebar.scss';
 
 type SidebarProps = {
     updateSelectedPanel: (panelType: symbol | undefined) => void;
+    selectTab: (type: symbol, name: string) => void;
 }
 
-function Sidebar({ updateSelectedPanel }: SidebarProps): JSX.Element {
+function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element {
 
     const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = useState(undefined);
 
@@ -30,7 +31,7 @@ function Sidebar({ updateSelectedPanel }: SidebarProps): JSX.Element {
             </div>
 
             <div className="bottom-container">
-                <button className='sidebar-button'>Settings</button>
+                <button className='sidebar-button' onClick={() => selectTab(WindowTypes.Settings.Type, WindowTypes.Settings.Name)}>Settings</button>
             </div>
         </div>
     );

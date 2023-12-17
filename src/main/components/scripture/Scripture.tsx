@@ -31,6 +31,7 @@ type ScriptureProps = {
  */
 function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState('');
     const [selectedTranslation, setSelectedTranslation] = useState('');
     const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
@@ -64,7 +65,9 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }, [queryToLoad]);
 
     useEffect(() => {
-        loadPassageFromString(searchQuery);
+        if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
+            loadPassageFromString(searchQuery);
+        }
     }, [selectedTranslation, selectedNoteGroup]); //TODO: this is horribly ineffecient. we should cache the contents, usfm, etc. and reuse them
 
     function handleSearch(): void {
@@ -106,6 +109,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
     function handleSearchBarChange(event: ChangeEvent<any>): void {
         setSearchQuery(event.currentTarget.value);
+        setSearchError(false);
     }
 
     function handleTranslationSelectChange(event: ChangeEvent<any>): void {
@@ -152,6 +156,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number): JSX.Element {
+        console.log(chapterContents);
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
@@ -165,8 +170,13 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
 
+        if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
+            return;
+        }
+
         const result = getUSFM(searchQuery);
-        if (!result) {
+        if (result.length === 0) {
+            setSearchError(true);
             return;
         }
 
@@ -178,36 +188,43 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         const chaptersContents = [];
 
         if (Array.isArray(usfm)) { // TODO; TEMP
-
             usfm = usfm[0]; // TODO; actully load the contetns of all the passages
         }
 
         if (usfm === undefined || usfm === null) {
+            setSearchError(true);
             return;
         }
-
+        
         const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
-
+        
         // load chapters from files
         for (let chapter = usfm.initialChapter; chapter <= chapterRange; chapter++) {
             const fileName = `${usfm.book}.${chapter}`;
-
+            
             if (!fileName) { // invalid
                 continue;
             }
             // TODO; prevent multiple reads of current file
-
+            
             // load contents externally from files
-            const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books // TODO; make NKJV
-            if (chapterContents) {
+            const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books
+            if (chapterContents) { //TODO temp?
                 chapterContents[0][0].chapter = chapter;
             }
-            chaptersContents.push(chapterContents);
-
-            deselect();
-
+            if (chapterContents) {
+                chaptersContents.push(chapterContents);
+            }
+            
         }
-
+        
+        if (chaptersContents.length === 0) {
+            setSearchError(true);
+            return;
+        }
+        setSearchError(false);
+        
+        deselect();
         // setPassagesContents(chaptersContents);
 
         // TOOO; better way to do this
@@ -302,14 +319,14 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         //TODO; fix
         // generate passage and merge into current
         if (delta === 1) {
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter + 1)); //TODO; we cannot always assume this will be initialChapter+1
 
             setPassages(<>{passages}{extraPassageContents}</>);
         }
         else { // TODO; fix verse numbers
             extraContents = extraContents.reverse()
             extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter));
+            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter - 1));
 
             setPassages(<>{extraPassageContents}{passages}</>);
         }
@@ -322,6 +339,11 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     function handleCheckboxChange(event: ChangeEvent<any>): void {
         setShowFootnotes(event.currentTarget.checked);
     }
+
+    // CSS
+    const searchStyle: any = {
+        'background-color': searchError ? 'var(--error-background-color)' : 'var(--select-background-color-default)'
+    };
 
     const containerStyle: any = {
         '--note-display': showFootnotes ? 'inline' : 'none'
@@ -349,7 +371,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                         <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
 
                         {/* SEARCH BAR */}
-                        <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+                        <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} style={searchStyle} />
                         {/* TRANSLATION SELECT */}
                         <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
                             {translationsList}

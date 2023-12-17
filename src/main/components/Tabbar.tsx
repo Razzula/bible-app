@@ -41,8 +41,23 @@ function Tab({ tabName, selectTab, closeTab, isSelected }: TabProps): JSX.Elemen
 
     const className = isSelected ? 'tab selected' : 'tab';
 
+    const handleClick = (e: React.MouseEvent) => {
+        switch (e.button) {
+            case 0: // left click
+                selectTab(tabName);
+                break;
+            case 1: // middle click
+                closeTab(tabName)
+                break;
+            case 2: // right click
+                break;
+            default:
+                break;
+        }
+    };
+
     return (
-        <span onClick={() => selectTab(tabName)} key={tabName} className={className}>
+        <span onMouseUp={handleClick} key={tabName} className={className}>
             {/* ICON */}
             <span>{tabName}</span>
 

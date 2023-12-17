@@ -6,7 +6,11 @@ const WindowTypes = Object.freeze({
 	Document: {
 		'Name': 'document',
 		'Type': Symbol("document")
-	}
+	},
+	Settings: {
+		'Name': 'settings',
+		'Type': Symbol("settings")
+	},
 });
 
 export { WindowTypes };

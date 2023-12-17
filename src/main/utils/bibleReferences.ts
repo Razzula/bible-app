@@ -1,5 +1,8 @@
 import books from '../../../public/books.json';
+import manifest from '../../../public/manifest.json';
+
 const booksArray: any = books;
+const manifestArray: any = manifest;
 
 /**
  * Parse the given reference and return relevant USFM (Unified Standard Format Marker).
@@ -165,7 +168,7 @@ export function locateReferences(text: string, currentBook: string | null = null
     }
 
     // detect references
-    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g); // TODO
+    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g); // TODO ???
     const matches = [];
 
     for (const match of text.matchAll(pattern)) { // get positions of references
@@ -274,12 +277,19 @@ export function getReferenceText(referenceData: Array<any>): string {
             currentBook = reference.book;
             let bookName = reference.book;
 
-            booksArray.forEach((book: string[]) => { // get human-readable book name
+            booksArray.forEach((book: string[]) => { // get usfm
                 if (book.includes(reference.book)) {
-                    bookName = book[1];
+                    bookName = book[0];
                 }
             });
-            referenceText += `${bookName.charAt(0)}${bookName.substr(1).toLowerCase()} `; // format to proper case //TODO; numericals
+
+            manifestArray.forEach((book: any) => { // get human-readable book name
+                if (book.usfm === bookName) {
+                    bookName = book['full-title'] ? book['full-title'] : book['title']
+                }
+            });
+
+            referenceText += `${bookName} `;
         }
         // chapter
         if (reference.initialChapter !== currentChapter) {

@@ -51,7 +51,7 @@ function Page(): JSX.Element {
 
     return (
         <div className='page' style={{ display: 'flex' }}>
-            <Sidebar updateSelectedPanel={updateSelectedPanel} />
+            <Sidebar updateSelectedPanel={updateSelectedPanel} selectTab={createNewTab} />
             <Sidepanel panelType={selectedPanel} createNewTab={createNewTab} />
 
             <div style={{ flex: 1 }}>
