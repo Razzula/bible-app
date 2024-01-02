@@ -6,13 +6,13 @@ from pygame import event
 
 class Text:
 
-    def __init__(self, window, font, message, x, y):
+    def __init__(self, window, font, message, x, y, colour=(0, 0, 0)):
         self.window = window
         
         self.message = message
         self.x = x
         self.y = y
-        self.text = font.render(self.message, True, (0, 0, 0), None)
+        self.text = font.render(self.message, True, colour, None)
         self.textRect = self.text.get_rect()  # Get the box the text is in
         self.textRect.left = self.x
         self.textRect.top = self.y
@@ -31,47 +31,63 @@ class Window():
         pygame.init()
 
         # Set up for the application window
-        pygame.display.set_caption("Wahooey")
-        self.window = pygame.display.set_mode((1200, 900))  # (x,y)
+        pygame.display.set_caption('Token Mapping Visualiser')
+        self.windowBehind = pygame.display.set_mode((1920, 140))
+        self.window = self.windowBehind.copy()
         self.window.fill((255, 255, 255))  # Sets app background to white
 
         # font object, you can change this pretty easily
         self.font = pygame.font.SysFont('bahnschrift', 16)
     
-    def draw(self, baseTokens, mappedObjects):
+    def draw(self, baseTokens, mappedObjects, title=None):
+
+        # DISPLAY TITLE
+        if (title):
+            pygame.display.set_caption(title)
 
         # DISPLAY TOKENS
         # top row ('objects')
         x = 0  # This will auto-update
-        y = 60  # This you can set yourself for this program
+        y = 10  # This you can set yourself for this program
         objects_to_map = {}
         for objIndex, obj in enumerate(mappedObjects):
+            
             x += 10  # A bit of odd padding
-            new_obj = Text(self.window, self.font, obj['content'], x, y)
-            # Make sure we base the next x off the end of the last object's width
-            x = new_obj.textRect.right
+            colour = (0, 0, 0) if (obj.get('token', None) != None) else (255, 0, 0) # if it's unmapped, make it red
+            
+            new_obj = Text(self.window, self.font, obj['content'], x, y, colour)
             new_obj.write()
             objects_to_map[objIndex] = new_obj
+            
+            # Make sure we base the next x off the end of the last object's width
+            x = new_obj.textRect.right
+        endWidth = new_obj.textRect.right
 
         # bottom row ('tokens')
         x = 0
-        y = 150
+        y = 100
         map_objects = {}
         for objIndex, obj in baseTokens.items():
+
             x += 10  # A bit of odd padding
-            new_obj = Text(self.window, self.font, obj['eng'], x, y)
-            # Make sure we base the next x off the end of the last object's width
-            x = new_obj.textRect.right
+            colour = (0, 0, 0) if self.isMapped(objIndex, mappedObjects) else (182, 182, 182) # if it's unmapped, make it gray
+            
+            new_obj = Text(self.window, self.font, obj['eng'], x, y, colour)
             new_obj.write()
-            x += 5
-            # The divider
-            pygame.draw.line(self.window, (0, 0, 0), (x, y), (x, y + self.font.get_height()))
             map_objects[objIndex] = new_obj
+            
+            # Make sure we base the next x off the end of the last object's width
+            x = new_obj.textRect.right + 5
+            
+            if (int(objIndex) + 1 < len(baseTokens)):
+                # The divider
+                pygame.draw.line(self.window, (0, 0, 0), (x, y), (x, y + self.font.get_height()))
+        endWidth = max(endWidth, new_obj.textRect.right)
 
         # DISPLAY MAPPINGS
         for objIndex, obj in enumerate(mappedObjects):
 
-            if (token := obj.get('token')):
+            if ((token := obj.get('token', None)) != None):
                 # Using font.get_height() to save you needing to edit this
                 to_map_tuple = (
                     objects_to_map[objIndex].textRect.centerx,
@@ -87,15 +103,24 @@ class Window():
                     map_tuple  # end_pos
                 )
 
+        # RESIZE WINDOW
+        pygame.display.set_mode((endWidth + 20, 140))
+        self.windowBehind.blit(self.window, (0, 0))
         pygame.display.update()
-        while True:
 
-            # This means you can actually quit the application
-            # Kinda useful-ish
+        # MAIN LOOP
+        while True:
             for e in event.get():
                 if e.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
+                    # sys.exit()
+                    return
+
+    def isMapped(self, token, mappedObjects):
+        for mapping in mappedObjects:
+            if (str(mapping.get('token')) == str(token)):
+                return True
+        return False
 
 
 if (__name__ == "__main__"):
@@ -124,4 +149,4 @@ if (__name__ == "__main__"):
         { 'content': "earth", "token": "6" }
     ]
 
-    window.draw(baseTokens, mappedObjects)
+    window.draw(baseTokens, mappedObjects, title="GEN.1.1")

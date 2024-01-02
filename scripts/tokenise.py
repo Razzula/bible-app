@@ -23,11 +23,11 @@ def tokenisePassage(passage, verse, translation, visualise=False):
     strongs = data[str(verse)]
 
     if (scripture and strongs):
-        return tokenise(scripture, strongs, visualise=visualise)
+        return tokenise(scripture, strongs, visualise=visualise, usfm=f'{passage}.{verse}')
     return None
 
 
-def tokenise(scripture, strongs, visualise=False):
+def tokenise(scripture, strongs, visualise=False, usfm=None):
 
     tokens = []
 
@@ -121,7 +121,7 @@ def tokenise(scripture, strongs, visualise=False):
 
     if (visualise):
         window = token_vis.Window()
-        window.draw(strongs, ABSTRACT_TOKENS)
+        window.draw(strongs, ABSTRACT_TOKENS, title=usfm)
 
     # RECONSTRUCT TOKENS
     # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
@@ -177,7 +177,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
                     continue
 
                 if (matchTolerance == MatchStrictness.IDENTICAL):
-                    if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # UNIQUE
+                    if (tokenCounts.get(simplifyToken(scriptureToken)) == (1, 1)): # UNIQUE
                         if (equals(scriptureToken, strongsToken)): # WHOLE, EXACT
                             # update data to be tokenised
                             scriptureToken['token'] = strongsTokenID
@@ -191,7 +191,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
 
                             if (matchTolerance == MatchStrictness.LEMMAS): # TODO this is kinda bad
                                 if (len(synonym) > 1):
-                                    pass # will this ever occur?
+                                    pass # will this ever occur? # YES: was -> wa, be
                                 for lemma in synonym:
                                     if (lemmaCounts[lemma] == (1, 1)): # UNIQUE
                                         # update data to be tokenised
@@ -247,7 +247,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
                     continue
 
                 if (matchTolerance == MatchStrictness.IDENTICAL):
-                    if (tokenCounts[simplifyToken(scriptureToken)] == (1, 1)): # UNIQUE
+                    if (tokenCounts.get(simplifyToken(scriptureToken)) == (1, 1)): # UNIQUE
                         if (contains(strongsToken, scriptureToken, mustMatchWholeWord=True)):
                             # update data to be tokenised
                             scriptureToken['token'] = strongsTokenID
@@ -377,6 +377,8 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
     # - make use of capitalisation ('Him' != 'him' see Matthew 9:9)
     # - use a better distance metric (exclude tags, '-', etc. instead of using indexes)
 
+    # - sc Lord = Yahweh
+
 def equals(scriptureToken, strongsToken):
     return simplifyToken(scriptureToken) == simplifyToken(strongsToken)
 
@@ -390,13 +392,13 @@ def contains(strongsToken, scriptureToken, mustMatchWholeWord=False): # this is 
 
 def simplifyToken(token):
     if isinstance(token, str):
-        return token.lower().strip('.,;:?!')
+        return token.lower().strip('.,;:?!“”‘’') # TODO extrat (and unify vv) this string
     
     elif (token.get('content')): # scripture
-        return token['content'].lower().strip('.,;:?!')
+        return token['content'].lower().strip('.,;:?!“”‘’')
     
     elif (token.get('eng')): # strongs
-        return token['eng'].lower().strip('.,;:?!')
+        return token['eng'].lower().strip('.,;:?!“”‘’')
     
     return None
 
@@ -471,7 +473,9 @@ with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 
     thesaurus = json.load(f)
 
 if __name__ == "__main__":
-    tokenisePassage('GEN.1', 1, 'NKJV', visualise=True)
+    # tokenisePassage('GEN.1', 1, 'NKJV', visualise=True)
     # tokenisePassage('GEN.1', 1, 'ESV', visualise=True)
     # tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
     # tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
+
+    tokenisePassage('MAT.4', 4, 'NKJV', visualise=True)
