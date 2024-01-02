@@ -3,6 +3,8 @@ import os
 from nltk.stem import WordNetLemmatizer
 from enum import Enum
 
+import token_vis
+
 class MatchStrictness(Enum):
     IDENTICAL = 1
     LEMMAS = 2
@@ -10,7 +12,7 @@ class MatchStrictness(Enum):
 
 lemmas = {}
 
-def tokenisePassage(passage, verse, translation):
+def tokenisePassage(passage, verse, translation, visualise=False):
 
     with open(os.path.join(os.path.dirname(__file__), 'data', translation, translation, passage), 'r') as f:
         data = json.load(f)
@@ -21,11 +23,11 @@ def tokenisePassage(passage, verse, translation):
     strongs = data[str(verse)]
 
     if (scripture and strongs):
-        return tokenise(scripture, strongs)
+        return tokenise(scripture, strongs, visualise=visualise)
     return None
 
 
-def tokenise(scripture, strongs):
+def tokenise(scripture, strongs, visualise=False):
 
     tokens = []
 
@@ -115,6 +117,11 @@ def tokenise(scripture, strongs):
         if (tokenIsDirty(token)):
             continue
         pass # FAILURE
+        print('FAILURE')
+
+    if (visualise):
+        window = token_vis.Window()
+        window.draw(strongs, ABSTRACT_TOKENS)
 
     # RECONSTRUCT TOKENS
     # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
@@ -464,7 +471,7 @@ with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 
     thesaurus = json.load(f)
 
 if __name__ == "__main__":
-    tokenisePassage('GEN.1', 1, 'NKJV')
-    # tokenisePassage('GEN.1', 1, 'ESV')
-    # tokenisePassage('EST.8', 9, 'NKJV')
-    # tokenisePassage('JHN.3', 16, 'NKJV')
+    tokenisePassage('GEN.1', 1, 'NKJV', visualise=True)
+    # tokenisePassage('GEN.1', 1, 'ESV', visualise=True)
+    # tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
+    # tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
