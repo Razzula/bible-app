@@ -12,9 +12,12 @@ class MatchStrictness(Enum):
 
 IGNORED_CHARS = ''.join(['.', ',', ';', ':', '?', '!', '“', '”', '‘', '’'])
 
-lemmas = {}
+lemmaCache = {}
 
 def tokenisePassage(passage, verse, translation, visualise=False):
+    """
+    Load, and tokenise, a passage of scripture.
+    """
 
     with open(os.path.join(os.path.dirname(__file__), 'data', translation, translation, passage), 'r') as f:
         data = json.load(f)
@@ -30,6 +33,9 @@ def tokenisePassage(passage, verse, translation, visualise=False):
 
 
 def tokenise(scripture, strongs, visualise=False, usfm=None):
+    """
+    Tokenise a passage of scripture, using a strongs dictionary.
+    """
 
     tokens = []
 
@@ -82,7 +88,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
             tokenCounts[tokenContent] = (1, 0)
 
         # lemmas
-        for lemma in lemmatizeWord(tokenContent):
+        for lemma in lemmatiseWord(tokenContent):
             exisitngCount = lemmaCounts.get(lemma)
             if (exisitngCount):
                 lemmaCounts[lemma] = (exisitngCount[0] + 1, exisitngCount[1])
@@ -102,7 +108,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
                 tokenCounts[word] = (0, 1)
 
             # lemmas
-            for lemma in lemmatizeWord(word):
+            for lemma in lemmatiseWord(word):
                 exisitngCount = lemmaCounts.get(lemma)
                 if (exisitngCount):
                     lemmaCounts[lemma] = (exisitngCount[0], exisitngCount[1] + 1)
@@ -153,6 +159,10 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
     return final_tokens
 
 def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
+    """
+    Tokenise a passage of scripture, using a strongs dictionary.
+    This function uses an 'abstracted' version of the tokens, which is more suitable for matching.
+    """
 
     # abstract tokens
     working_tokens = []
@@ -359,7 +369,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
                             tempCandidates.append(int(strongsTokenID))
                     
                     elif (matchTolerance == MatchStrictness.LEMMAS):
-                        if (lemmatizeWord(scriptureToken.get('content')) & lemmatizeWord(word)):
+                        if (lemmatiseWord(scriptureToken.get('content')) & lemmatiseWord(word)):
                             tempCandidates.append(int(strongsTokenID))
                     
                     elif (matchTolerance == MatchStrictness.SYNONYMS):
@@ -418,9 +428,16 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
     # - 'spared' --> 'spare'
 
 def equals(scriptureToken, strongsToken):
+    """
+    Are the contents of the two tokens identical?
+    """
     return simplifyToken(scriptureToken) == simplifyToken(strongsToken)
 
 def contains(strongsToken, scriptureToken, mustMatchWholeWord=False): # this is imperfect
+    """
+    Is the contents of the scripture token contained within the strongs token?
+    Can enforce that the match must be perfect (i.e. 'a' should not match 'and')
+    """
     if (mustMatchWholeWord):
         strongsContainer = simplifyToken(strongsToken).split(' ')
     else:
@@ -429,6 +446,9 @@ def contains(strongsToken, scriptureToken, mustMatchWholeWord=False): # this is 
     return simplifyToken(scriptureToken) in strongsContainer
 
 def simplifyToken(token):
+    """
+    Get the stripped content of a token.
+    """
     if isinstance(token, str):
         return token.lower().strip(IGNORED_CHARS)
     
@@ -441,10 +461,14 @@ def simplifyToken(token):
     return None
 
 def synonymous(scriptureToken, strongsToken, matchTolerance):
+    """
+    Are the contents of the two tokens synonymous?
+    If so, return the shared synonym.
+    """
     strongsWord = simplifyToken(strongsToken)
 
     if (matchTolerance == MatchStrictness.LEMMAS):
-        if (lemmas := (list(lemmatizeWord(simplifyToken(scriptureToken)) & lemmatizeWord(strongsWord)))):
+        if (lemmas := (list(lemmatiseWord(simplifyToken(scriptureToken)) & lemmatiseWord(strongsWord)))):
             return lemmas
                     
     if (matchTolerance == MatchStrictness.SYNONYMS):
@@ -458,29 +482,36 @@ def synonymous(scriptureToken, strongsToken, matchTolerance):
     return False
 
 def tokenIsDirty(token):
+    """
+    Is the token of an exception type, or already tokenised?
+    """
     return (token.get('type') in ['note', 'it']) or (token.get('token') != None)
         # TODO use an array for more cases instead of just 'note'
 
-def lemmatizeWord(word):
+def lemmatiseWord(word, posTags=['v', 'n', 'a', 'r']):
+    """
+    Get the lemmas of a word.
+    """
+    global lemmaCache
 
-    # global lemmas
-    # if (lemma := lemmas.get(word)): # check cache
-    #     return lemma
+    word = word.lower().strip(IGNORED_CHARS)
+
+    if (lemma := lemmaCache.get(word)): # check cache
+        return lemma
 
     lemmatizer = WordNetLemmatizer()
-    pos_tags = ['v', 'n', 'a', 'r']  # verb, noun, adjective, adverb
 
-    temp_lemmas = set()
+    tempLemmas = set()
 
-    for pos_tag in pos_tags:
-        if (lemma := lemmatizer.lemmatize(word, pos_tag)) != word:
-            temp_lemmas.add(lemma)
+    for posTag in posTags:
+        if (lemma := lemmatizer.lemmatize(word, posTag)) != word:
+            tempLemmas.add(lemma)
 
-    if (temp_lemmas != []):
-        # lemmas[word] = temp_lemmas
-        return temp_lemmas
+    if (tempLemmas != []):
+        lemmaCache[word] = tempLemmas
+        return tempLemmas
     
-    # lemmas[word] = [word]
+    lemmaCache[word] = [word]
     return set(word)
 
 ## GEN.1.1
@@ -507,6 +538,8 @@ def lemmatizeWord(word):
 #     "6": { "strongs": "776", "eng": "the earth" }
 # }
 
+
+# load thesaurus used for synonyms
 with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 'r') as f:
     thesaurus = json.load(f)
 
@@ -516,4 +549,4 @@ if __name__ == "__main__":
     # tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
     # tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
 
-    tokenisePassage('MAT.2', 2, 'NKJV', visualise=True)
+    tokenisePassage('ROM.3', 23, 'NKJV', visualise=True)

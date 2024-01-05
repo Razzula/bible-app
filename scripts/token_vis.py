@@ -1,5 +1,7 @@
 import sys
 
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'  # Hide pygame welcome message
 import pygame
 from pygame import event
 
