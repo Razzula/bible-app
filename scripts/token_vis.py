@@ -41,6 +41,9 @@ class Window():
     
     def draw(self, baseTokens, mappedObjects, title=None):
 
+        # CLEAN INPUT
+        mappedObjects = [obj for obj in mappedObjects if obj.get('type', None) != 'note']
+
         # DISPLAY TITLE
         if (title):
             pygame.display.set_caption(title)
@@ -54,6 +57,12 @@ class Window():
             
             x += 10  # A bit of odd padding
             colour = (0, 0, 0) if (obj.get('token', None) != None) else (255, 0, 0) # if it's unmapped, make it red
+
+            # it
+            if (type := obj.get('type', None)):
+                if ('it' in type):
+                    obj['content'] = f'[{obj["content"]}]'
+                    colour = (182, 182, 182)
             
             new_obj = Text(self.window, self.font, obj['content'], x, y, colour)
             new_obj.write()
