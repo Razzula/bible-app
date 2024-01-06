@@ -12,7 +12,9 @@ class MatchStrictness(Enum):
 
 IGNORED_CHARS = ''.join(['.', ',', ';', ':', '?', '!', '“', '”', '‘', '’'])
 
-lemmaCache = {}
+lemmaCache = {
+    'spared': ['spare'],
+}
 
 def tokenisePassage(passage, verse, translation, visualise=False):
     """
@@ -61,7 +63,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
                 token['header'] = chunk['header']
 
             if (chunk.get('type')):
-                token['type'] = chunk['type'] # TODO cannot split paragraphs into multiple
+                token['type'] = chunk['type'] # TODO cannot split paragraphs into multiple (?)
 
             token['content'] = candidateToken
 
@@ -78,7 +80,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
         if (token.get('type') == 'note'):
             continue
 
-        tokenContent = token['content'].lower().strip('.,;:?!')
+        tokenContent = token['content'].lower().strip(IGNORED_CHARS)
 
         # genuine content
         exisitngCount = tokenCounts.get(tokenContent)
@@ -404,7 +406,32 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
     # ABSORB LOOSE TOKENS # TODO
         # ARE ANY TRUE TOKENS NOT USED?
     
-        # IF TEXT IS GREEK, ALLOW 'the' TO BE 'he'/'his'
+        # SPECIAL CASES
+        # truly|truly --> 'most assuredly', 
+        if (tokenCounts.get('truly', (0, 0))[1] >= 2):
+            
+            for strongsTokenID, strongsToken in strongs.items():
+                    
+                    if (strongsToken.get('strongs', None) == '281'): # [281]: 'truly'
+                        nextStrongsTokenID = str(int(strongsTokenID) + 1)
+                        if (strongs[nextStrongsTokenID].get('strongs', None) == '281'):
+                            # truly|truly is present
+
+                            for scriptureIndex, scriptureToken in enumerate(working_tokens):
+                                if (tokenIsDirty(scriptureToken)):
+                                    continue
+                                if (scriptureIndex < len(working_tokens) - 1):
+
+                                    for translation in [('most', 'assuredly'), ('verily', 'verily'), ('amen', 'amen')]:
+                                        if (equals(scriptureToken, translation[0])):
+                                            if (equals(working_tokens[scriptureIndex + 1], translation[1])):
+                                                working_tokens[scriptureIndex]['token'] = strongsTokenID
+                                                working_tokens[scriptureIndex + 1]['token'] = nextStrongsTokenID
+                                                break
+        pass
+
+        # (GREEK) 'the' --> 'he'/'his' # TODO (she/hers? they/theirs?)
+        pass
     pass
 
     return working_tokens
@@ -412,20 +439,13 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
     # TODO: possible improvements
     # - make use of some markers (wj tags, for instance) ?
     # - make use of capitalisation ('Him' != 'him' see Matthew 9:9)
-    # - use a better distance metric (exclude tags, '-', etc. instead of using indexes)
 
     # - sc Lord = Yahweh
-    # - truly | truly --> most assuredly
     # - xless --> without x
 
+    # some tokens need to map to multiple strongs (see John 3:5, for example)
+
     # NEED TO LEMMATISE SYNONYMS!
-
-    # ADDITIONAL SYNONYMS
-    # - 'delivered' --> 'gave'
-    # - 'grant' --> 'give'
-
-    # ADDITIONAL LEMMAS
-    # - 'spared' --> 'spare'
 
 def equals(scriptureToken, strongsToken):
     """
@@ -486,7 +506,6 @@ def tokenIsDirty(token):
     Is the token of an exception type, or already tokenised?
     """
     return (token.get('type') in ['note', 'it']) or (token.get('token') != None)
-        # TODO use an array for more cases instead of just 'note'
 
 def lemmatiseWord(word, posTags=['v', 'n', 'a', 'r']):
     """
@@ -549,4 +568,4 @@ if __name__ == "__main__":
     # tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
     # tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
 
-    tokenisePassage('ROM.3', 23, 'NKJV', visualise=True)
+    tokenisePassage('JHN.3', 5, 'NKJV', visualise=True)
