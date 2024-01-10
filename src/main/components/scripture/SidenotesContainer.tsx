@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Sidenote } from 'sidenotes';
-import SidenoteContent from '../scripture/SidenoteContent';
+import NoteContent from './NoteContent';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
@@ -16,8 +16,8 @@ type SidenotesContainerProps = {
 
     setAnnotatedVerses: Function;
     createNewNote: (id: string, selectedNoteGroup: string) => void;
-    updateNotesContents: (id: string, verse: string, selectedNoteGroup: string, noteContents: string, callback?: Function) => void;
-    deleteNote: (id: string, selectedNoteGroup: string) => void;
+    updateNotesContents?: (id: string, verse: string, selectedNoteGroup: string, noteContents: string, callback?: Function) => void; // TODO ? is only temporary
+    deleteNote?: (id: string, selectedNoteGroup: string) => void; // TODO ? is only temporary
 }
 
 /**
@@ -51,7 +51,7 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
             activeVerses.add(passageName)
             return (
                 <Sidenote key={passageName} sidenote={passageName} base={passage}>
-                    <SidenoteContent sidenoteID={noteContents.id} passageName={passageName} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote} />
+                    <NoteContent sidenoteID={noteContents.id} passageName={passageName} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote} />
                 </Sidenote>
             );
         });
@@ -61,11 +61,13 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
     }
 
     function handleUpdateNotesContents(id: string, verse: string, noteContent: string, callback?: Function): void {
-        updateNotesContents(id, verse, selectedNoteGroup, noteContent, callback);
+        if (updateNotesContents)
+            updateNotesContents(id, verse, selectedNoteGroup, noteContent, callback);
     }
 
     function handleDeleteNote(id: string): void {
-        deleteNote(id, selectedNoteGroup);
+        if (deleteNote)
+            deleteNote(id, selectedNoteGroup);
     }
 
     function handleNewNoteClick(): void {

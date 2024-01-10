@@ -17,6 +17,16 @@
     user-select: none;
 }
 
+.passage {
+    span {
+        line-height: 2em;
+    }
+
+    // span:hover {
+    //     border-bottom: 1px dotted;
+    // }
+}
+
 //paragraphs
 span.s,
 span.s1,
@@ -29,6 +39,11 @@ span.qa {
     margin: 1em 0 0 0;
     display: inline-block;
     font-style: italic;
+    margin-top: 16px;
+}
+
+span.s {
+    display: var(--header-display, inline-block);
 }
 
 span.d {
@@ -43,14 +58,14 @@ span.p,
 span.m {
     //regular paragraph: indent first line
     text-indent: 1em;
-    line-height: 2em;
-    margin-top: 16px;
+    margin-top: 24px;
     display: inline-block;
 }
 
 span.pc {
     //centralsie paragraph
     text-align: center;
+    display: inline-block;
 }
 
 span.pmr {
@@ -59,7 +74,6 @@ span.pmr {
 }
 
 span.q1 {
-    line-height: 2em;
     padding-left: 2em;
     text-indent: 2em;
     margin-top: 16px;
@@ -68,7 +82,6 @@ span.q1 {
 
 span.q2,
 span.q3 {
-    line-height: 2em;
     padding-left: 2em;
     text-indent: 3em;
     display: inline-block;
@@ -168,8 +181,4 @@ span.bdit {
     30% {
         color: yellow;
     }
-}
-
-.dotted { 
-    border-bottom: 1px dotted; 
 }

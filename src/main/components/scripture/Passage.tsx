@@ -4,6 +4,8 @@ import { Alert } from 'react-bootstrap';
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
 import SidenotesContainer from './SidenotesContainer';
+import NoteContent from './NoteContent';
+import { isOfParagraphType } from '../../utils/general';
 
 import '../../styles/bible.scss';
 import PassageChunk from './PassageChunk';
@@ -17,6 +19,7 @@ type PassageProps = {
     translation: string;
     docID?: string;
     selectedNoteGroup?: string;
+    renderMode?: string;
 }
 
 type Note = {
@@ -37,14 +40,14 @@ type Note = {
  * 
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID }: PassageProps): JSX.Element {
+function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, selectedNoteGroup, docID, renderMode }: PassageProps): JSX.Element {
 
     const [passageContents, setPassageContents]: [any, (a: any) => void] = useState([]);
     const [passageElements, setPassageElements]: [any, (a: any) => void] = useState([]);
 
     const [notesContents, setNotesContents]: [any, (a: any) => void] = useState([]);
 
-    const [annotatedVerses, setAnnotatedVerses]: [any, (a: any) => void] = useState(new Set<string>());
+    const [annotatedVerses, setAnnotatedVerses]: [Set<string>, (a: any) => void] = useState(new Set<string>());
     const [selectedVerse, setSelectedVerse]: [any, (a: any) => void] = useState(null);
 
     const shouldLoad = (contents !== null && contents !== undefined);
@@ -61,17 +64,17 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     }, [contents]);
 
-    useEffect(() => { //DEBUG
+    useEffect(() => {
         if (shouldLoadNotes) {
             void loadPassageNotes(selectedNoteGroup, `${passageBook}`, `${passageChapter}`);
         }
     }, [selectedNoteGroup]);
 
     useEffect(() => {
-        setPassageElements(
-            <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} />
-        );
-    }, [passageContents, annotatedVerses]);
+        if (passageContents) {
+            renderPassage();
+        }
+    }, [passageContents, annotatedVerses, renderMode]);
 
     // presence check
     if (contents === null || contents === undefined) {
@@ -85,7 +88,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         );
     }
 
-    // LOAD AND GENERATE PASSAGE NOTES
+    // LOAD PASSAGE NOTES
     async function loadPassageNotes(group: string, book: string, chapter: string): Promise<void> {
 
         if (group == null || group.trim() === '') {
@@ -99,6 +102,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         }
     }
 
+    // HANDLE NOTES
     async function updateNotesContents(id: string, verse: string, selectedNoteGroup: string, noteContent: string, callback?: Function): Promise<void> {
 
         const newNoteContents = {
@@ -177,8 +181,8 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
     function generatePassage(): void {
 
         // split content into paragraphs
-        const paragraphs = [];
-        let temp = [];
+        // const paragraphs = [];
+        let formattedContent = [];
 
         let verse = 1;
         for (let i = 0; i < contents.length; i++) { // iterate through verses
@@ -192,55 +196,160 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
                 const section = contents[i][ii];
 
-                if (section.type) {
-                    if (section.type.includes('p') || section.type.includes('q1') || section.type.includes('q2') || section.type.includes('pc') || section.type.includes('qs')) { // new paragraph
-                        if (temp.length !== 0) { // store previous sections as a paragraph
-                            paragraphs.push(temp);
-                        }
-                        temp = []; // begin new paragraph
-                    }
-                }
                 // header
                 if (section.header) {
-                    paragraphs.push([{ "type": "s", "content": section.header }]);
+                    formattedContent.push({ "type": "s", "content": section.header });
+                    delete section.header;
                 }
 
                 // verse numbers
                 if (ii === 0) {
+
                     if (section.verse) {
                         verse = section.verse;
                     }
-                    if (section.chapter) {
-                        // use chapter number instead of verse
-                        temp.push({ "type": "label chapter", "content": section.chapter });
+                    const label = (section.chapter) ? { "type": "label chapter", "content": section.chapter } : { "type": "label", "content": verse + i };
+
+                    // paragraph
+                    const paraType = isOfParagraphType(section.type);
+                    if (section.type) {
+                        if (paraType) { // new paragraph
+                            label.type += ` ${paraType}`;
+                            section.type = section.type.replace(new RegExp(`\\s*${paraType}\\s*`, 'g'), '')
+                        }
                     }
-                    else {
-                        temp.push({ "type": "label", "content": verse + i });
-                    }
+
+                    formattedContent.push(label);
                 }
 
                 section.id = `${passageBook}.${passageChapter}.${verse + i}`; // TODO; rename 'verse'->'initialVerse' //TODO support multiple chapters
-                // console.log('passage', section.id);
-                temp.push(section);
+                // section.token = undefined; // TODO
+                formattedContent.push(section);
             };
         }
-        paragraphs.push(temp);
-        setPassageContents(paragraphs);
+        // paragraphs.push(temp);
+
+        console.log(formattedContent);
+        setPassageContents(formattedContent);
     }
 
-    return (<>
-        {passageElements}
+    function renderPassage(): void {
 
-        {(!ignoreFootnotes && shouldLoadNotes)
-            ? <>
-                <SidenotesContainer position='' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID} setAnnotatedVerses={setAnnotatedVerses} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} />
-                {/* <SidenotesContainer position=' l' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} /> */}
-            </>
-            : null
+        if (renderMode === 'sidenotes') {
+            setPassageElements(
+                <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} renderMode={renderMode} />
+            );
         }
 
+        else if (renderMode === 'interlinear') {
+            let tempPassageElements: JSX.Element[] = [];
 
-    </>);
+            // TODO; handle 0 notes
+
+            // get split points
+            let annotations: any = {};
+            for (const annotation of annotatedVerses) {
+                annotations[annotation] = {};
+            }
+            for (let i = 0; i < passageContents.length; i++) {
+
+                if (passageContents[i].id) {
+                    for (const annotation of annotatedVerses) {
+                        
+                        if (passageContents[i].id === annotation) {
+                            if (annotations[annotation]['start'] === undefined) {
+                                annotations[annotation]['start'] = (passageContents[i-1].type.includes('label')) ? i-1 : i;
+                            }
+                            annotations[annotation]['end'] = i;
+                        }
+
+                    }
+                }
+            }
+            let splitPoints: any = Object.entries(annotations);
+
+            // render
+            let temp: JSX.Element[] = [];
+            let splitPoint = splitPoints.shift();
+            for (let i = 0; i < passageContents.length; i++) {
+
+                if (splitPoint) {
+                    if (i === splitPoint[1].start) {
+                        // start of note
+
+                        // unannotated chunk
+                        tempPassageElements.push(
+                            <PassageChunk
+                                contents={temp}
+                                ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                            />
+                        );
+
+                        temp = [];
+                    }
+
+                    // add to chunk
+                    temp.push(passageContents[i]);
+
+                    if (i === splitPoint[1].end) {
+                        // end of note
+
+                        // annotated chunk
+                        if (temp[0].type) {
+                            if (!isOfParagraphType(temp[0].type)) {
+                                temp[0].type += ' p';
+                            }
+                        }
+                        else {
+                            temp[0].type = 'p';
+                        }
+
+                        tempPassageElements.push(
+                            <PassageChunk
+                                contents={temp}
+                                ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                            />
+                        );
+
+                        // note
+                        tempPassageElements.push(<div>NOTE</div>);
+
+                        // continue
+                        splitPoint = splitPoints.shift();
+                        temp = [];
+                    }
+                }
+                else {
+                    // add to chunk
+                    temp.push(passageContents[i]);
+                }
+            }
+            tempPassageElements.push(
+                <PassageChunk
+                    contents={temp}
+                    ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                />
+            );
+            
+            setPassageElements(tempPassageElements);
+        }
+
+    }
+
+    return (
+        <div className='passage'>
+            {passageElements}
+
+            {(!ignoreFootnotes && shouldLoadNotes && renderMode === 'sidenotes')
+                ? <>
+                    <SidenotesContainer position='' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID} setAnnotatedVerses={setAnnotatedVerses} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} />
+                    {/* <SidenotesContainer position=' l' passage={`${passageBook}.${passageChapter}`} notesContents={notesContents} defaultGroup='GROUP' docID={docID} setAnnotatedVerses={setAnnotatedVerses} setParentSelectedNoteGroup={setSelectedNoteGroup} createNewNote={createNewNote} updateNotesContents={updateNotesContents} deleteNote={deleteNote} /> */}
+                </>
+                : null
+            }
+
+        </div>
+    );
 }
 
 export default Passage;

@@ -4,6 +4,8 @@ import Footnote from './Footnote';
 
 import '../../styles/bible.scss';
 import { InlineAnchor } from 'sidenotes';
+import { isOfParagraphType } from '../../utils/general';
+import { allowedNodeEnvironmentFlags } from 'process';
 
 type PassageChunkProps = {
     contents: any;
@@ -14,6 +16,7 @@ type PassageChunkProps = {
     translation: string;
     notedVerses?: Set<string>;
     setSelectedVerse: Function;
+    renderMode?: string;
 }
 
 type Verse = {
@@ -26,10 +29,10 @@ type Verse = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse, renderMode }: PassageChunkProps): JSX.Element {
 
     // format paragraphs
-    function generateContents(item: Verse): JSX.Element | null {
+    function generateContents(item: Verse): JSX.Element | JSX.Element[] | null {
         // footnotes
         if (item.type === 'note') {
             if (ignoreFootnotes) {
@@ -41,22 +44,33 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             );
         }
 
+        let data = [];
+
+        // paragraph
+        if (item.type) {
+            console.log(item);
+            if (isOfParagraphType(item.type, true)) {
+                data.push(<br />);
+            }
+        }
+
         // labels
         if (item.type === 'label') {
-            return (
+            data.push(
                 <span className={item.type} id={`v${item.content}`}>{item.content}</span> // can use scrollIntoView() to jump to verse
             );
+            return data;
         }
         if (item.type === 'label chapter') {
-            return (
+            data.push(
                 <span className={item.type} id={'v1'}>{item.content}</span> // can use scrollIntoView() to jump to verse
             );
+            return data;
         }
 
         // other formatting
         let contents;
-        let className = (item.type !== undefined) && !(item.type.includes('p') || item.type.includes('q1') || item.type.includes('q2') || item.type.includes('pc') || item.type.includes('qs')) // not a paragraph
-            ? `${item.type} ${item.id}` : item.id;
+        let className = (item.type !== undefined) ? `${item.type} ${item.id}` : item.id;
 
         if (item.children) { // if node is a parent, recursively generate its contents
             contents = <span className={className}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
@@ -66,35 +80,42 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
 
         // anchors
-        if (notedVerses !== undefined && notedVerses?.has(item.id)) {
-            return (
+        if (notedVerses !== undefined && notedVerses?.has(item.id) && renderMode === 'sidenotes') {
+            data.push(
                 <InlineAnchor sidenote={item.id}>{contents}</InlineAnchor>
             );
         }
         else {
-            return contents;
+            data.push(contents);
         }
+
+        return data;
     }
 
-    return contents.map((paragraph: Array<Verse>) => {
+    return contents.map(generateContents);
 
-        // format contents of paragraph
-        const paraContent = paragraph.map(generateContents);
+    // return contents.map((paragraph: Array<Verse>) => {
 
-        let paraType = paragraph[0].type
-        if (paraType.startsWith('label')) {
-            paraType = paragraph[1].type
-        }
+    //     // format contents of paragraph
+    //     const paraContent = paragraph.map(generateContents);
 
-        return (
-            <>
-                <span className={paraType}>
-                    {paraContent}
-                </span>
-                <br />
-            </>
-        );
-    });
+    //     // TODO what does this do?
+    //     let paraType = paragraph[0].type
+    //     if (paraType.startsWith('label')) {
+    //         paraType = paragraph[1].type
+    //     }
+
+    //     return paraContent;
+
+    //     // return (
+    //     //     <div className="passageChunk">
+    //     //         <span className={paraType}>
+    //     //             {paraContent}
+    //     //         </span>
+    //     //         <br />
+    //     //     </div>
+    //     // );
+    // });
 
 }
 

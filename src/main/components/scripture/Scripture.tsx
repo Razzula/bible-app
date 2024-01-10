@@ -36,6 +36,8 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     const [selectedTranslation, setSelectedTranslation] = useState('');
     const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
     const [showFootnotes, setShowFootnotes] = useState(true)
+    const [selectedRenderMode, setSelectedRenderMode] = useState('sidenotes');
+    const [showHeaders, setShowHeaders] = useState(true)
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[], []]);
 
@@ -68,7 +70,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
             loadPassageFromString(searchQuery);
         }
-    }, [selectedTranslation, selectedNoteGroup]); //TODO: this is horribly ineffecient. we should cache the contents, usfm, etc. and reuse them
+    }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]); //TODO: this is horribly ineffecient. we should cache the contents, usfm, etc. and reuse them
 
     function handleSearch(): void {
         void loadPassageFromString(searchQuery, true);
@@ -156,16 +158,15 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }
 
     function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number): JSX.Element {
-        console.log(chapterContents);
         if (chapterContents[0][0].chapter) { // there is a subsequent chapter
             return (
                 <>
                     <hr />
-                    <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} />
+                    <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} renderMode={selectedRenderMode} />
                 </>
             );
         }
-        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} />);
+        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} renderMode={selectedRenderMode} />);
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
@@ -336,22 +337,19 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         setSelectedNoteGroup(event.currentTarget.value);
     }
 
-    function handleCheckboxChange(event: ChangeEvent<any>): void {
-        setShowFootnotes(event.currentTarget.checked);
-    }
-
     // CSS
     const searchStyle: any = {
         'background-color': searchError ? 'var(--error-background-color)' : 'var(--select-background-color-default)'
     };
 
     const containerStyle: any = {
-        '--note-display': showFootnotes ? 'inline' : 'none'
+        '--note-display': showFootnotes ? 'inline' : 'none',
+        '--header-display': showHeaders ? 'inline-block' : 'none',
     };
 
     // GENERATE JSX
     return (
-        <>
+        <div className="scripture">
 
             {/* BANNER */}
             <div className="banner">
@@ -383,9 +381,24 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                     {/* SUB CONTROLS */}
                     <div className="">
                         <label>
-                            <input type="checkbox" className="" onChange={handleCheckboxChange} defaultChecked={showFootnotes} />
+                            <input type='checkbox' className='' onChange={(e) => setShowFootnotes(e.currentTarget.checked)} defaultChecked={showFootnotes} />
                             Show Footnotes
                         </label>
+
+                        <div className='btn-group' data-toggle='buttons'>
+                            <label className='btn btn-primary'>
+                                <input type='radio' name='options' id='sidenotes' value='sidenotes' checked={selectedRenderMode === 'sidenotes'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Sidenotes
+                            </label>
+                            <label className='btn btn-primary'>
+                                <input type='radio' name='options' id='interlinear' value='interlinear' checked={selectedRenderMode === 'interlinear'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Interlinear
+                            </label>
+                        </div>
+
+                        <label>
+                            <input type='checkbox' className='' onChange={(e) => setShowHeaders(e.currentTarget.checked)} defaultChecked={showFootnotes} />
+                            Show Headers
+                        </label>
+
                     </div>
                 </div>
 
@@ -412,7 +425,8 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
                 </article>
             </div>
-        </>
+
+        </div>
     );
 }
 

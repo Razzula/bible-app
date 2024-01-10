@@ -12,7 +12,7 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import '../../styles/editor.scss';
 
-type SidenoteContentProps = {
+type NoteContentProps = {
     sidenoteID: string;
     passageName: string;
     docID?: string;
@@ -34,7 +34,7 @@ type SidenoteContentProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContent({ sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote }: SidenoteContentProps): JSX.Element {
+function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
@@ -110,4 +110,4 @@ function SidenoteContent({ sidenoteID, passageName, docID, initialNoteContents, 
 
 }
 
-export default SidenoteContent;
+export default NoteContent;

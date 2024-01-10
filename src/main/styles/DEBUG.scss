@@ -1,0 +1,15 @@
+.scripture {
+    border: 1px solid red;
+}
+
+.passage {
+    border: 5px solid red;
+}
+
+.passageChunk {
+    border: 1px solid yellow;
+
+    span {
+        border: 1px solid green;
+    }
+}

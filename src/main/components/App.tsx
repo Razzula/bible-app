@@ -2,8 +2,10 @@ import React from 'react';
 
 import Page from './Page';
 
+// import '../styles/DEBUG.scss'; // TODO: remove
 import '../styles/dark.scss';
 import '../styles/App.scss';
+
 
 /**
  * A React component to display the main application.
