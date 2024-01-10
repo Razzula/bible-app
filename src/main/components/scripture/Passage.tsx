@@ -229,7 +229,6 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
         }
         // paragraphs.push(temp);
 
-        console.log(formattedContent);
         setPassageContents(formattedContent);
     }
 

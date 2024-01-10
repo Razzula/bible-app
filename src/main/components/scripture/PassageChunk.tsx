@@ -48,7 +48,6 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
         // paragraph
         if (item.type) {
-            console.log(item);
             if (isOfParagraphType(item.type, true)) {
                 data.push(<br />);
             }
