@@ -242,7 +242,10 @@ def simplify(data, outDir, book, file):  # HTML to JSON
 
                 section['content'] = element.contents[0]
                 
-                verse.append(section)
+                if (section.get('type', None) == 'p' and section.get('content', '').strip() == '' and section.get('header', None) == None): # handle empty paragraphs
+                    div = 'p'
+                else:
+                    verse.append(section)
                 #print(verse[-1]) #temp
 
         # non-leaf node
