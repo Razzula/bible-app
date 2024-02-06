@@ -387,7 +387,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
                         <div className='btn-group' data-toggle='buttons'>
                             <label className='btn btn-primary'>
-                                <input type='radio' name='options' id='sidenotes' value='sidenotes' checked={selectedRenderMode === 'sidenotes'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Sidenotes
+                                <input type='radio' name='options' id='sidenotes' value='sidenotes' checked={selectedRenderMode === 'sidenotes'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Annotations
                             </label>
                             <label className='btn btn-primary'>
                                 <input type='radio' name='options' id='interlinear' value='interlinear' checked={selectedRenderMode === 'interlinear'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Interlinear

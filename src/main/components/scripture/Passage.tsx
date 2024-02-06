@@ -234,7 +234,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     function renderPassage(): void {
 
-        if (renderMode === 'sidenotes') {
+        if (ignoreFootnotes || renderMode === 'sidenotes') {
             setPassageElements(
                 <PassageChunk contents={passageContents} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={passageBook} passageChapter={passageChapter} translation={translation} notedVerses={annotatedVerses} setSelectedVerse={setSelectedVerse} renderMode={renderMode} />
             );
