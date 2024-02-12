@@ -11,12 +11,13 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import '../../styles/editor.scss';
+import { EditorState } from 'lexical';
 
 type NoteContentProps = {
     sidenoteID: string;
     passageName: string;
     docID?: string;
-    initialNoteContents: any;
+    initialNoteContents: string;
     updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 }
@@ -76,7 +77,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
         }
     }
 
-    function onError(error: any): void {
+    function onError(error: Error): void {
         console.error(error);
     }
 

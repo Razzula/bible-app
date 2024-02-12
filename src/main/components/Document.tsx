@@ -11,7 +11,7 @@ import '../styles/document.scss'
 import '../styles/editor.scss';
 
 type DocumentProps = {
-    initialContents: any;
+    initialContents: string | null;
 }
 
 /**
@@ -20,7 +20,7 @@ type DocumentProps = {
  */
 function Document({ initialContents }: DocumentProps): JSX.Element {
 
-    function onError(error: any): void {
+    function onError(error: Error): void {
         console.error(error);
     }
 

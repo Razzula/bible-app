@@ -5,7 +5,6 @@ import Footnote from './Footnote';
 import '../../styles/bible.scss';
 import { InlineAnchor } from 'sidenotes';
 import { isOfParagraphType } from '../../utils/general';
-import { allowedNodeEnvironmentFlags } from 'process';
 
 type PassageChunkProps = {
     contents: any;

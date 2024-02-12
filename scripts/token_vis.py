@@ -1,5 +1,3 @@
-import sys
-
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'  # Hide pygame welcome message
 import pygame
@@ -58,11 +56,11 @@ class Window():
         for objIndex, obj in enumerate(mappedObjects):
             
             x += 10  # A bit of odd padding
-            colour = (0, 0, 0) if (obj.get('token', None) != None) else (255, 0, 0) # if it's unmapped, make it red
+            colour = (0, 0, 0) if (obj.get('token', None) is not None) else (255, 0, 0) # if it's unmapped, make it red
 
             # it
-            if (type := obj.get('type', None)):
-                if ('it' in type):
+            if (format := obj.get('type', None)):
+                if ('it' in format):
                     obj['content'] = f'[{obj["content"]}]'
                     colour = (182, 182, 182)
             
@@ -98,7 +96,7 @@ class Window():
         # DISPLAY MAPPINGS
         for objIndex, obj in enumerate(mappedObjects):
 
-            if ((token := obj.get('token', None)) != None):
+            if ((token := obj.get('token', None)) is not None):
                 # Using font.get_height() to save you needing to edit this
                 to_map_tuple = (
                     objects_to_map[objIndex].textRect.centerx,
@@ -128,36 +126,37 @@ class Window():
                     return
 
     def isMapped(self, token, mappedObjects):
-        for mapping in mappedObjects:
-            if (str(mapping.get('token')) == str(token)):
-                return True
-        return False
+        return any((str(mapping.get('token')) == str(token)) for mapping in mappedObjects)
 
 
 if (__name__ == "__main__"):
-    window = Window()
 
-    # GEN.1.1
-    baseTokens = {
-        '0': { 'eng': "In the beginning" },
-        '1': { 'eng': "created" },
-        '2': { 'eng': "God" },
-        '3': { 'eng': "-" },
-        '4': { 'eng': "the heavens" },
-        '5': { 'eng': "and" },
-        '6': { 'eng': "the earth" }
-    }
-    mappedObjects = [
-        { 'content': "In", "token": "0" },
-        { 'content': "the", "token": "0" },
-        { 'content': "beginning", "token": "0" },
-        { 'content': "God", "token": "2" },
-        { 'content': "created", "token": "1" },
-        { 'content': "the", "token": "4" },
-        { 'content': "heavens", "token": "4" },
-        { 'content': "and", "token": "5" },
-        { 'content': "the", "token": "6" },
-        { 'content': "earth", "token": "6" }
-    ]
+    def main():
+        window = Window()
 
-    window.draw(baseTokens, mappedObjects, title="GEN.1.1")
+        # GEN.1.1
+        baseTokens = {
+            '0': { 'eng': "In the beginning" },
+            '1': { 'eng': "created" },
+            '2': { 'eng': "God" },
+            '3': { 'eng': "-" },
+            '4': { 'eng': "the heavens" },
+            '5': { 'eng': "and" },
+            '6': { 'eng': "the earth" }
+        }
+        mappedObjects = [
+            { 'content': "In", "token": "0" },
+            { 'content': "the", "token": "0" },
+            { 'content': "beginning", "token": "0" },
+            { 'content': "God", "token": "2" },
+            { 'content': "created", "token": "1" },
+            { 'content': "the", "token": "4" },
+            { 'content': "heavens", "token": "4" },
+            { 'content': "and", "token": "5" },
+            { 'content': "the", "token": "6" },
+            { 'content': "earth", "token": "6" }
+        ]
+
+        window.draw(baseTokens, mappedObjects, title="GEN.1.1")
+
+    main()

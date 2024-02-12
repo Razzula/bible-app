@@ -47,7 +47,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
 
     const [notesContents, setNotesContents]: [any, (a: any) => void] = useState([]);
 
-    const [annotatedVerses, setAnnotatedVerses]: [Set<string>, (a: any) => void] = useState(new Set<string>());
+    const [annotatedVerses, setAnnotatedVerses]: [Set<string>, (a: Set<string>) => void] = useState(new Set<string>());
     const [selectedVerse, setSelectedVerse]: [any, (a: any) => void] = useState(null);
 
     const shouldLoad = (contents !== null && contents !== undefined);
@@ -265,7 +265,7 @@ function Passage({ contents, ignoreFootnotes, loadPassage, passageBook, passageC
                     }
                 }
             }
-            let splitPoints: any = Object.entries(annotations);
+            let splitPoints: any[] = Object.entries(annotations);
 
             // render
             let temp: JSX.Element[] = [];

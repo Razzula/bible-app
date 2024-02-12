@@ -1,4 +1,3 @@
-import pytest
 from tokenise import tokenise
 
 
@@ -6,7 +5,7 @@ def test_GEN_1_1():
 
     inputs = [
         (
-            [ #NKJV
+            [ # NKJV
                 { "header": "The History of Creation", "type": "p", "content": "In the " },
                 { "type": "note", "content": "Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)" },
                 { "content": "beginning " },
@@ -16,7 +15,7 @@ def test_GEN_1_1():
             [0, None, 0, None, 2, 1, 4, 5, 6]
         ),
         (
-            [ #ESV
+            [ # ESV
                 { "header": "The Creation of the World", "type": "p", "content": " " },
                 { "content": "In the " },
                 { "type": "note", "content": "Job 38:4-7; Ps. 33:6; 136:5; Isa. 42:5; 45:18; John 1:1-3; Acts 14:15; 17:24; Col. 1:16, 17; Heb. 1:10; 11:3; Rev. 4:11" },
@@ -36,8 +35,8 @@ def test_GEN_1_1():
         6: { "strongs": "776", "eng": "the earth" }
     }
 
-    for input, expected in inputs:
-        res = tokenise(input, strongs)
+    for data, expected in inputs:
+        res = tokenise(data, strongs)
 
         assert(len(res) == len(expected))
 

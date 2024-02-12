@@ -62,7 +62,7 @@ for book in manifest:
                         if (cellClass == 'pos'): # Hebrew --> Greek
                             cellClass = 'strongs'
 
-                        if (cellClass in ['strongs', 'eng']): #translit, greek #additional fields with the original language contents
+                        if (cellClass in ['strongs', 'eng']): # translit, greek # additional fields with the original language contents
                             data = cell.text.strip()
 
                             data = unicodedata.normalize('NFKD', data)
@@ -78,7 +78,7 @@ for book in manifest:
             # handle verseData
             chapterData[verse + 1] = verseData
 
-            pass #verse
+            pass # verse
             # break
 
         # output
@@ -96,10 +96,10 @@ for book in manifest:
             f.write(temp)
 
         print(f'\t{chapter+1}')
-        pass #chapter
+        pass # chapter
         # break
 
-    pass #book
+    pass # book
     # break
 
 print('done :D')

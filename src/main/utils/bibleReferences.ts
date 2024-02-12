@@ -1,8 +1,12 @@
 import books from '../../../public/books.json';
 import manifest from '../../../public/manifest.json';
 
-const booksArray: any = books;
-const manifestArray: any = manifest;
+type usfm = { book: string, initialChapter?: number, finalChapter?: number, initialVerse?: number, finalVerse?: number };
+type book = string | string[];
+type manifest = { usfm: string, 'full-title'?: string, title: string };
+
+const booksArray: book[] = books;
+const manifestArray: manifest[] = manifest;
 
 /**
  * Parse the given reference and return relevant USFM (Unified Standard Format Marker).
@@ -51,7 +55,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
      * 7: additional references (optional)
      */
 
-    const usfm: any = {};
+    const usfm: usfm = { book: '' };
 
     if (match) {
 
@@ -89,7 +93,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                 }
                 const bookName = match[1] + match[2];
 
-                booksArray.forEach((book: string[]) => {
+                booksArray.forEach((book: book) => {
                     if (book.includes(bookName)) {
                         usfm.book = book[0];
                     }
@@ -258,9 +262,9 @@ export function getReferenceText(referenceData: Array<any>): string {
     let referenceText = '';
 
     let currentBook = '';
-    let currentChapter = NaN;
+    let currentChapter: number | undefined = NaN;
 
-    referenceData.forEach((reference: any, i: number) => {
+    referenceData.forEach((reference: usfm, i: number) => {
 
         // multi-reference separator
         if (i !== 0) {
@@ -277,13 +281,13 @@ export function getReferenceText(referenceData: Array<any>): string {
             currentBook = reference.book;
             let bookName = reference.book;
 
-            booksArray.forEach((book: string[]) => { // get usfm
+            booksArray.forEach((book: book) => { // get usfm
                 if (book.includes(reference.book)) {
                     bookName = book[0];
                 }
             });
 
-            manifestArray.forEach((book: any) => { // get human-readable book name
+            manifestArray.forEach((book: manifest) => { // get human-readable book name
                 if (book.usfm === bookName) {
                     bookName = book['full-title'] ? book['full-title'] : book['title']
                 }

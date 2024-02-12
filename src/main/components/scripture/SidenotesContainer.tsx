@@ -10,7 +10,7 @@ type SidenotesContainerProps = {
     position: string;
 
     passage: string;
-    notesContents: any;
+    notesContents: any[];
     selectedNoteGroup: string;
     docID?: string;
 

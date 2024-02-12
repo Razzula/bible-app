@@ -11,7 +11,7 @@ function createWindow () {
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: true,
+            // nodeIntegration: true,
             enableRemoteModule: true,
             // contextIsolation: false
         }
@@ -29,7 +29,7 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    ipcMain.handle('setupApp', (event) => handleInitialSetup())
+    ipcMain.handle('setupApp', () => handleInitialSetup())
     ipcMain.handle('getDirectories', (event, localPath) => handleDirectoryScan(localPath))
     ipcMain.handle('loadNotes', (event, group, book, chapter) => handleLoadNotes(group, book, chapter))
     ipcMain.handle('saveNote', (event, fileName, group, book, chapter, data) => handleSaveNote(fileName, group, book, chapter, data))

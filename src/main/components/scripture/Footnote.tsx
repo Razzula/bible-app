@@ -7,7 +7,7 @@ import Passage from './Passage';
 
 type FootnoteProps = {
     contents: string;
-    loadPassage: (usfm: any, isFootnote: boolean) => void;
+    loadPassage: (usfm: {}, isFootnote: boolean) => void;
     currentBook: string;
     currentChapter: number;
     translation: string;

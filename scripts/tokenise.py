@@ -74,7 +74,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
         pass
     pass
 
-    #TODO for some translations, the [x] words (it) in strongs should be de-bracketed (perhaps in the strip function?)
+    # TODO for some translations, the [x] words (it) in strongs should be de-bracketed (perhaps in the strip function?)
 
     # COUNT NUMBER OF OCCURRENCES OF EACH TOKEN
     tokenCounts = {} # { token: (scriptureCount, strongsCount) }
@@ -124,7 +124,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
 
     ABSTRACT_TOKENS = tokeniseAbstract(tokens, strongs, tokenCounts, lemmaCounts)
     for token in ABSTRACT_TOKENS:
-        if ((tokenID := token.get('token', None)) != None):
+        if ((tokenID := token.get('token', None)) is not None):
             tokens[token['index']]['token'] = tokenID
 
     # CHECK STATUS
@@ -278,7 +278,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
                                 # TODO do the uniqueness check within the synonym function
         pass
 
-        # # BRIDGE GAPS #note: this is problematic
+        # # BRIDGE GAPS # note: this is problematic
         # currentToken = None
         # chasm = []
         # for scriptureIndex, scriptureToken in enumerate(working_tokens):
@@ -287,7 +287,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
         #         continue
 
         #     scriptureTokenID = scriptureToken.get('token')
-        #     if (scriptureTokenID != None):
+        #     if (scriptureTokenID is not None):
         #         if (currentToken != scriptureTokenID): # TODO does this work?
         #             currentToken = scriptureTokenID
         #             # clear chasm
@@ -305,7 +305,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
         pass
 
         # REVERT ANOMALIES
-        revertAnomalies(working_tokens, strongs)
+        revertAnomalies(working_tokens)
         pass
     pass
 
@@ -358,7 +358,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
                 candidateTokenPos = int(candidateToken) / len(strongs)
                 delta = abs(scriptureTokenPos - candidateTokenPos)
 
-                if (bestCandidateToken == None or delta < bestCandidateToken[1]):
+                if (bestCandidateToken is None or delta < bestCandidateToken[1]):
                     bestCandidateToken = (candidateToken, delta)
 
             # TODO uniqueness check
@@ -366,7 +366,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
         pass
 
         # REVERT AGAIN
-        revertAnomalies(working_tokens, strongs)
+        revertAnomalies(working_tokens)
         pass
     
     # LINK ARTICLES
@@ -414,7 +414,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
             x = match.group(1)
 
             for strongsTokenID, strongsToken in strongs.items():
-                if (contains(strongsToken, x, mustMatchWholeWord=True)): #TODO mustMatchWholeWord?
+                if (contains(strongsToken, x, mustMatchWholeWord=True)): # TODO mustMatchWholeWord?
                     working_tokens[scriptureIndex]['token'] = strongsTokenID
                     break
 
@@ -472,7 +472,7 @@ def linkArticles(working_tokens, strongs, allowImplicitArticles=False):
                             continue
 
 # REVERT ANOMALIES
-def revertAnomalies(working_tokens, strongs):
+def revertAnomalies(working_tokens):
     """
     Compare tokens with their neighbours, if one is drastically different, revert it.
     """
@@ -538,10 +538,10 @@ def simplifyToken(token):
     if isinstance(token, str):
         return token.lower().strip(IGNORED_CHARS)
     
-    elif (token.get('content')): # scripture
+    if (token.get('content')): # scripture
         return token['content'].lower().strip(IGNORED_CHARS)
     
-    elif (token.get('eng')): # strongs
+    if (token.get('eng')): # strongs
         return token['eng'].lower().strip(IGNORED_CHARS)
     
     return None
@@ -584,13 +584,15 @@ def tokenIsDirty(token):
     """
     Is the token of an exception type, or already tokenised?
     """
-    return (token.get('type') in ['note', 'it']) or (token.get('token') != None)
+    return (token.get('type') in ['note', 'it']) or (token.get('token') is not None)
 
-def lemmatiseWord(word, posTags=['v', 'n', 'a', 'r']):
+def lemmatiseWord(word, posTags=None):
     """
     Get the lemmas of a word.
     """
-    global lemmaCache
+
+    if (posTags is None):
+        posTags = ['v', 'n', 'a', 'r']
 
     word = word.lower().strip(IGNORED_CHARS)
 
@@ -613,14 +615,14 @@ def lemmatiseWord(word, posTags=['v', 'n', 'a', 'r']):
     return set(word)
 
 ## GEN.1.1
-# scripture = [ #NKJV
+# scripture = [ # NKJV
 #     { "header": "The History of Creation", "type": "p", "content": "In the " },
 #     { "type": "note", "content": "Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)" },
 #     { "content": "beginning " },
 #     { "type": "note", "content": "Gen. 2:4; (Ps. 8:3; 89:11; 90:2); Is. 44:24; Acts 17:24; Rom. 1:20; (Heb. 1:2; 11:3); Rev. 4:11" },
 #     { "content": "God created the heavens and the earth. " }
 # ]
-# scripture = [ #ESV
+# scripture = [ # ESV
 #     { "header": "The Creation of the World", "type": "p", "content": " " },
 #     { "content": "In the " },
 #     { "type": "note", "content": "Job 38:4-7; Ps. 33:6; 136:5; Isa. 42:5; 45:18; John 1:1-3; Acts 14:15; 17:24; Col. 1:16, 17; Heb. 1:10; 11:3; Rev. 4:11" },
@@ -638,8 +640,8 @@ def lemmatiseWord(word, posTags=['v', 'n', 'a', 'r']):
 
 
 # load thesaurus used for synonyms
-with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 'r') as f:
-    thesaurus = json.load(f)
+with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 'r') as thesaurusFile:
+    thesaurus = json.load(thesaurusFile)
 
 if __name__ == "__main__":
     # tokenisePassage('GEN.1', 1, 'NKJV', visualise=True)
@@ -649,21 +651,18 @@ if __name__ == "__main__":
 
     # tokenisePassage('GEN.1', 7, 'NKJV', visualise=True)
 
-    for i in range(1, 31):
-        tokenisePassage('GEN.1', i, 'NKJV', visualise=True)
+    for temp in range(24, 31):
+        tokenisePassage('GEN.1', temp, 'NKJV', visualise=True)
         # TODO
         # 10 'collection'-->'gathering together' (broad synonym)
-        # 11 'fruit' (non-unique collision)
         # 11, 12 'in itself'?
         # 14 'and' (incorrect assignment)
         # 15, 17 (broad synonym)
-        # 18 'over'(non-unique collision), 'and' (incorrect assignment)
-        # 20 'of' (non-unique collision)
+        # 18 'and' (incorrect assignment)
         # 21 'kinds' (incomplete lemma)
-        # 22 'and' (non-unique collision)
-        # 24 'the' (incorrect assumption of noun), 'and' (non-unique collision)
-        # 26 'and over' (non-unique collision)
-        # 27 'in' (non-unique collision)
-        # 28 'God' (non-unique collision), 'and'
+        # 24 'the' (incorrect assumption of noun)
+        # 28 'and'
         # 29
         # 30 'Also' (borked distance metric)?
+
+        # non-unique collision : 11 (fruit), 18 (over), 20 (of), 22 (and), 24 (and), 26 (and over), 27 (in), 28 (God)

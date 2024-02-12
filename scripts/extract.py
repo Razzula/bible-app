@@ -6,6 +6,13 @@ import re
 from bs4 import BeautifulSoup
 
 
+verses = []
+verse = []
+div = False
+header = None
+current = None
+
+
 class bcolors:
     """
     A class to define escape codes for colored text in the terminal.
@@ -64,7 +71,7 @@ def readString(arrayOfByte, start=3):
 
     if (current not in a):
         b = readString(arrayOfByte, 4) if (start == 3) else None
-        if (b == None):
+        if (b is None):
             pass
         return b
     return a
@@ -144,13 +151,13 @@ def extract(inDir, outDir):
             # DECODE
             out = data.encode('latin1').decode('utf-8')
 
-            simplify(out, outDir, book['usfm'], current)
+            simplify(out, outDir, current)
 
     print('DONE')
 
 
 # SIMPLIFY
-def simplify(data, outDir, book, file):  # HTML to JSON
+def simplify(data, outDir, file):  # HTML to JSON
     """
     Process data in HTML format and save it as JSON.
 
@@ -186,8 +193,11 @@ def simplify(data, outDir, book, file):  # HTML to JSON
     div = False
     header = None
 
-    def thisNeedsAName(element, parentClasses=[]):
-        global verses, verse, div, header
+    def thisNeedsAName(element, parentClasses=None):
+        global verse, div, header
+
+        if (parentClasses is None):
+            parentClasses = []
 
         newParentClasses = parentClasses.copy()
 
@@ -218,7 +228,6 @@ def simplify(data, outDir, book, file):  # HTML to JSON
                     if (elementClass != 'content'):
                         pass # this should never fire
                     elementClass = div
-                    #verse.append({ "type": "p", "content": " " })
                     div = False
 
                 # verse formatting (wj, nb, etc.)
@@ -242,22 +251,21 @@ def simplify(data, outDir, book, file):  # HTML to JSON
 
                 section['content'] = element.contents[0]
                 
-                if (section.get('type', None) == 'p' and section.get('content', '').strip() == '' and section.get('header', None) == None): # handle empty paragraphs
+                if (section.get('type', None) == 'p' and section.get('content', '').strip() == '' and section.get('header', None) is None): # handle empty paragraphs
                     div = 'p'
                 else:
                     verse.append(section)
-                #print(verse[-1]) #temp
 
         # non-leaf node
         else:
 
             # HEADER
-            if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): #TODO
+            if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): # TODO
                 header = element.text
                 return
 
             # NEW PARAGRAPH
-            if (elementClass in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']): #TODO
+            if (elementClass in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']): # TODO
                 div = elementClass
 
             elif (elementClass not in ['version', 'content', 'verse', 'chapter', 'book', 'note']):
