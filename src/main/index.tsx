@@ -2,7 +2,7 @@ import React from 'react';
 import { applyMiddleware, createStore } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Store, setup } from 'sidenotes';
 import rootReducer from './utils/reducers';
 
@@ -15,13 +15,14 @@ import App from "./components/App";
 const store: Store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 setup(store, { padding: 10 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+root.render(
   <Provider store={store}>
     <React.StrictMode>
 
       <App />
 
     </React.StrictMode>
-  </Provider>,
-  document.getElementById('root'),
+  </Provider>
 );
