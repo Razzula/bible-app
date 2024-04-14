@@ -127,6 +127,15 @@ span.bdit {
     font-style: italic;
 }
 
+span.text {
+    &:hover,
+    &.selected {
+        text-decoration-line: underline;
+        text-decoration-style: dotted;
+        cursor: pointer;
+    }
+}
+
 .ref {
     cursor: pointer;
 }

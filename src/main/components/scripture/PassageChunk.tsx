@@ -14,21 +14,30 @@ type PassageChunkProps = {
     passageChapter?: number;
     translation: string;
     passageNotes?: any;
-    setSelectedVerse: Function;
     renderMode?: string;
+    selectedToken?: string;
+    setSelectedToken?: Function;
+}
+
+type PassageTokenProps = {
+    content: Section;
+    classes: string[];
+    selectedToken?: string;
+    setSelectedToken?: Function;
 }
 
 type Section = {
-    id: string,
-    type: string,
-    content: string,
-    children?: any //TODO
+    id: string;
+    type: string;
+    content: string;
+    children?: any; //TODO
+    token?: string;
 }
 
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, setSelectedVerse, renderMode }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, selectedToken, setSelectedToken, renderMode }: PassageChunkProps): JSX.Element {
 
     const [notedVerses, setNotedVerses]: [Set<string> | undefined, Function] = React.useState();
 
@@ -59,7 +68,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             );
         }
 
-        const elements = [];
+        const elements: JSX.Element[] = [];
 
         if (item.type) {
 
@@ -85,13 +94,22 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
         // other formatting
         let contents;
-        let className = (item.type !== undefined) ? `${item.type} ${item.id}` : item.id;
+        const classes: string[] = [item.id];
+        if (item.type !== undefined) {
+            classes.push(item.type);
+        }
+        if (item.token !== undefined || true) { // TODO only do this for valid tokens
+            classes.push('text');
+        }
 
         if (item.children) { // if node is a parent, recursively generate its contents
-            contents = <span className={className}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
+            contents = <span className={classes.join(' ')}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
         }
         else {
-            contents = <span className={className} onMouseDown={() => {setSelectedVerse(item.id)}} onMouseUp={() => setSelectedVerse(item.id)}>{item.content}</span>
+            contents = <PassageToken
+                content={item} classes={classes} selectedToken={selectedToken}
+                setSelectedToken={setSelectedToken}
+            />;
         }
 
         // anchors
@@ -109,6 +127,29 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
     return contents.map(generateContents);
 
+}
+
+function PassageToken({ content, classes, selectedToken, setSelectedToken }: PassageTokenProps): JSX.Element {
+
+    const handleTokenClick = (e: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
+        if (setSelectedToken) {
+            if (selectedToken === content.id) {
+                setSelectedToken(undefined);
+            }
+            else {
+                setSelectedToken(content.id);
+            }
+        }
+    };
+
+    return (
+        <span
+            className={classes.join(' ') + ((selectedToken && selectedToken === content.id) ? ' selected' : '')}
+            onClick={handleTokenClick}
+        >
+            {content.content /* TODO this is poorly named */}
+        </span>
+    );
 }
 
 export default PassageChunk;

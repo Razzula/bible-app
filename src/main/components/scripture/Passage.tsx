@@ -46,7 +46,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     const [passage, setPassage]: [JSX.Element, Function] = useState(<></>);
 
     const [notesContents, setNotesContents]: [any, (a: any) => void] = useState([]);
-    const [selectedVerse, setSelectedVerse]: [any, (a: any) => void] = useState(null);
+    const [selectedToken, setSelectedToken]: [any, (a: any) => void] = useState(null);
 
     const shouldLoad = (contents !== null && contents !== undefined);
     const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
@@ -71,7 +71,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         if (formattedContent) {
             renderPassage();
         }
-    }, [formattedContent, notesContents, renderMode]);
+    }, [formattedContent, notesContents, renderMode, selectedToken]);
 
     // LOAD PASSAGE NOTES
     async function loadPassageNotes(group: string, book: string, chapter: string): Promise<void> {
@@ -138,7 +138,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
         const newNoteContents: Note = {
             id,
-            verse: selectedVerse,
+            verse: selectedToken,
             contents: { "root": { "children": [{ "children": [{ "detail": 0, "format": 0, "mode": "normal", "style": "", "text": "new note", "type": "text", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1 } } //TODO this should probably be extracted somewhere
         };
 
@@ -228,7 +228,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         if (ignoreFootnotes || renderMode === 'sidenotes') {
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} setSelectedVerse={setSelectedVerse} renderMode={renderMode} // TODO
+                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                    setSelectedToken={setSelectedToken}
                 />
             );
         }
@@ -269,8 +270,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected unannotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContentChunk}
-                                ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                                contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                setSelectedToken={setSelectedToken}
                             />
                         );
 
@@ -286,8 +287,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected annotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContentChunk}
-                                ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                                contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                setSelectedToken={setSelectedToken}
                             />
                         );
 
@@ -313,15 +314,14 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             }
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContentChunk}
-                    ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} setSelectedVerse={setSelectedVerse} renderMode={renderMode}
+                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                    setSelectedToken={setSelectedToken}
                 />
             );
 
         }
 
         setPassage(<>{passageElements}</>);
-        console.log(passageElements);
 
     }
 

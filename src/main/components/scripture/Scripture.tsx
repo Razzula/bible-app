@@ -298,8 +298,6 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                     <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
                     </select>
-                    {/* NEW NOTE BUTTON */}
-                    <button disabled className='btn btn-default'>New Note</button>
                 </div>
 
                 <div>
@@ -347,8 +345,6 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                     <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
                     </select>
-                    {/* NEW NOTE BUTTON */}
-                    <button disabled className='btn btn-default'>New Note</button>
                 </div>
             </div>
 
