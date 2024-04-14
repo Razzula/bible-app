@@ -102,8 +102,15 @@ async function handleDirectoryScan(localPath) {
     const dirName = app.getPath("documents");
     const directoryPath = path.join(dirName, 'bible-app', localPath);
 
-    const items = fs.readdirSync(directoryPath);
     const directories = [];
+    let items = [];
+    try {
+        items = fs.readdirSync(directoryPath);
+
+    }
+    catch (err) {
+        return directories;
+    }
 
     for (const item of items) {
         const itemPath = path.join(directoryPath, item);
@@ -113,7 +120,6 @@ async function handleDirectoryScan(localPath) {
             directories.push(item);
         }
     }
-
     return directories;
 }
 
@@ -141,13 +147,13 @@ async function handleLoadNotes(group, book, chapter) {
 
     for await (const fileName of fileNames) {
         const fileContents = await readFile(fileName, localPath);
-    
+
         if (fileContents) {
             fileContents.id = fileName;
             notes.push(fileContents);
         }
     }
-            
+
     return notes;
 }
 
@@ -169,7 +175,7 @@ async function handleLoadScripture(fileName, localPath, data) {
 async function handleLoadDocument(filename) {
 
     const fileContents = await readFile(filename, 'documents');
-            
+
     return fileContents;
 }
 

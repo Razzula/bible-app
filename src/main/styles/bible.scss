@@ -1,20 +1,18 @@
 // BIBLE
 
 .label {
-    position: relative;
-    top: -0.6em;
     margin-right: 5px;
     font-size: 12px;
     user-select: none;
     color: #9c9386;
+    vertical-align: sub;
+    font-weight: 500;
 }
 
 .label.chapter {
-    top: 0em;
-    bottom: -0.1em;
+    vertical-align: bottom;
     font-size: 24px;
     font-weight: 700;
-    user-select: none;
 }
 
 .passage {
@@ -40,6 +38,8 @@ span.qa {
     display: inline-block;
     font-style: italic;
     margin-top: 16px;
+
+    user-select: none;
 }
 
 span.s {

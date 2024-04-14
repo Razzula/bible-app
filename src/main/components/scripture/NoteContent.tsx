@@ -52,8 +52,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
 
     useEffect(() => {
         if (!isSelected && !isSaved) {
-            const passageNameSplit = passageName.split('.');
-            updateNotesContents(sidenoteID, passageNameSplit[passageNameSplit.length - 1], currentNoteContents, saveNoteContentsCallback);
+            updateNotesContents(sidenoteID, passageName, currentNoteContents, saveNoteContentsCallback);
         }
     }, [isSelected]);
 

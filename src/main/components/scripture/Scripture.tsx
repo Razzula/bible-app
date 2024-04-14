@@ -19,7 +19,6 @@ declare global {
 let store: Store;
 
 const docID = 'article';
-const baseAnchor = 'anchor';
 
 type ScriptureProps = {
     queryToLoad?: string;
@@ -41,8 +40,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[], []]);
 
-    // const [passagesContents, setPassagesContents]: [any[], Function] = useState([]);
-    const [passages, setPassages]: [JSX.Element, Function] = useState(<></>);
+    const [passages, setPassages]: [JSX.Element[], Function] = useState([]);
 
     const [noteGroupsList, setNoteGroupsList] = useState('');
     const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
@@ -127,14 +125,14 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         const translations = await window.electronAPI.getDirectories('Scripture');
 
         if (translations.length === 0) {
-            setPassages(
+            setPassages([
                 <Alert variant="danger">
                     <Alert.Heading>404</Alert.Heading>
                     <p>
                         No translations found. Please add a translation to the Scripture folder.
                     </p>
                 </Alert>
-            );
+            ]);
             return;
         }
 
@@ -157,18 +155,6 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key : ''); // TODO: make this a setting
     }
 
-    function generatePassage(chapterContents: any, i: number, chaptersContentsLength: number, passageBook: string, passageChapter: number): JSX.Element {
-        if (chapterContents[0][0].chapter) { // there is a subsequent chapter
-            return (
-                <>
-                    <hr />
-                    <Passage key={`${passageBook}.${passageChapter}.${i}`} contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={passageChapter} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} renderMode={selectedRenderMode} />
-                </>
-            );
-        }
-        return (<Passage contents={chapterContents} loadPassage={loadPassageFromUSFM} passageBook={passageBook} passageChapter={0} translation={selectedTranslation} selectedNoteGroup={selectedNoteGroup} docID={docID} renderMode={selectedRenderMode} />);
-    }
-
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
 
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
@@ -186,151 +172,105 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false): Promise<void> {
 
-        const chaptersContents = [];
-
-        if (Array.isArray(usfm)) { // TODO; TEMP
-            usfm = usfm[0]; // TODO; actully load the contetns of all the passages
+        if (!Array.isArray(usfm)) {
+            usfm = [usfm];
         }
 
-        if (usfm === undefined || usfm === null) {
-            setSearchError(true);
-            return;
-        }
-        
-        const chapterRange = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter;
-        
-        // load chapters from files
-        for (let chapter = usfm.initialChapter; chapter <= chapterRange; chapter++) {
-            const fileName = `${usfm.book}.${chapter}`;
-            
-            if (!fileName) { // invalid
-                continue;
-            }
-            // TODO; prevent multiple reads of current file
-            
-            // load contents externally from files
-            const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books
-            if (chapterContents) { //TODO temp?
-                chapterContents[0][0].chapter = chapter;
-            }
-            if (chapterContents) {
-                chaptersContents.push(chapterContents);
-            }
-            
-        }
-        
-        if (chaptersContents.length === 0) {
-            setSearchError(true);
-            return;
-        }
-        setSearchError(false);
-        
-        deselect();
-        // setPassagesContents(chaptersContents);
+        const passages: JSX.Element[] = await Promise.all(
+            usfm.map(async (passageUsfm: any) => {
 
-        // TOOO; better way to do this
-        const passageContents = chaptersContents.map((chapterContents: any, i: number) => generatePassage(chapterContents, i, chaptersContents.length, usfm.book, usfm.initialChapter));
+                if (passageUsfm === undefined || passageUsfm === null) {
+                    return;
+                }
 
-        setPassages(
-            <>
-                {[passageContents]}
-            </>
+                const chaptersContents: any[] = [];
+                const chapterRange = passageUsfm.finalChapter ? passageUsfm.finalChapter : passageUsfm.initialChapter;
+
+                // load chapters from files
+                for (let chapter = passageUsfm.initialChapter; chapter <= chapterRange; chapter++) {
+                    const fileName = `${passageUsfm.book}.${chapter}`;
+
+                    if (!fileName) { // invalid
+                        continue;
+                    }
+                    // TODO; prevent multiple reads of current file
+
+                    // load contents externally from files
+                    const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books
+                    if (chapterContents) {
+                        chaptersContents.push(chapterContents);
+                    }
+
+                }
+
+                if (chaptersContents.length === 0) {
+                    return;
+                }
+
+                const usfmString = getReferenceText(passageUsfm);
+                return <Passage
+                    key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
+                />;
+            })
         );
-        setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
 
-        // scroll to verse if specified
-        if (usfm.initialVerse) { // might need to move into state
+        deselect();
 
-            const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
+        // display passages
+        if (passages) {
+            setPassages(passages);
+            setSearchError(false);
+            setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
 
-            // jump to passage
-            const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
-            if (element) {
-                element.scrollIntoView();
+            // TODO; validation
+            historyStacks[0].push(searchQuery)
+            if (clearForwardCache) {
+                historyStacks[1] = new Array<string>();
+            }
+            setHistoryStacks(historyStacks);
+        }
+        else {
+            setSearchError(true);
+        }
+
+        setTimeout(() => { // TODO: make this in response
+
+            // scroll to verse if specified
+            if (Array.isArray(usfm)) { // only scroll to first passage
+                usfm = usfm[0];
+            }
+            if (usfm.initialVerse) { // might need to move into state
+
+                const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
+
+                // jump to passage
+                const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
+                if (element) {
+                    element.scrollIntoView();
+                }
+                else {
+                    document.getElementById(docID)?.scrollIntoView(); // goto top
+                }
+
+                // highlight passage
+                for (let verse = usfm.initialVerse; verse <= range; verse++) {
+
+                    const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
+                    for (const e of elements) {
+                        const element = e as HTMLElement;
+                        element.classList.remove('blink');
+                        element.offsetWidth; // allow repetition
+                        element.classList.add('blink');
+                    }
+
+                }
+
             }
             else {
                 document.getElementById(docID)?.scrollIntoView(); // goto top
             }
+        }, 100);
 
-            // highlight passage
-            for (let verse = usfm.initialVerse; verse <= range; verse++) {
-
-                const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
-                for (const e of elements) {
-                    const element = e as HTMLElement;
-                    element.classList.remove('blink');
-                    element.offsetWidth; // allow repetition
-                    element.classList.add('blink');
-                }
-
-            }
-
-        }
-        else {
-            document.getElementById(docID)?.scrollIntoView(); // goto top
-        }
-
-        // TODO; validation
-        historyStacks[0].push(searchQuery)
-        if (clearForwardCache) {
-            historyStacks[1] = new Array<string>();
-        }
-        setHistoryStacks(historyStacks);
-    }
-
-    async function expandPassage(delta: number): Promise<void> {
-        // get next chapter
-        const historyStack = historyStacks[0]
-        const usfm = getUSFM(historyStack[historyStack.length - 1])[0]; // TODO; TEMP
-
-        let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
-        extraChapter = Number(extraChapter) + delta
-
-        const fileName = `${usfm.book}.${extraChapter}`
-        const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation);
-        if (chapterContents) {
-            chapterContents[0][0].chapter = extraChapter;
-        }
-
-        // truncate up to next heading
-        let extraContents = [];
-
-        const start = (delta === 1 ? 0 : chapterContents.length - 1)
-
-        for (let i = start; (i < chapterContents.length && i >= 0); i += delta) {
-
-            if (i !== 0) {
-                if (chapterContents[i].header) {
-                    if (delta === -1) {
-                        extraContents.push(chapterContents[i]);
-                    }
-                    break;
-                }
-                if (chapterContents[i][0]?.header) {
-                    if (delta === -1) {
-                        extraContents.push(chapterContents[i]);
-                    }
-                    break;
-                }
-            }
-            extraContents.push(chapterContents[i]);
-
-        }
-
-        //TODO; fix
-        // generate passage and merge into current
-        if (delta === 1) {
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter + 1)); //TODO; we cannot always assume this will be initialChapter+1
-
-            setPassages(<>{passages}{extraPassageContents}</>);
-        }
-        else { // TODO; fix verse numbers
-            extraContents = extraContents.reverse()
-            extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
-            const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter - 1));
-
-            setPassages(<>{extraPassageContents}{passages}</>);
-        }
     }
 
     function handleNoteGroupSelectChange(event: ChangeEvent<any>): void {
@@ -416,12 +356,8 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
                 <article id={docID} onClick={deselect}>
 
                     {/* BIBLE */}
-                    <AnchorBase anchor={baseAnchor} className="base">
-                        <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br/>
-                        {passages}
-                        <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button>
-                    </AnchorBase>
-                    {(passages.props.children?.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
+                    {passages}
+                    {(passages.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
 
                 </article>
             </div>

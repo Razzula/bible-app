@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Footnote from './Footnote';
 
-import '../../styles/bible.scss';
+import '../../styles/Bible.scss';
 import { InlineAnchor } from 'sidenotes';
 import { isOfParagraphType } from '../../utils/general';
 
@@ -13,12 +13,12 @@ type PassageChunkProps = {
     passageBook?: string;
     passageChapter?: number;
     translation: string;
-    notedVerses?: Set<string>;
+    passageNotes?: any;
     setSelectedVerse: Function;
     renderMode?: string;
 }
 
-type Verse = {
+type Section = {
     id: string,
     type: string,
     content: string,
@@ -28,10 +28,26 @@ type Verse = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, notedVerses, setSelectedVerse, renderMode }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, setSelectedVerse, renderMode }: PassageChunkProps): JSX.Element {
+
+    const [notedVerses, setNotedVerses]: [Set<string> | undefined, Function] = React.useState();
+
+    useEffect(() => {
+        if (passageNotes) {
+            const notedVerses = new Set<string>();
+            passageNotes.forEach((note: any) => {
+                notedVerses.add(note.verse);
+            });
+            setNotedVerses(notedVerses);
+        }
+    }, [passageNotes]);
 
     // format paragraphs
-    function generateContents(item: Verse): JSX.Element | JSX.Element[] | null {
+    /**
+     * Maps a single array of formatted scripture to JSX elements.
+     */
+    function generateContents(item: Section): JSX.Element | JSX.Element[] | null {
+
         // footnotes
         if (item.type === 'note') {
             if (ignoreFootnotes) {
@@ -43,27 +59,28 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             );
         }
 
-        let data = [];
+        const elements = [];
 
-        // paragraph
         if (item.type) {
-            if (isOfParagraphType(item.type, true)) {
-                data.push(<br />);
-            }
-        }
 
-        // labels
-        if (item.type === 'label') {
-            data.push(
-                <span className={item.type} id={`v${item.content}`}>{item.content}</span> // can use scrollIntoView() to jump to verse
-            );
-            return data;
-        }
-        if (item.type === 'label chapter') {
-            data.push(
-                <span className={item.type} id={'v1'}>{item.content}</span> // can use scrollIntoView() to jump to verse
-            );
-            return data;
+            // paragraph
+            if (isOfParagraphType(item.type, true)) {
+                elements.push(<br />); // TODO this means that headers are spaced, even when disabled
+            }
+
+            // labels
+            if (item.type.includes('label chapter')) {
+                elements.push(
+                    <span className={item.type} id={'v1'}>{item.content}</span> // can use scrollIntoView() to jump to verse
+                );
+                return elements;
+            }
+            if (item.type.includes('label')) {
+                elements.push(
+                    <span className={item.type} id={`v${item.content}`}>{item.content}</span> // can use scrollIntoView() to jump to verse
+                );
+                return elements;
+            }
         }
 
         // other formatting
@@ -79,41 +96,18 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
         // anchors
         if (notedVerses !== undefined && notedVerses?.has(item.id) && renderMode === 'sidenotes') {
-            data.push(
+            elements.push(
                 <InlineAnchor sidenote={item.id}>{contents}</InlineAnchor>
             );
         }
         else {
-            data.push(contents);
+            elements.push(contents);
         }
 
-        return data;
+        return elements;
     }
 
     return contents.map(generateContents);
-
-    // return contents.map((paragraph: Array<Verse>) => {
-
-    //     // format contents of paragraph
-    //     const paraContent = paragraph.map(generateContents);
-
-    //     // TODO what does this do?
-    //     let paraType = paragraph[0].type
-    //     if (paraType.startsWith('label')) {
-    //         paraType = paragraph[1].type
-    //     }
-
-    //     return paraContent;
-
-    //     // return (
-    //     //     <div className="passageChunk">
-    //     //         <span className={paraType}>
-    //     //             {paraContent}
-    //     //         </span>
-    //     //         <br />
-    //     //     </div>
-    //     // );
-    // });
 
 }
 

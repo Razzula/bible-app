@@ -14,10 +14,9 @@ type SidenotesContainerProps = {
     selectedNoteGroup: string;
     docID?: string;
 
-    setAnnotatedVerses: Function;
     createNewNote: (id: string, selectedNoteGroup: string) => void;
-    updateNotesContents?: (id: string, verse: string, selectedNoteGroup: string, noteContents: string, callback?: Function) => void; // TODO ? is only temporary
-    deleteNote?: (id: string, selectedNoteGroup: string) => void; // TODO ? is only temporary
+    updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
+    deleteNote: (sidenoteID: string) => void;
 }
 
 /**
@@ -27,7 +26,7 @@ type SidenotesContainerProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, setAnnotatedVerses, createNewNote, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
+function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, createNewNote, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
 
     // const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
 
@@ -43,31 +42,19 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
 
     function renderPassageNotes(): void {
 
-        const activeVerses = new Set<string>();
-
         const sidenotesElements = notesContents.map((noteContents: { id: string, verse: string, contents: string }) => {
 
-            const passageName = `${passage}.${noteContents.verse}`;
-            activeVerses.add(passageName)
             return (
-                <Sidenote key={passageName} sidenote={passageName} base={passage}>
-                    <NoteContent sidenoteID={noteContents.id} passageName={passageName} docID={docID} initialNoteContents={noteContents.contents} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote} />
+                <Sidenote key={noteContents.verse} sidenote={noteContents.verse} base={passage}>
+                    <NoteContent
+                        sidenoteID={noteContents.id} passageName={noteContents.verse} docID={docID} initialNoteContents={noteContents.contents}
+                        updateNotesContents={updateNotesContents} deleteNote={deleteNote}
+                    />
                 </Sidenote>
             );
         });
 
         setSidenotesElements(sidenotesElements);
-        setAnnotatedVerses(activeVerses);
-    }
-
-    function handleUpdateNotesContents(id: string, verse: string, noteContent: string, callback?: Function): void {
-        if (updateNotesContents)
-            updateNotesContents(id, verse, selectedNoteGroup, noteContent, callback);
-    }
-
-    function handleDeleteNote(id: string): void {
-        if (deleteNote)
-            deleteNote(id, selectedNoteGroup);
     }
 
     function handleNewNoteClick(): void {

@@ -151,13 +151,13 @@ def extract(inDir, outDir):
             # DECODE
             out = data.encode('latin1').decode('utf-8')
 
-            simplify(out, outDir, current)
+            simplify(out, outDir, current, chapter)
 
     print('DONE')
 
 
 # SIMPLIFY
-def simplify(data, outDir, file):  # HTML to JSON
+def simplify(data, outDir, file, chapter):  # HTML to JSON
     """
     Process data in HTML format and save it as JSON.
 
@@ -209,7 +209,7 @@ def simplify(data, outDir, file):  # HTML to JSON
 
         # leaf node
         if (len(element.contents) == 1) and (isinstance(element.contents[0], str)):
-            
+
             # NEW VERSE
             if (elementClass == 'label'):
                 newVerseNumber = (int)(element.text)
@@ -221,7 +221,7 @@ def simplify(data, outDir, file):  # HTML to JSON
                         # push and reset
                         verses.append(verse)
                         verse = []
-                    
+
             else:
                 # paragraph formatting (p, q1, etc.)
                 if (div):
@@ -250,7 +250,7 @@ def simplify(data, outDir, file):  # HTML to JSON
                     section['type'] = elementClass
 
                 section['content'] = element.contents[0]
-                
+
                 if (section.get('type', None) == 'p' and section.get('content', '').strip() == '' and section.get('header', None) is None): # handle empty paragraphs
                     div = 'p'
                 else:
@@ -287,12 +287,18 @@ def simplify(data, outDir, file):  # HTML to JSON
             else:
                 for child in element.children:
                     thisNeedsAName(child, newParentClasses)
-    
+
     thisNeedsAName(root)
     verses.append(verse)
 
+    # reformat from array to dict
+    outDict = {}
+    for index, verse in enumerate(verses[1:]):
+        outDict[index + 1] = verse
+    outDict[1][0]['chapter'] = chapter
+
     # OUT
-    outJSON = json.dumps(verses[1:], indent=4)
+    outJSON = json.dumps(outDict, indent=4)
     outDir = os.path.join(outDir, file)
     with open(outDir, 'w') as f:
         f.write(outJSON)

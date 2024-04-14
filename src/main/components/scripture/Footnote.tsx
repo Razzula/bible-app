@@ -3,11 +3,12 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import { locateReferences } from '../../utils/bibleReferences';
 
+import PassageChunk from './PassageChunk';
 import Passage from './Passage';
 
 type FootnoteProps = {
     contents: string;
-    loadPassage: (usfm: {}, isFootnote: boolean) => void;
+    loadPassage: (usfm: object, isFootnote: boolean) => void;
     currentBook: string;
     currentChapter: number;
     translation: string;
@@ -38,7 +39,7 @@ const InnerPopover = forwardRef(
  *  - currentChapter (number): The current chapter.
  *
  * @returns {JSX.Element} A JSX Element of a `span` containing the footnote.
- * 
+ *
  * @note
  *   - References are automatically formatted and linked to the appropriate passage.
  *   - Hovering over a reference will display the passage in a popover.
@@ -55,7 +56,8 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
             const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
 
             // format passage
-            const notePassage = (<Passage contents={noteContents} ignoreFootnotes translation={translation} />);
+            const usfm = {"book": currentBook, "initialChapter": currentChapter};
+            const notePassage = (<Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />);
             // contents of footnote popover
             return (
                 <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
@@ -64,11 +66,11 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
             );
 
             async function updatePopoverContents(): Promise<any> {
+
                 // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
                 const fileName = `${usfm.book}.${usfm.initialChapter}`;
                 let passageContents = await window.electronAPI.loadScripture(fileName, translation);
-                passageContents[0][0].chapter = usfm.initialChapter;
 
                 if (!passageContents) {
                     setNoteContents(null);
@@ -89,10 +91,13 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
                     }
                 }
 
-                passageContents = passageContents.slice(initalVerse - 1, finalVerse);
-                passageContents[0][0].verse = initalVerse;
+                const slicedPassageContents: any = {};
+                for (let i = initalVerse; i <= finalVerse; i++) {
+                    slicedPassageContents[i] = passageContents[i];
+                }
+                slicedPassageContents[initalVerse][0].verse = initalVerse;
 
-                setNoteContents(passageContents);
+                setNoteContents([slicedPassageContents]);
             }
         }
         return ref;
