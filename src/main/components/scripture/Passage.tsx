@@ -274,7 +274,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected unannotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
                                 setSelectedToken={setSelectedToken}
                             />
                         );
@@ -291,7 +291,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected annotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
                                 setSelectedToken={setSelectedToken}
                             />
                         );
@@ -318,7 +318,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             }
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                    contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
                     setSelectedToken={setSelectedToken}
                 />
             );
