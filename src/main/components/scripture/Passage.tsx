@@ -9,6 +9,8 @@ import PassageChunk from './PassageChunk';
 import { isOfParagraphType } from '../../utils/general';
 import { Store, AnchorBase } from 'sidenotes';
 
+import FileManager from '../../utils/FileManager';
+
 import '../../styles/Bible.scss';
 
 const baseAnchor = 'anchor';
@@ -51,6 +53,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     const shouldLoad = (contents !== null && contents !== undefined);
     const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
 
+    const fileManager = FileManager.getInstance();
+
     useEffect(() => {
         if (shouldLoad) {
             formatContents();
@@ -80,7 +84,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             return;
         }
 
-        const rawNotesContents: [] = await window.electronAPI.loadNotes(group, book, chapter);
+        const rawNotesContents: [] = await fileManager.loadNotes(group, book, chapter);
 
         if (rawNotesContents) {
             setNotesContents(rawNotesContents);
@@ -110,7 +114,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         });
 
         // save to file
-        const saveResult = await window.electronAPI.saveNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter), newNoteContents);
+        const saveResult = await fileManager.saveNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter), newNoteContents);
         if (callback) {
             callback(saveResult, noteContent);
         }
@@ -131,7 +135,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         });
 
         // electron function to delete note
-        window.electronAPI.deleteNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter));
+        fileManager.deleteNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter));
     }
 
     function createNewNote(id: string, selectedNoteGroup: string): void {
@@ -156,7 +160,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             return newNotesContents;
         });
 
-        window.electronAPI.saveNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter), newNoteContents);
+        fileManager.saveNote(`${id}`, selectedNoteGroup, usfm.book, String(usfm.initialChapter), newNoteContents);
     }
 
     // DYNAMICALLY GENERATE PASSAGE
@@ -343,8 +347,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     //     let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
     //     extraChapter = Number(extraChapter) + delta
 
-    //     const fileName = `${usfm.book}.${extraChapter}`
-    //     const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation);
+    //     const chapterContents = await fileManager.loadScripture(usfm.book, usfm.chapter, selectedTranslation);
     //     if (chapterContents) {
     //         chapterContents[0][0].chapter = extraChapter;
     //     }

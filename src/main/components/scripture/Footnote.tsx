@@ -1,6 +1,7 @@
 import React, { useEffect, useState, forwardRef } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
+import FileManager from '../../utils/FileManager';
 import { locateReferences } from '../../utils/bibleReferences';
 
 import PassageChunk from './PassageChunk';
@@ -48,6 +49,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
     const [noteContents, setNoteContents]: [string | undefined, Function] = useState();
 
     const data = locateReferences(contents, currentBook, currentChapter);
+    const fileManager = FileManager.getInstance();
 
     // format references
     const references = data.map((ref) => {
@@ -69,8 +71,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
 
                 // TODO; prevent multiple reads of same file
                 const usfm = ref[1];
-                const fileName = `${usfm.book}.${usfm.initialChapter}`;
-                let passageContents = await window.electronAPI.loadScripture(fileName, translation);
+                const passageContents = await fileManager.loadScripture(usfm.book, usfm.initialChapter, translation);
 
                 if (!passageContents) {
                     setNoteContents(null);

@@ -4,6 +4,7 @@ import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 import { Alert } from 'react-bootstrap';
 
+import FileManager from '../../utils/FileManager';
 import { getUSFM, getReferenceText } from '../../utils/bibleReferences';
 
 import Passage from './Passage';
@@ -44,6 +45,8 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
     const [noteGroupsList, setNoteGroupsList] = useState('');
     const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
+
+    const fileManager = FileManager.getInstance();
 
     store = useStore();
     const deselect = () => store.dispatch(deselectSidenote(docID));
@@ -156,8 +159,11 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
-
+        // debugger;
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
+            return;
+        }
+        if (selectedTranslation === undefined || selectedTranslation === null || selectedTranslation === '') {
             return;
         }
 
@@ -171,6 +177,7 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }
 
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false): Promise<void> {
+        console.log('loadPassageFromUSFM');
 
         if (!Array.isArray(usfm)) {
             usfm = [usfm];
@@ -188,15 +195,14 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
 
                 // load chapters from files
                 for (let chapter = passageUsfm.initialChapter; chapter <= chapterRange; chapter++) {
-                    const fileName = `${passageUsfm.book}.${chapter}`;
 
-                    if (!fileName) { // invalid
+                    if (!passageUsfm.book) { // invalid
                         continue;
                     }
                     // TODO; prevent multiple reads of current file
 
                     // load contents externally from files
-                    const chapterContents = await window.electronAPI.loadScripture(fileName, selectedTranslation); // TODO; single-chapter books
+                    const chapterContents = await fileManager.loadScripture(passageUsfm.book, chapter, selectedTranslation); // TODO; single-chapter books
                     if (chapterContents) {
                         chaptersContents.push(chapterContents);
                     }
