@@ -177,7 +177,6 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
     }
 
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false): Promise<void> {
-        console.log('loadPassageFromUSFM');
 
         if (!Array.isArray(usfm)) {
             usfm = [usfm];

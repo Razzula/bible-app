@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Sidenote } from 'sidenotes';
-import NoteContent from './NoteContent';
-
-import 'sidenotes/dist/sidenotes.css';
-import '../../styles/sidenotes.scss';
+import SidenoteContainer from './SidenoteContainer';
 
 type SidenotesContainerProps = {
     position: string;
@@ -45,12 +41,10 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
         const sidenotesElements = notesContents.map((noteContents: { id: string, verse: string, contents: string }) => {
 
             return (
-                <Sidenote key={noteContents.verse} sidenote={noteContents.verse} base={passage}>
-                    <NoteContent
-                        sidenoteID={noteContents.id} passageName={noteContents.verse} docID={docID} initialNoteContents={noteContents.contents}
-                        updateNotesContents={updateNotesContents} deleteNote={deleteNote}
-                    />
-                </Sidenote>
+                <SidenoteContainer // TODO: switch these
+                    sidenoteID={noteContents.id} passageName={noteContents.verse} docID={docID} initialNoteContents={noteContents.contents} base={passage}
+                    updateNotesContents={updateNotesContents} deleteNote={deleteNote}
+                />
             );
         });
 

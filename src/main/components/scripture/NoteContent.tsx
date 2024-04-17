@@ -81,7 +81,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
     }
 
     return (
-        <div style={{ width: 280, height: 'auto', backgroundColor: backgroundColour }}>
+        <div style={{ height: 'auto', backgroundColor: backgroundColour }}>
             <div>
                 <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
                 <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
