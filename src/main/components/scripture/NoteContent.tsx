@@ -10,6 +10,8 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
+import { FloatingToolbarPlugin } from '../lexical/plugins/FloatingToolbarPlugin';
+
 import '../../styles/editor.scss';
 import { EditorState } from 'lexical';
 
@@ -103,6 +105,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
                     </div>
                     <OnChangePlugin onChange={handleChange} />
                     <HistoryPlugin />
+                    <FloatingToolbarPlugin />
                 </LexicalComposer>
             </div>
         </div>
