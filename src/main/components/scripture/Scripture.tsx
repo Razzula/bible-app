@@ -10,6 +10,7 @@ import { getUSFM, getReferenceText } from '../../utils/bibleReferences';
 import Passage from './Passage';
 
 import licenses from '../../../../public/licenses.json';
+import { WindowTypes } from '../../utils/enums';
 
 declare global {
     interface Window {
@@ -23,13 +24,14 @@ const docID = 'article';
 
 type ScriptureProps = {
     queryToLoad?: string;
+    createNewTab: (panelType: symbol, data: string) => void;
 }
 
 /**
  * A React component to display the main application.
  * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
  */
-function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
+function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState('');
@@ -176,7 +178,12 @@ function Scripture({ queryToLoad }: ScriptureProps): JSX.Element {
         void loadPassageFromUSFM(result, clearForwardCache)
     }
 
-    async function loadPassageFromUSFM(usfm: any, clearForwardCache = false): Promise<void> {
+    async function loadPassageFromUSFM(usfm: any, clearForwardCache = false, openInNewTab = false): Promise<void> {
+
+        if (openInNewTab) {
+            createNewTab(WindowTypes.Scripture.Type, getReferenceText(usfm));
+            return;
+        }
 
         if (!Array.isArray(usfm)) {
             usfm = [usfm];

@@ -9,14 +9,15 @@ import { Alert } from 'react-bootstrap';
 type WindowProps = {
     windowToLoad: symbol;
     data: string;
+    createNewTab: (panelType: symbol, data: string) => void;
 }
 
-function Window({ windowToLoad, data }: WindowProps): JSX.Element | null {
+function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element | null {
 
     switch (windowToLoad) {
         case WindowTypes.Scripture.Type:
             return (
-                <Scripture queryToLoad={data} />
+                <Scripture queryToLoad={data} createNewTab={createNewTab} />
             );
         case WindowTypes.Document.Type:
             return (

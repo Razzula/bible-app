@@ -9,7 +9,7 @@ import Passage from './Passage';
 
 type FootnoteProps = {
     contents: string;
-    loadPassage: (usfm: object, isFootnote: boolean) => void;
+    loadPassage: (usfm: object, isFootnote: boolean, openInNewTab?: boolean) => void;
     currentBook: string;
     currentChapter: number;
     translation: string;
@@ -63,7 +63,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
             // contents of footnote popover
             return (
                 <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
-                    <span className={refType} onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[1], true)}>{ref[0]}</span>
+                    <span className={refType} onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[1], true)} onAuxClick={() => loadPassage(ref[1], true, true)}>{ref[0]}</span>
                 </OverlayTrigger>
             );
 

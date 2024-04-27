@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import Footnote from './Footnote';
 
@@ -16,14 +16,14 @@ type PassageChunkProps = {
     passageNotes?: any;
     renderMode?: string;
     selectedToken?: string;
-    setSelectedToken?: Function;
+    handleTokenSelected?: Function;
 }
 
 type PassageTokenProps = {
     content: Section;
     classes: string[];
     selectedToken?: string;
-    setSelectedToken?: Function;
+    handleTokenSelected?: Function;
 }
 
 type Section = {
@@ -37,7 +37,7 @@ type Section = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, selectedToken, setSelectedToken, renderMode }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, selectedToken, handleTokenSelected, renderMode }: PassageChunkProps): JSX.Element {
 
     const [notedVerses, setNotedVerses]: [Set<string> | undefined, Function] = React.useState();
 
@@ -108,7 +108,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         else {
             contents = <PassageToken
                 content={item} classes={classes} selectedToken={selectedToken}
-                setSelectedToken={setSelectedToken}
+                handleTokenSelected={handleTokenSelected}
             />;
         }
 
@@ -129,21 +129,23 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
 }
 
-function PassageToken({ content, classes, selectedToken, setSelectedToken }: PassageTokenProps): JSX.Element {
+function PassageToken({ content, classes, selectedToken, handleTokenSelected }: PassageTokenProps): JSX.Element {
+
+    const tokenRef = useRef(null);
 
     const handleTokenClick = (e: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
-        if (setSelectedToken) {
+        if (handleTokenSelected) {
             if (selectedToken === content.id) {
-                setSelectedToken(undefined);
+                handleTokenSelected(undefined, null);
             }
             else {
-                setSelectedToken(content.id);
+                handleTokenSelected(content.id, tokenRef.current);
             }
         }
     };
 
     return (
-        <span
+        <span ref={tokenRef}
             className={classes.join(' ') + ((selectedToken && selectedToken === content.id) ? ' selected' : '')}
             onClick={handleTokenClick}
         >

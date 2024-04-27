@@ -105,7 +105,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
                     </div>
                     <OnChangePlugin onChange={handleChange} />
                     <HistoryPlugin />
-                    <FloatingToolbarPlugin />
+                    {/* <FloatingToolbarPlugin /> // TODO fix this */}
                 </LexicalComposer>
             </div>
         </div>

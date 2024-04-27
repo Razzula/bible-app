@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
 import 'sidenotes/dist/sidenotes.css';
@@ -12,6 +12,7 @@ import { Store, AnchorBase } from 'sidenotes';
 import FileManager from '../../utils/FileManager';
 
 import '../../styles/Bible.scss';
+import { useFloating, autoUpdate, offset, flip, shift, useClick, useDismiss, useRole, useInteractions, FloatingFocusManager, } from '@floating-ui/react';
 
 const baseAnchor = 'anchor';
 
@@ -54,6 +55,18 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
 
     const fileManager = FileManager.getInstance();
+
+    // popover for token selection
+    const [isOpen, setIsOpen] = useState(false);
+    const { refs, floatingStyles, context } = useFloating({
+        open: isOpen,
+        onOpenChange: setIsOpen,
+        middleware: [offset(10), flip(), shift()],
+        whileElementsMounted: autoUpdate,
+    });
+
+    // TODO popover for footnotes
+    // TODO popver for references (these can be a level higher, I guess?)
 
     useEffect(() => {
         if (shouldLoad) {
@@ -233,7 +246,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             passageElements.push(
                 <PassageChunk
                     contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
-                    setSelectedToken={setSelectedToken}
+                    handleTokenSelected={handleTokenSelected}
                 />
             );
         }
@@ -275,7 +288,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         passageElements.push(
                             <PassageChunk
                                 contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
-                                setSelectedToken={setSelectedToken}
+                                handleTokenSelected={handleTokenSelected}
                             />
                         );
 
@@ -292,7 +305,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         passageElements.push(
                             <PassageChunk
                                 contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
-                                setSelectedToken={setSelectedToken}
+                                handleTokenSelected={handleTokenSelected}
                             />
                         );
 
@@ -319,7 +332,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             passageElements.push(
                 <PassageChunk
                     contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
-                    setSelectedToken={setSelectedToken}
+                    handleTokenSelected={handleTokenSelected}
                 />
             );
 
@@ -393,32 +406,57 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     //     }
     // }
 
-    // TOOO; better way to do this
+    function handleTokenSelected(token: string, ref: any): void {
+        setSelectedToken(token);
+        refs.setReference(ref);
+        setIsOpen(ref !== null);
+    }
 
-    return (<>
-        <AnchorBase anchor={baseAnchor} className="base">
-            {/* <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br/> */}
-            {passage}
-            {/* <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button> */}
-        </AnchorBase>
-
-        {(!ignoreFootnotes && shouldLoadNotes && renderMode === 'sidenotes')
-            ? <>
-                <SidenotesContainer
-                    position=''
-                    passage={`${usfm.book}.${usfm.chapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID}
-                    createNewNote={createNewNote} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
-                />
-                {/* <SidenotesContainer
-                    position=' l'
-                    passage={`${usfm.book}.${usfm.chapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID}
-                    createNewNote={createNewNote} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
-                /> */}
-            </>
-            : null
+    function handleNewNoteClick(): void {
+        if (selectedNoteGroup) {
+            const id = crypto.randomUUID();
+            createNewNote(id, selectedNoteGroup);
         }
-    </>);
+    }
+
+    return (
+        <>
+            <AnchorBase anchor={baseAnchor} className="base">
+                {/* <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br/> */}
+                {passage}
+                {/* <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button> */}
+            </AnchorBase>
+
+            {(!ignoreFootnotes && shouldLoadNotes && renderMode === 'sidenotes')
+                ? <>
+                    <SidenotesContainer
+                        position=''
+                        passage={`${usfm.book}.${usfm.chapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID}
+                        createNewNote={createNewNote} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
+                    />
+                    {/* <SidenotesContainer
+                        position=' l'
+                        passage={`${usfm.book}.${usfm.chapter}`} notesContents={notesContents} selectedNoteGroup={selectedNoteGroup} docID={docID}
+                        createNewNote={createNewNote} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
+                    /> */}
+                </>
+                : null
+            }
+
+            {isOpen && (
+                <FloatingFocusManager context={context} modal={false}>
+                    <div ref={refs.setFloating} style={floatingStyles}>
+                        {/* NEW NOTE BUTTON */}
+                        <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
+                    </div>
+                </FloatingFocusManager>
+            )}
+        </>
+    );
 
 }
+
+// function AnnotationPopover({ token, context, }: any): JSX.Element {
+// }
 
 export default Passage;

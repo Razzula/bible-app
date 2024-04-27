@@ -23,7 +23,7 @@ function Page(): JSX.Element {
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
 
-            const newWindow = <Window windowToLoad={type} data={name} />;
+            const newWindow = <Window windowToLoad={type} data={name} createNewTab={createNewTab} />;
             newWindowsList.set(name, newWindow);
 
             selectTab(name);
@@ -38,7 +38,7 @@ function Page(): JSX.Element {
     }
 
     function closeTab(name: string): void {
-        
+
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
             newWindowsList.delete(name);

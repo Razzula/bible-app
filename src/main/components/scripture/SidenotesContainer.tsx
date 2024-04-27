@@ -51,23 +51,9 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
         setSidenotesElements(sidenotesElements);
     }
 
-    function handleNewNoteClick(): void {
-
-        const selectedText = window.getSelection()?.toString();
-        if (selectedText !== '') {
-            const id = crypto.randomUUID();
-            createNewNote(id, selectedNoteGroup);
-        }
-    }
-
     return (
         <div className={`sidenotes${position}`}>
-
-            {/* NEW NOTE BUTTON */}
-            <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
-
             {sidenotesElements}
-
         </div>
     );
 
