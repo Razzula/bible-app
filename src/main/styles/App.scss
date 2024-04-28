@@ -46,3 +46,8 @@
 Window {
     display: flex;
 }
+
+.popover {
+    position: absolute;
+    z-index: 1000;
+}

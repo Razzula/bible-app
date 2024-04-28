@@ -4,7 +4,7 @@ import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { createRoot } from 'react-dom/client';
 import { Store, setup } from 'sidenotes';
-import rootReducer from './utils/reducers';
+import rootReducer from './redux/rootReducer';
 
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -18,11 +18,11 @@ setup(store, { padding: 10 });
 const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 root.render(
-  <Provider store={store}>
-    <React.StrictMode>
+    <Provider store={store}>
+        <React.StrictMode>
 
-      <App />
+            <App />
 
-    </React.StrictMode>
-  </Provider>
+        </React.StrictMode>
+    </Provider>
 );

@@ -13,6 +13,9 @@ import FileManager from '../../utils/FileManager';
 
 import '../../styles/Bible.scss';
 import { useFloating, autoUpdate, offset, flip, shift, useClick, useDismiss, useRole, useInteractions, FloatingFocusManager, } from '@floating-ui/react';
+import { useSelector } from 'react-redux';
+import { RootSate } from '../..//redux/rootReducer';
+import { FloatingToolbar } from '../lexical/FloatingToolbar';
 
 const baseAnchor = 'anchor';
 
@@ -57,13 +60,33 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     const fileManager = FileManager.getInstance();
 
     // popover for token selection
-    const [isOpen, setIsOpen] = useState(false);
-    const { refs, floatingStyles, context } = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
+    const [tokenPopoverIsOpen, setTokenPopoverIsOpen] = useState(false);
+    const { refs: tokenFloatRefs, floatingStyles: tokenFloatStyles, context: tokenFloatContext } = useFloating({
+        open: tokenPopoverIsOpen,
+        onOpenChange: setTokenPopoverIsOpen,
+        placement: 'top',
         middleware: [offset(10), flip(), shift()],
         whileElementsMounted: autoUpdate,
     });
+
+    // popver for note editors
+    const { currentEditorRef, currentEditor } = useSelector((state: RootSate) => ({
+        currentEditorRef: state.passage.activateRef,
+        currentEditor: state.passage.activeEditor,
+    }));
+    const editorPopoverIsOpen = useSelector((state: RootSate) => state.passage.activateRef !== null);
+
+    const { refs: editorFloatRefs, floatingStyles: editorFloatStyles, context: editorFloatContext } = useFloating({
+        open: editorPopoverIsOpen,
+        // onOpenChange: setIsJackOpen,
+        placement: 'top',
+        middleware: [offset(10), flip(), shift()],
+        whileElementsMounted: autoUpdate,
+    });
+
+    useEffect(() => {
+        editorFloatRefs.setReference(currentEditorRef !== null ? currentEditorRef.current : null);
+    }, [currentEditorRef]);
 
     // TODO popover for footnotes
     // TODO popver for references (these can be a level higher, I guess?)
@@ -408,8 +431,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
     function handleTokenSelected(token: string, ref: any): void {
         setSelectedToken(token);
-        refs.setReference(ref);
-        setIsOpen(ref !== null);
+        tokenFloatRefs.setReference(ref);
+        setTokenPopoverIsOpen(ref !== null);
     }
 
     function handleNewNoteClick(): void {
@@ -443,11 +466,19 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                 : null
             }
 
-            {isOpen && (
-                <FloatingFocusManager context={context} modal={false}>
-                    <div ref={refs.setFloating} style={floatingStyles}>
+            {tokenPopoverIsOpen && (
+                <FloatingFocusManager context={tokenFloatContext} modal={false}>
+                    <div ref={tokenFloatRefs.setFloating} style={tokenFloatStyles}>
                         {/* NEW NOTE BUTTON */}
                         <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
+                    </div>
+                </FloatingFocusManager>
+            )}
+
+            {editorPopoverIsOpen && (
+                <FloatingFocusManager context={editorFloatContext} modal={false}>
+                    <div ref={editorFloatRefs.setFloating} className='popover' style={editorFloatStyles}>
+                        <FloatingToolbar editor={currentEditor} />
                     </div>
                 </FloatingFocusManager>
             )}

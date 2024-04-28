@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { State } from 'sidenotes/dist/src/store';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
@@ -38,6 +38,8 @@ type NoteContentProps = {
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
 function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
+
+    const ref = useRef(null);
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
@@ -90,7 +92,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
                 {/* <textarea value={currentNoteContents} onChange={handleChange} /> */}
             </div>
 
-            <div style={{ height: 'auto' }}>
+            <div ref={ref} style={{ height: 'auto' }}>
                 <LexicalComposer initialConfig={{
                     namespace: 'name',
                     onError,
@@ -105,7 +107,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
                     </div>
                     <OnChangePlugin onChange={handleChange} />
                     <HistoryPlugin />
-                    {/* <FloatingToolbarPlugin /> // TODO fix this */}
+                    <FloatingToolbarPlugin editorRef={ref} />
                 </LexicalComposer>
             </div>
         </div>

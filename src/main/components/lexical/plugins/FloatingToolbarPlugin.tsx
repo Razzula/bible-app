@@ -1,71 +1,60 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
-import { createPortal } from 'react-dom';
-
-import { FloatingToolbar } from '../FloatingToolbar';
-import { FloatingMenuCoords } from '../../FloatingMenu';
-import { computePosition } from '@floating-ui/dom';
 import { usePointerInteraction } from '../../../hooks/usePointerInteractions';
 import { $getSelection, $isRangeSelection } from 'lexical';
+import { useDispatch } from 'react-redux';
+import { activatePassage, deactivatePassage } from '../../../../main/redux/actions';
 
-const DOM_ELEMENT = document.body;
+type FloatingToolbarPluginProps = {
+    editorRef: any;
+};
 
 /**
  * A Lexical plugin to display a floating toolbar.
  */
-export function FloatingToolbarPlugin(): JSX.Element {
+export function FloatingToolbarPlugin({ editorRef }: FloatingToolbarPluginProps): null {
 
-    const ref = useRef<HTMLDivElement>(null); // thsi re-renders so many times every click
-    // console.log(ref);
-    const [coords, setCoords] = useState<FloatingMenuCoords>(undefined);
     const [editor] = useLexicalComposerContext();
 
     const isPointerDown = usePointerInteraction();
 
+    const dispatch = useDispatch();
+
     /**
      * When the pointer is no longer down, regenerate the function to calculate the position of the floating toolbar.
      */
-    const calculatePosition = useCallback(() => {
+    const triggerPopover = useCallback(() => {
 
-        const domSelection = getSelection();
-        const domRange = (domSelection?.rangeCount !== 0) && (domSelection?.getRangeAt(0));
+        if (!isPointerDown) {
+            dispatch(activatePassage(editorRef, editor));
+        }
 
-        if (!domRange || !ref.current || isPointerDown) return setCoords(undefined);
-
-        computePosition(domRange, ref.current, { placement: 'top' })
-            .then(pos => { // set coordinates to the top of the selection
-                console.log({ x: pos.x, y: pos.y - 10 });
-                setCoords({ x: pos.x, y: pos.y - 10 });
-            })
-            .catch(() => { // do not display, as coordinates could not be computed
-                setCoords(undefined);
-            });
     }, [isPointerDown]);
 
     /**
-     * TODO
+     * Handle when there is a change in the selection of the lexical editor's text.
      */
     const handleSelectionChange = useCallback(() => {
 
         // ensure that the editor is focused and not in composition mode
         if (editor.getRootElement() !== document.activeElement || editor.isComposing()) {
-            setCoords(undefined);
             return;
         }
 
+        // is there a range selection?
         const selection = $getSelection();
         if ($isRangeSelection(selection) && !selection.anchor.is(selection.focus)) {
-            calculatePosition(); // calculate the position of the floating toolbar
+            triggerPopover();
         }
         else {
-            setCoords(undefined);
+            dispatch(deactivatePassage());
         }
-    }, [editor, calculatePosition]);
+    }, [editor, triggerPopover]);
 
     /**
-     * TODO
+     * Register a listener to handle selection changes.
      */
     useEffect(() => {
         return editor.registerUpdateListener(({ editorState }) => {
@@ -74,21 +63,16 @@ export function FloatingToolbarPlugin(): JSX.Element {
     }, [editor, handleSelectionChange]);
 
     /**
-     * TODO
+     * Manually trigger the selection change handler when the editor is first mounted.
      */
     useEffect(() => {
 
-        if (coords === undefined) {
-            editor.getEditorState().read(() => handleSelectionChange());
-        }
+        editor.getEditorState().read(() => handleSelectionChange());
         // Adding show to the dependency array causes an issue if
         // a range selection is dismissed by navigating via arrow keys.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleSelectionChange, editor]);
 
-    return createPortal(
-        <FloatingToolbar ref={ref} editor={editor} coords={coords} />,
-        DOM_ELEMENT
-    );
+    return null;
 
 }
