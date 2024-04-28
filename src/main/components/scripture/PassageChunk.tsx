@@ -5,6 +5,8 @@ import Footnote from './Footnote';
 import '../../styles/Bible.scss';
 import { InlineAnchor } from 'sidenotes';
 import { isOfParagraphType } from '../../utils/general';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/rootReducer';
 
 type PassageChunkProps = {
     contents: any;
@@ -15,7 +17,6 @@ type PassageChunkProps = {
     translation: string;
     passageNotes?: any;
     renderMode?: string;
-    selectedToken?: string;
     handleTokenSelected?: Function;
 }
 
@@ -37,7 +38,7 @@ type Section = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, selectedToken, handleTokenSelected, renderMode }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, handleTokenSelected, renderMode }: PassageChunkProps): JSX.Element {
 
     const [notedVerses, setNotedVerses]: [Set<string> | undefined, Function] = React.useState();
 
@@ -107,7 +108,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
         else {
             contents = <PassageToken
-                content={item} classes={classes} selectedToken={selectedToken}
+                content={item} classes={classes}
                 handleTokenSelected={handleTokenSelected}
             />;
         }
@@ -129,12 +130,15 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
 }
 
-function PassageToken({ content, classes, selectedToken, handleTokenSelected }: PassageTokenProps): JSX.Element {
+function PassageToken({ content, classes, handleTokenSelected }: PassageTokenProps): JSX.Element {
 
     const tokenRef = useRef(null);
 
-    const handleTokenClick = (e: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
+    const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
+
+    const handleTokenClick = (event: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
         if (handleTokenSelected) {
+            event.stopPropagation()
             if (selectedToken === content.id) {
                 handleTokenSelected(undefined, null);
             }
@@ -144,9 +148,11 @@ function PassageToken({ content, classes, selectedToken, handleTokenSelected }: 
         }
     };
 
+    const selectionCSS = (selectedToken && selectedToken !== content.id) ? ' unselected' : '';
+
     return (
         <span ref={tokenRef}
-            className={classes.join(' ') + ((selectedToken && selectedToken === content.id) ? ' selected' : '')}
+            className={classes.join(' ') + selectionCSS}
             onClick={handleTokenClick}
         >
             {content.content /* TODO this is poorly named */}

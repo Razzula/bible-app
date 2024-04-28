@@ -15,16 +15,27 @@ export const FloatingToolbar = forwardRef<HTMLDivElement, FloatingToolbarProps>(
     function FloatingToolbar({ editor }) {
 
         return (
-            <Button
-                // icon="bold"
-                aria-label="Format text as bold"
-                // active={state.isBold}
-                onClick={() => {
-                    editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
-                }}
-            >
-                BOLD
-            </Button>
+            <>
+                {/* BOLD */}
+                <Button
+                    aria-label="Format text as bold"
+                    onClick={() => {
+                        editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
+                    }}
+                >
+                    B
+                </Button>
+
+                {/* ITALICS */}
+                <Button
+                    aria-label="Format text as italicised"
+                    onClick={() => {
+                        editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+                    }}
+                >
+                    I
+                </Button>
+            </>
         );
     }
 );

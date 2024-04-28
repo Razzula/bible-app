@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { Store, AnchorBase } from 'sidenotes';
+import { Store } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { useStore } from 'react-redux';
 import { Alert } from 'react-bootstrap';
@@ -11,6 +11,7 @@ import Passage from './Passage';
 
 import licenses from '../../../../public/licenses.json';
 import { WindowTypes } from '../../utils/enums';
+import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 
 declare global {
     interface Window {
@@ -51,7 +52,13 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const fileManager = FileManager.getInstance();
 
     store = useStore();
-    const deselect = () => store.dispatch(deselectSidenote(docID));
+    const deselect = () => {
+        store.dispatch(deselectSidenote(docID));
+        if (document.activeElement?.className !== 'editor-input') { // allow clicking on inline notes
+            store.dispatch(setNoActiveEditor());
+        }
+        store.dispatch(setNoActiveToken());
+    };
 
     useEffect(() => {
         void getTranslationList();

@@ -14,8 +14,10 @@ import FileManager from '../../utils/FileManager';
 import '../../styles/Bible.scss';
 import { useFloating, autoUpdate, offset, flip, shift, useClick, useDismiss, useRole, useInteractions, FloatingFocusManager, } from '@floating-ui/react';
 import { useSelector } from 'react-redux';
-import { RootSate } from '../..//redux/rootReducer';
+import { RootState } from '../../redux/rootReducer';
 import { FloatingToolbar } from '../lexical/FloatingToolbar';
+import { useDispatch } from 'react-redux';
+import { setActiveToken } from '../../redux/actions';
 
 const baseAnchor = 'anchor';
 
@@ -52,12 +54,13 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     const [passage, setPassage]: [JSX.Element, Function] = useState(<></>);
 
     const [notesContents, setNotesContents]: [any, (a: any) => void] = useState([]);
-    const [selectedToken, setSelectedToken]: [any, (a: any) => void] = useState(null);
+    const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
 
     const shouldLoad = (contents !== null && contents !== undefined);
     const shouldLoadNotes = (shouldLoad && selectedNoteGroup !== undefined);
 
     const fileManager = FileManager.getInstance();
+    const dispatch = useDispatch();
 
     // popover for token selection
     const [tokenPopoverIsOpen, setTokenPopoverIsOpen] = useState(false);
@@ -69,12 +72,18 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         whileElementsMounted: autoUpdate,
     });
 
+    useEffect(() => {
+        if (selectedToken === null) {
+            setTokenPopoverIsOpen(false);
+        }
+    }, [selectedToken]);
+
     // popver for note editors
-    const { currentEditorRef, currentEditor } = useSelector((state: RootSate) => ({
-        currentEditorRef: state.passage.activateRef,
+    const { currentEditorRef, currentEditor } = useSelector((state: RootState) => ({
+        currentEditorRef: state.passage.activeRef,
         currentEditor: state.passage.activeEditor,
     }));
-    const editorPopoverIsOpen = useSelector((state: RootSate) => state.passage.activateRef !== null);
+    const editorPopoverIsOpen = useSelector((state: RootState) => state.passage.activeRef !== null);
 
     const { refs: editorFloatRefs, floatingStyles: editorFloatStyles, context: editorFloatContext } = useFloating({
         open: editorPopoverIsOpen,
@@ -85,7 +94,13 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     });
 
     useEffect(() => {
-        editorFloatRefs.setReference(currentEditorRef !== null ? currentEditorRef.current : null);
+        if (currentEditorRef !== null) {
+            editorFloatRefs.setReference(currentEditorRef.current);
+            currentEditorRef.current.focus();
+        }
+        else {
+            editorFloatRefs.setReference(null);
+        }
     }, [currentEditorRef]);
 
     // TODO popover for footnotes
@@ -111,7 +126,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         if (formattedContent) {
             renderPassage();
         }
-    }, [formattedContent, notesContents, renderMode, selectedToken]);
+    }, [formattedContent, notesContents, renderMode]);
 
     // LOAD PASSAGE NOTES
     async function loadPassageNotes(group: string, book: string, chapter: string): Promise<void> {
@@ -175,6 +190,10 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     }
 
     function createNewNote(id: string, selectedNoteGroup: string): void {
+
+        if (selectedToken === null) {
+            return;
+        }
 
         const newNoteContents: Note = {
             id,
@@ -268,7 +287,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         if (ignoreFootnotes || renderMode === 'sidenotes') {
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
                     handleTokenSelected={handleTokenSelected}
                 />
             );
@@ -310,7 +329,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected unannotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
                                 handleTokenSelected={handleTokenSelected}
                             />
                         );
@@ -327,7 +346,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         // add currently collected annotated chunk
                         passageElements.push(
                             <PassageChunk
-                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
                                 handleTokenSelected={handleTokenSelected}
                             />
                         );
@@ -354,7 +373,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             }
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} selectedToken={selectedToken} renderMode={renderMode}
+                    contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
                     handleTokenSelected={handleTokenSelected}
                 />
             );
@@ -430,7 +449,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     // }
 
     function handleTokenSelected(token: string, ref: any): void {
-        setSelectedToken(token);
+        dispatch(setActiveToken(token));
         tokenFloatRefs.setReference(ref);
         setTokenPopoverIsOpen(ref !== null);
     }
@@ -476,7 +495,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             )}
 
             {editorPopoverIsOpen && (
-                <FloatingFocusManager context={editorFloatContext} modal={false}>
+                <FloatingFocusManager context={editorFloatContext} modal={false} initialFocus={-1}>
                     <div ref={editorFloatRefs.setFloating} className='popover' style={editorFloatStyles}>
                         <FloatingToolbar editor={currentEditor} />
                     </div>

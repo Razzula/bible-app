@@ -5,7 +5,7 @@ import { useEffect, useCallback } from 'react';
 import { usePointerInteraction } from '../../../hooks/usePointerInteractions';
 import { $getSelection, $isRangeSelection } from 'lexical';
 import { useDispatch } from 'react-redux';
-import { activatePassage, deactivatePassage } from '../../../../main/redux/actions';
+import { setActiveEditor, setNoActiveEditor } from '../../../../main/redux/actions';
 
 type FloatingToolbarPluginProps = {
     editorRef: any;
@@ -28,7 +28,7 @@ export function FloatingToolbarPlugin({ editorRef }: FloatingToolbarPluginProps)
     const triggerPopover = useCallback(() => {
 
         if (!isPointerDown) {
-            dispatch(activatePassage(editorRef, editor));
+            dispatch(setActiveEditor(editorRef, editor));
         }
 
     }, [isPointerDown]);
@@ -49,7 +49,7 @@ export function FloatingToolbarPlugin({ editorRef }: FloatingToolbarPluginProps)
             triggerPopover();
         }
         else {
-            dispatch(deactivatePassage());
+            dispatch(setNoActiveEditor());
         }
     }, [editor, triggerPopover]);
 

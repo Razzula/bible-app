@@ -1,29 +1,45 @@
-import { ACTIVATE_PASSAGE, DEACTIVATE_PASSAGE } from './actions';
+import { ACTIVATE_EDITOR, DEACTIVATE_EDITOR, ACTIVATE_TOKEN, DEACTIVATE_TOKEN } from './actions';
 
 export interface PassageUIState {
-    activateRef: any;
+    activeRef: any;
     activeEditor: any;
+    activeToken: string | null;
 }
 
 const initialState: PassageUIState = {
-    activateRef: null,
-    activeEditor: null
+    activeRef: null,
+    activeEditor: null,
+    activeToken: null
 };
 
 const passageUIReducer = (state = initialState, action: any): PassageUIState => {
+
     switch (action.type) {
-        case ACTIVATE_PASSAGE:
+
+        case ACTIVATE_EDITOR:
             return {
                 ...state,
-                activateRef: action.payload.ref,
+                activeRef: action.payload.ref,
                 activeEditor: action.payload.editor
             };
-        case DEACTIVATE_PASSAGE:
+        case DEACTIVATE_EDITOR:
             return {
                 ...state,
-                activateRef: null,
+                activeRef: null,
                 activeEditor: null
             };
+
+        case ACTIVATE_TOKEN:
+            return {
+                ...state,
+                activeToken: action.payload.token
+            };
+        case DEACTIVATE_TOKEN:
+            return {
+                ...state,
+                activeToken: null
+            };
+
         default:
             return state;
     }

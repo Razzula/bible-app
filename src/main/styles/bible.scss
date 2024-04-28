@@ -128,10 +128,14 @@ span.bdit {
 }
 
 span.text {
-    &:hover,
-    &.selected {
+    cursor: pointer;
+
+    &:hover {
         text-decoration-line: underline;
         text-decoration-style: dotted;
+    }
+    &.unselected {
+        opacity: 0.4;
         cursor: pointer;
     }
 }

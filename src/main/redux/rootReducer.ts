@@ -3,7 +3,7 @@ import { State, SidenotesUIActions, Reducer, reducer } from 'sidenotes';
 import passageUIReducer, { PassageUIState } from './passageUIReducer';
 import { UIState } from 'sidenotes/dist/src/store/ui/types';
 
-export interface RootSate {
+export interface RootState {
     sidenotes: UIState;
     passage: PassageUIState;
 }
