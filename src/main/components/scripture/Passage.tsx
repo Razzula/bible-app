@@ -294,11 +294,12 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         }
         else if (renderMode === 'interlinear') {
 
-            // GET SPLIT POINTS
+            // GET ANNOTATION BOUNDS
             // calculate the start and end of each section we need to annotate
-            const splitPointsMap: any = {};
+            const notesBounds: any = {};
             for (const note of notesContents) {
-                splitPointsMap[note.verse] = {};
+                // instantiate the object ready so that bounds can be written directly, without presence checking
+                notesBounds[note.verse] = {};
             }
             for (let i = 0; i < formattedContent.length; i++) { // iterate over all verse subsections
 
@@ -307,67 +308,77 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         const annotation = note.verse;
 
                         if (formattedContent[i].id === annotation) {
-                            if (splitPointsMap[annotation]['start'] === undefined) {
-                                splitPointsMap[annotation]['start'] = (formattedContent[i-1].type.includes('label')) ? i-1 : i;
+                            // this is an occurence of an annotation
+                            if (notesBounds[annotation]['start'] === undefined) {
+                                // we only mark the start on the first seen occurence
+                                notesBounds[annotation]['start'] = (formattedContent[i-1].type.includes('label')) ? i-1 : i;
                             }
-                            splitPointsMap[annotation]['end'] = i;
+                            // mark this as the end: this will eventually be overwritten with the true end
+                            notesBounds[annotation]['end'] = i;
                         }
 
                     }
                 }
             }
-            const splitPoints: any[] = Object.entries(splitPointsMap);
+
+            // GET SPLIT POINTS
+            // we assume there is no overlap between notes
+            // we assume that there are no notes sharing a boundary
+            // TODO handle overlap
+            const splitPoints: any = {};
+            Object.entries(notesBounds).forEach(([token, bounds]: any) => {
+                if (splitPoints[bounds.end] !== undefined) {
+                    // TODO handle this properly
+                    console.error('Splitpoint', bounds.end, 'is already marked as', splitPoints[bounds.end], 'whilst trying to set to', token);
+                }
+                splitPoints[bounds.end] = token;
+
+                if (splitPoints[bounds.start] !== undefined) {
+                    // TODO handle this properly
+                    console.error('Splitpoint', bounds.start, 'is already marked as', splitPoints[bounds.start], 'whilst trying to set to null');
+                }
+                else {
+                    splitPoints[bounds.start] = null;
+                }
+            });
 
             // RENDER
             // split the formatted content into chunks
             let formattedContentChunk: JSX.Element[] = [];
-            let splitPoint = splitPoints.shift(); // TODO this assumes there is no overlap between notes
             for (let i = 0; i < formattedContent.length; i++) {
-                if (splitPoint) {
-                    if (i === splitPoint[1].start) { // START
 
-                        // add currently collected unannotated chunk
-                        passageElements.push(
-                            <PassageChunk
-                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
-                                handleTokenSelected={handleTokenSelected}
-                            />
-                        );
-
-                        // begin collecting the new chunk
-                        formattedContentChunk = [];
-                    }
-
+                const split = splitPoints[i];
+                if (split === null) {
+                    // this is a split point (start of a bound)
+                    // TODO
+                    formattedContentChunk.push(formattedContent[i]);
+                }
+                else if (split !== undefined) {
+                    // this is a split point (end of a bound)
                     // add to chunk
                     formattedContentChunk.push(formattedContent[i]);
 
-                    if (i === splitPoint[1].end) { // END
+                    // END CHUNK
+                    // add currently collected annotated chunk
+                    passageElements.push(
+                        <PassageChunk
+                            contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
+                            handleTokenSelected={handleTokenSelected}
+                        />
+                    );
+                    formattedContentChunk = [];
 
-                        // add currently collected annotated chunk
-                        passageElements.push(
-                            <PassageChunk
-                                contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
-                                handleTokenSelected={handleTokenSelected}
-                            />
-                        );
+                    // INSERT NOTE
+                    const note = notesContents.find((note: any) => note.verse === split);
 
-                        // note
-                        const note = notesContents.find((note: any) => note.verse === splitPoint[0]);
-
-                        const noteContent = (<NoteContent
-                            sidenoteID={note.verse} passageName={note.verse} docID={docID} initialNoteContents={note.contents}
-                            updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
-                        />);
-                        passageElements.push(<div>{noteContent}</div>);
-
-                        // watch for next split point
-                        splitPoint = splitPoints.shift();
-                        formattedContentChunk = [];
-
-                    }
+                    const noteContent = (<NoteContent
+                        sidenoteID={note.verse} passageName={note.verse} docID={docID} initialNoteContents={note.contents}
+                        updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
+                    />);
+                    passageElements.push(<div>{noteContent}</div>);
                 }
                 else {
-                    // there are no more split points, so just add the rest of the content
+                    // not a split point, so just add to chunk
                     formattedContentChunk.push(formattedContent[i]);
                 }
             }

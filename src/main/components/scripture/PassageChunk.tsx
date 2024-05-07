@@ -4,7 +4,7 @@ import Footnote from './Footnote';
 
 import '../../styles/Bible.scss';
 import { InlineAnchor } from 'sidenotes';
-import { isOfParagraphType } from '../../utils/general';
+import { isOfParagraphType, isOfHeaderType } from '../../utils/general';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/rootReducer';
 
@@ -73,9 +73,17 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
         if (item.type) {
 
+            // header
+            if (isOfHeaderType(item.type)) {
+                elements.push(<br className={item.type}/>);
+                elements.push(
+                    <span className={item.type}>{item.content}</span>
+                );
+                return elements;
+            }
             // paragraph
-            if (isOfParagraphType(item.type, true)) {
-                elements.push(<br />); // TODO this means that headers are spaced, even when disabled
+            if (isOfParagraphType(item.type)) {
+                elements.push(<br />);
             }
 
             // labels

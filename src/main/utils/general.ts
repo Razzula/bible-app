@@ -11,11 +11,27 @@ export function isOfParagraphType(type: string, includeHeaders = false): string 
                 return type;
             }
 
-            if (includeHeaders && headerTypes.includes(type)) {
+        }
+    }
+
+    if (includeHeaders) {
+        return isOfHeaderType(type);
+    }
+
+    return undefined;
+}
+
+export function isOfHeaderType(type: string): string | undefined {
+
+    if (type) {
+        let types = type.split(' ');
+
+        for (const type of types) {
+            if (headerTypes.includes(type)) {
                 return type;
             }
         }
     }
-    
     return undefined;
+
 }
