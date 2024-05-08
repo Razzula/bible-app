@@ -8,10 +8,10 @@ import '../../styles/sidenotes.scss';
 
 type NoteContentProps = {
     sidenoteID: string;
-    passageName: string;
+    tokens: string[];
     docID?: string;
     initialNoteContents: string;
-    updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
+    updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 
     base: string;
@@ -26,14 +26,14 @@ type NoteContentProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContainer({ sidenoteID, passageName, docID, initialNoteContents, base, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
+function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, base, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
 
     return (
         <div style={{ width: 280, height: 'auto' }}>
-            <Sidenote key={passageName} sidenote={passageName} base={base}>
+            <Sidenote key={sidenoteID} sidenote={sidenoteID} base={base}>
                 <NoteContent
                     sidenoteID={sidenoteID}
-                    passageName={passageName}
+                    tokens={tokens}
                     docID={docID}
                     initialNoteContents={initialNoteContents}
                     updateNotesContents={updateNotesContents}

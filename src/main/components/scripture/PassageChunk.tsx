@@ -40,15 +40,26 @@ type Section = {
  */
 function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, handleTokenSelected, renderMode }: PassageChunkProps): JSX.Element {
 
-    const [notedVerses, setNotedVerses]: [Set<string> | undefined, Function] = React.useState();
+    const [notedTokens, setNotedTokens]: [any, Function] = React.useState();
 
     useEffect(() => {
         if (passageNotes) {
-            const notedVerses = new Set<string>();
+            const newNotedVerses: any = {};
+            console.log(passageNotes);
             passageNotes.forEach((note: any) => {
-                notedVerses.add(note.verse);
+                note.tokens.forEach((token: string) => {
+                    const currentForToken = newNotedVerses[token];
+                    if (currentForToken === undefined) {
+                        newNotedVerses[token] = new Set([note.id]);
+                    }
+                    else {
+                        currentForToken.add(note.id);
+                        newNotedVerses[token] = currentForToken;
+                    }
+                });
             });
-            setNotedVerses(notedVerses);
+            console.log(newNotedVerses);
+            setNotedTokens(newNotedVerses);
         }
     }, [passageNotes]);
 
@@ -57,6 +68,10 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
      * Maps a single array of formatted scripture to JSX elements.
      */
     function generateContents(item: Section): JSX.Element | JSX.Element[] | null {
+
+        if (item.token === undefined) {
+            item.token = item.id; //TODO TEMP!
+        }
 
         // footnotes
         if (item.type === 'note') {
@@ -122,10 +137,17 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         }
 
         // anchors
-        if (notedVerses !== undefined && notedVerses?.has(item.id) && renderMode === 'sidenotes') {
-            elements.push(
-                <InlineAnchor sidenote={item.id}>{contents}</InlineAnchor>
-            );
+        if (notedTokens !== undefined && item.token !== undefined && renderMode === 'sidenotes') {
+            const notesForThisToken: Set<string> = notedTokens[item.token];
+
+            let tempChild = contents;
+            if (notesForThisToken !== undefined) {
+                notesForThisToken.forEach((noteID: string) => {
+                    const tempParent = <InlineAnchor sidenote={noteID}>{tempChild}</InlineAnchor>;
+                    tempChild = tempParent;
+                });
+            }
+            elements.push(tempChild)
         }
         else {
             elements.push(contents);

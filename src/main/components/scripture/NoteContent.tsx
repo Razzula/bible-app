@@ -17,10 +17,10 @@ import { EditorState } from 'lexical';
 
 type NoteContentProps = {
     sidenoteID: string;
-    passageName: string;
+    tokens: string[];
     docID?: string;
     initialNoteContents: string;
-    updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
+    updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 }
 
@@ -37,14 +37,14 @@ type NoteContentProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
+function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
 
     const ref = useRef(null);
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
 
-    const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, passageName));
+    const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
     const isSaved = (currentNoteContents === committedNoteContents);
     const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
 
@@ -56,7 +56,7 @@ function NoteContent({ sidenoteID, passageName, docID, initialNoteContents, upda
 
     useEffect(() => {
         if (!isSelected && !isSaved) {
-            updateNotesContents(sidenoteID, passageName, currentNoteContents, saveNoteContentsCallback);
+            updateNotesContents(sidenoteID, tokens, currentNoteContents, saveNoteContentsCallback);
         }
     }, [isSelected]);
 

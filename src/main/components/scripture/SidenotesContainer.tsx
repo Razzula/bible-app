@@ -7,11 +7,9 @@ type SidenotesContainerProps = {
 
     passage: string;
     notesContents: any[];
-    selectedNoteGroup: string;
     docID?: string;
 
-    createNewNote: (id: string, selectedNoteGroup: string) => void;
-    updateNotesContents: (sidenoteID: string, passageName: string, noteContents: string, callback: Function) => void;
+    updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 }
 
@@ -22,15 +20,9 @@ type SidenotesContainerProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenotesContainer({ position, passage, notesContents, selectedNoteGroup, docID, createNewNote, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
-
-    // const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
+function SidenotesContainer({ position, passage, notesContents, docID, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
 
     const [sidenotesElements, setSidenotesElements]: [any, Function] = useState([]);
-
-    // useEffect(() => {
-    //     updateSelectedNoteGroup(defaultGroup);
-    // }, []);
 
     useEffect(() => {
         renderPassageNotes();
@@ -41,8 +33,9 @@ function SidenotesContainer({ position, passage, notesContents, selectedNoteGrou
         const sidenotesElements = notesContents.map((noteContents: { id: string, verse: string, contents: string }) => {
 
             return (
-                <SidenoteContainer // TODO: switch these
-                    sidenoteID={noteContents.id} passageName={noteContents.verse} docID={docID} initialNoteContents={noteContents.contents} base={passage}
+                <SidenoteContainer // TODO: switch these ???
+                // TODO handle tokens={[noteContents.verse]}
+                    sidenoteID={noteContents.id} tokens={[noteContents.verse]} docID={docID} initialNoteContents={noteContents.contents} base={passage}
                     updateNotesContents={updateNotesContents} deleteNote={deleteNote}
                 />
             );
