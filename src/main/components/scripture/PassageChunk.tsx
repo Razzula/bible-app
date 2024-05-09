@@ -3,10 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import Footnote from './Footnote';
 
 import '../../styles/Bible.scss';
-import { InlineAnchor } from 'sidenotes';
+import { InlineAnchor, Store } from 'sidenotes';
 import { isOfParagraphType, isOfHeaderType } from '../../utils/general';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import { RootState } from '../../redux/rootReducer';
+import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 type PassageChunkProps = {
     contents: any;
@@ -23,7 +24,7 @@ type PassageChunkProps = {
 type PassageTokenProps = {
     content: Section;
     classes: string[];
-    selectedToken?: string;
+    topNoteID?: string;
     handleTokenSelected?: Function;
 }
 
@@ -114,6 +115,8 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             }
         }
 
+        const notesForThisToken: Set<string> = notedTokens ? notedTokens[item.token] : undefined;
+
         // other formatting
         let contents;
         const classes: string[] = [item.id];
@@ -128,15 +131,17 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             contents = <span className={classes.join(' ')}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
         }
         else {
+            const topNoteID = notesForThisToken?.size > 0 ? notesForThisToken.values().next().value : undefined;
+
             contents = <PassageToken
                 content={item} classes={classes}
+                topNoteID={topNoteID}
                 handleTokenSelected={handleTokenSelected}
             />;
         }
 
         // anchors
-        if (notedTokens !== undefined && item.token !== undefined && renderMode === 'sidenotes') {
-            const notesForThisToken: Set<string> = notedTokens[item.token];
+        if (notesForThisToken && item.token !== undefined && renderMode === 'sidenotes') {
 
             let tempChild = contents;
             if (notesForThisToken !== undefined) {
@@ -158,15 +163,17 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
 }
 
-function PassageToken({ content, classes, handleTokenSelected }: PassageTokenProps): JSX.Element {
+function PassageToken({ content, classes, topNoteID, handleTokenSelected }: PassageTokenProps): JSX.Element {
 
     const tokenRef = useRef(null);
 
     const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
+    const store: Store = useStore();
 
     const handleTokenClick = (event: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
         if (handleTokenSelected) {
-            event.stopPropagation()
+            event.stopPropagation();
+
             if (selectedToken === content.id) {
                 handleTokenSelected(undefined, null);
             }
@@ -174,6 +181,10 @@ function PassageToken({ content, classes, handleTokenSelected }: PassageTokenPro
                 handleTokenSelected(content.id, tokenRef.current);
             }
         }
+        if (topNoteID) {
+            event.stopPropagation();
+        }
+        store.dispatch(selectSidenote('Scripture', topNoteID));
     };
 
     const selectionCSS = (selectedToken && selectedToken !== content.id) ? ' unselected' : '';

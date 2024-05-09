@@ -19,9 +19,7 @@ declare global {
     }
 }
 
-let store: Store;
-
-const docID = 'article';
+const docID = 'Scripture';
 
 type ScriptureProps = {
     queryToLoad?: string;
@@ -51,7 +49,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     const fileManager = FileManager.getInstance();
 
-    store = useStore();
+    const store: Store = useStore();
     const deselect = () => {
         store.dispatch(deselectSidenote(docID));
         if (document.activeElement?.className !== 'editor-input') { // allow clicking on inline notes
@@ -168,7 +166,6 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
-        // debugger;
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
             return;
         }

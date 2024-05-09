@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { State } from 'sidenotes/dist/src/store';
+import { useSelector, useStore } from 'react-redux';
+import { State, Store } from 'sidenotes/dist/src/store';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -14,6 +14,7 @@ import { FloatingToolbarPlugin } from '../lexical/plugins/FloatingToolbarPlugin'
 
 import '../../styles/editor.scss';
 import { EditorState } from 'lexical';
+import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 type NoteContentProps = {
     sidenoteID: string;
@@ -48,6 +49,8 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
     const isSaved = (currentNoteContents === committedNoteContents);
     const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
 
+    const store: Store = useStore();
+
     useEffect(() => {
         //const temp = JSON.parse(initialNoteContents);
         setCurrentNoteContents(initialNoteContents);
@@ -60,6 +63,11 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
         }
     }, [isSelected]);
 
+    function handleSelection(event: React.MouseEvent): void {
+        event.stopPropagation();
+        store.dispatch(selectSidenote(docID, sidenoteID));
+    }
+
     function handleChange(editorState: any): void {
         const temp = editorState.toJSON();
         setCurrentNoteContents(temp);
@@ -67,7 +75,8 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
         // setCurrentNoteContents(JSON.stringify(editorStateJSON));
     }
 
-    function handleDeleteClick(): void {
+    function handleDeleteClick(event: React.MouseEvent): void {
+        event.stopPropagation();
         deleteNote(sidenoteID);
     }
 
@@ -76,7 +85,7 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
             setCommittedNoteContents(noteContents);
         }
         else {
-            console.log("ERROR: Failed to save note contents.");
+            console.error("ERROR: Failed to save note contents.");
         }
     }
 
@@ -85,7 +94,10 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
     }
 
     return (
-        <div style={{ height: 'auto', backgroundColor: backgroundColour }}>
+        <div
+            style={{ height: 'auto', backgroundColor: backgroundColour }}
+            onClick={handleSelection}
+        >
             <div>
                 <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
                 <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>

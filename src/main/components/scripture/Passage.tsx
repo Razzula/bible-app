@@ -373,7 +373,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
                         // TODO check sidenoteID property and tokens array
                         const noteContent = (<NoteContent
-                            sidenoteID={note.id} tokens={[note.verse]} docID={docID} initialNoteContents={note.contents}
+                            sidenoteID={note.id} tokens={note.tokens} docID={docID} initialNoteContents={note.contents}
                             updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
                         />);
                         passageElements.push(<div>{noteContent}</div>);
