@@ -281,7 +281,6 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
      * Render the passage (JSX.Element[]) from the formatted content.
      */
     function renderPassage(): void {
-        console.log(notesContents);
 
         const passageElements: JSX.Element[] = [];
 
@@ -308,7 +307,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     for (const note of notesContents) {
                         const noteID = note.id;
 
-                        if (formattedContent[i].id === note.verse) {
+                        if (note.tokens !== undefined && note.tokens.some((token: string) => token === formattedContent[i].id)) {
                             // this is an occurence of an annotation
                             if (notesBounds[noteID]['start'] === undefined) {
                                 // we only mark the start on the first seen occurence

@@ -45,7 +45,6 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
     useEffect(() => {
         if (passageNotes) {
             const newNotedVerses: any = {};
-            console.log(passageNotes);
             passageNotes.forEach((note: any) => {
                 note.tokens.forEach((token: string) => {
                     const currentForToken = newNotedVerses[token];
@@ -58,7 +57,6 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
                     }
                 });
             });
-            console.log(newNotedVerses);
             setNotedTokens(newNotedVerses);
         }
     }, [passageNotes]);
