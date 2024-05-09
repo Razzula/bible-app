@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
-import { State, SidenotesUIActions, Reducer, reducer } from 'sidenotes';
-import passageUIReducer, { PassageUIState } from './passageUIReducer';
+import { Reducer, SidenotesUIActions, State, reducer } from 'sidenotes';
 import { UIState } from 'sidenotes/dist/src/store/ui/types';
+
+import passageUIReducer, { PassageUIState } from './passageUIReducer';
 
 export interface RootState {
     sidenotes: UIState;

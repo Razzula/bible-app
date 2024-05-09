@@ -1,17 +1,16 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Alert } from 'react-bootstrap';
+import { useStore } from 'react-redux';
 import { Store } from 'sidenotes';
 import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
-import { useStore } from 'react-redux';
-import { Alert } from 'react-bootstrap';
 
+import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 import FileManager from '../../utils/FileManager';
-import { getUSFM, getReferenceText } from '../../utils/bibleReferences';
-
+import { getReferenceText, getUSFM } from '../../utils/bibleReferences';
 import Passage from './Passage';
 
 import licenses from '../../../../public/licenses.json';
 import { WindowTypes } from '../../utils/enums';
-import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 
 declare global {
     interface Window {
@@ -78,8 +77,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
             loadPassageFromString(searchQuery);
         }
-    }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]); //TODO: this is horribly ineffecient. we should cache the contents, usfm, etc. and reuse them
-
+    }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]);
     function handleSearch(): void {
         void loadPassageFromString(searchQuery, true);
     }
@@ -151,7 +149,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         });
 
         setTranslationsList(translationList);
-        updateSelectedTranslation('NKJV'); //TODO: make this a setting
+        updateSelectedTranslation('NKJV'); //TODO: (BIBLE-82) make this a setting
     }
 
     async function getNoteGroupsList(): Promise<void> {
@@ -162,7 +160,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         });
 
         setNoteGroupsList(noteGroupsList);
-        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key : ''); // TODO: make this a setting
+        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key : ''); // TODO: (BIBLE-82) make this a setting
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
@@ -209,10 +207,10 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                     if (!passageUsfm.book) { // invalid
                         continue;
                     }
-                    // TODO; prevent multiple reads of current file
+                    // TODO: prevent multiple reads of current file
 
                     // load contents externally from files
-                    const chapterContents = await fileManager.loadScripture(passageUsfm.book, chapter, selectedTranslation); // TODO; single-chapter books
+                    const chapterContents = await fileManager.loadScripture(passageUsfm.book, chapter, selectedTranslation);
                     if (chapterContents) {
                         chaptersContents.push(chapterContents);
                     }
@@ -238,7 +236,6 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             setSearchError(false);
             setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
 
-            // TODO; validation
             historyStacks[0].push(searchQuery)
             if (clearForwardCache) {
                 historyStacks[1] = new Array<string>();
@@ -309,10 +306,12 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
             {/* BANNER */}
             <div className="banner">
+
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
-                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
+                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange} disabled={true}>
                         {noteGroupsList}
+                        <option key='None' value={undefined}>None</option>
                     </select>
                 </div>
 
@@ -360,6 +359,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                     {/* NOTE GROUP SELECT */}
                     <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
+                        <option key='None' value={undefined}>None</option>
                     </select>
                 </div>
             </div>

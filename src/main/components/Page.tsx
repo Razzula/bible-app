@@ -19,7 +19,7 @@ function Page(): JSX.Element {
     }
 
     function createNewTab(type: symbol, name: string): void {
-        //TODO: replace with uuid
+        //TODO: (BIBLE-64) replace with uuid
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
 
@@ -56,8 +56,6 @@ function Page(): JSX.Element {
 
             <div style={{ flex: 1 }}>
                 <Tabbar activeTabs={windowsList} selectedTab={selectedTab} selectTab={selectTab} closeTab={closeTab} />
-                {/* TODO: place Windows in container */}
-                {/* <Window windowToLoad={activeWindow} /> */}
                 {activeWindow}
             </div>
         </div>

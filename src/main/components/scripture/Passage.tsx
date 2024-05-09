@@ -1,23 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-bootstrap';
+import { FloatingFocusManager, autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AnchorBase } from 'sidenotes';
 
-import 'sidenotes/dist/sidenotes.css';
-import '../../styles/sidenotes.scss';
-import SidenotesContainer from './SidenotesContainer';
+import { setActiveToken } from '../../redux/actions';
+import { RootState } from '../../redux/rootReducer';
+import FileManager from '../../utils/FileManager';
+import { isOfParagraphType } from '../../utils/general';
+import { FloatingToolbar } from '../lexical/FloatingToolbar';
 import NoteContent from './NoteContent';
 import PassageChunk from './PassageChunk';
-import { isOfParagraphType } from '../../utils/general';
-import { Store, AnchorBase } from 'sidenotes';
+import SidenotesContainer from './SidenotesContainer';
 
-import FileManager from '../../utils/FileManager';
+import defaultNoteContents from '../../../../public/defaultNote.json';
 
+import 'sidenotes/dist/sidenotes.css';
 import '../../styles/Bible.scss';
-import { useFloating, autoUpdate, offset, flip, shift, useClick, useDismiss, useRole, useInteractions, FloatingFocusManager, } from '@floating-ui/react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/rootReducer';
-import { FloatingToolbar } from '../lexical/FloatingToolbar';
-import { useDispatch } from 'react-redux';
-import { setActiveToken } from '../../redux/actions';
+import '../../styles/sidenotes.scss';
 
 const baseAnchor = 'anchor';
 
@@ -102,9 +101,6 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             editorFloatRefs.setReference(null);
         }
     }, [currentEditorRef]);
-
-    // TODO popover for footnotes
-    // TODO popver for references (these can be a level higher, I guess?)
 
     useEffect(() => {
         if (shouldLoad) {
@@ -198,7 +194,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         const newNoteContents: Note = {
             id,
             tokens: [selectedToken],
-            contents: { "root": { "children": [{ "children": [{ "detail": 0, "format": 0, "mode": "normal", "style": "", "text": "new note", "type": "text", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1 }], "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1 } } //TODO this should probably be extracted somewhere
+            contents: defaultNoteContents
         };
 
         setNotesContents((currentNotesContents: Note[]) => {
@@ -230,7 +226,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
             Object.entries(chapter).forEach(([verseNumber, verse]: any) => { // iterate through verses
 
-                if (!Array.isArray(verse)) { // TODO; convert below code to function and use that instead
+                if (!Array.isArray(verse)) {
                     verse = [verse];
                 }
 
@@ -239,7 +235,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
                     // header
                     if (subsection.header) {
-                        formattedContent.push({ "type": "s", "content": subsection.header }); // TODO handle Psalms better
+                        formattedContent.push({ "type": "s", "content": subsection.header }); // TODO: (BIBLE-88) handle Psalms better
                         // remove header from this section, as it is now its own element
                         subsection = { ...subsection};
                         delete subsection.header;
@@ -265,8 +261,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                         formattedContent.push(label);
                     }
 
-                    subsection.id = `${usfm.book}.${usfm.initialChapter}.${verseNumber}`; // TODO; rename 'verse'->'initialVerse' //TODO support multiple chapters //TODO initialChapter is wrong
-                    // section.token = undefined; // TODO
+                    subsection.id = `${usfm.book}.${usfm.initialChapter}.${verseNumber}`; //TODO: initialChapter is wrong
+                    // section.token = undefined; // TODO: (BIBLE-101)
                     formattedContent.push(subsection);
 
                 });
@@ -324,7 +320,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             // GET SPLIT POINTS
             // we assume there is no overlap between notes
             // we assume that there are no notes sharing a boundary
-            // TODO handle overlap
+            // TODO: (BIBLE-102) handle overlap
             const splitPoints: any = {};
             Object.entries(notesBounds).forEach(([token, bounds]: any) => {
                 if (splitPoints[bounds.end] === undefined || splitPoints[bounds.end] === null) {
@@ -349,7 +345,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                 const splits = splitPoints[i];
                 if (splits === null) {
                     // this is a split point (start of a bound)
-                    // TODO
+                    // TODO: currently, there is no need to handle this, as we are only interested in the end of bounds
+                    // note: this may change at some point
                     formattedContentChunk.push(formattedContent[i]);
                 }
                 else if (splits !== undefined) {
@@ -371,7 +368,6 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     splits.forEach((split: string) => {
                         const note = notesContents.find((note: any) => note.id === split);
 
-                        // TODO check sidenoteID property and tokens array
                         const noteContent = (<NoteContent
                             sidenoteID={note.id} tokens={note.tokens} docID={docID} initialNoteContents={note.contents}
                             updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
@@ -397,12 +393,12 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
     }
 
-    function handleUpdateNotesContents(id: string, tokens: string[], noteContent: string, callback?: Function): void { // TODO share this with PassageChunk
+    function handleUpdateNotesContents(id: string, tokens: string[], noteContent: string, callback?: Function): void {
         if (updateNotesContents && selectedNoteGroup)
             updateNotesContents(id, tokens, selectedNoteGroup, noteContent, callback);
     }
 
-    function handleDeleteNote(id: string): void { // TODO share this with PassageChunk
+    function handleDeleteNote(id: string): void {
         if (deleteNote && selectedNoteGroup)
             deleteNote(id, selectedNoteGroup);
     }
@@ -410,7 +406,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
     // async function expandPassage(delta: number): Promise<void> {
     //     // get next chapter
     //     const historyStack = historyStacks[0]
-    //     const usfm = getUSFM(historyStack[historyStack.length - 1])[0]; // TODO; TEMP
+    //     const usfm = getUSFM(historyStack[historyStack.length - 1])[0]; // TODO:  TEMP
 
     //     let extraChapter = usfm.finalChapter ? usfm.finalChapter : usfm.initialChapter
     //     extraChapter = Number(extraChapter) + delta
@@ -445,14 +441,14 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
     //     }
 
-    //     //TODO; fix
+    //     //TODO:  fix
     //     // generate passage and merge into current
     //     if (delta === 1) {
-    //         const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter + 1)); //TODO; we cannot always assume this will be initialChapter+1
+    //         const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter + 1)); //TODO:  we cannot always assume this will be initialChapter+1
 
     //         setPassages(<>{passages}{extraPassageContents}</>);
     //     }
-    //     else { // TODO; fix verse numbers
+    //     else { // TODO:  fix verse numbers
     //         extraContents = extraContents.reverse()
     //         extraContents[0][0].verse = (chapterContents.length + 1) - extraContents.length;
     //         const extraPassageContents = [extraContents].map((chapterContents: [][], i: number) => generatePassage(chapterContents, i, 1, usfm.book, usfm.initialChapter - 1));

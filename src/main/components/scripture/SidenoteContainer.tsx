@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { Sidenote } from 'sidenotes';
+
 import NoteContent from './NoteContent';
 
 import 'sidenotes/dist/sidenotes.css';

@@ -1,10 +1,10 @@
 import React from 'react';
+import { Alert } from 'react-bootstrap';
+
+import Document from './Document';
+import Scripture from './scripture/Scripture';
 
 import { WindowTypes } from '../utils/enums';
-
-import Scripture from './scripture/Scripture';
-import Document from './Document';
-import { Alert } from 'react-bootstrap';
 
 type WindowProps = {
     windowToLoad: symbol;

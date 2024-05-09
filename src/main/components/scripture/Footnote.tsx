@@ -69,7 +69,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
 
             async function updatePopoverContents(): Promise<any> {
 
-                // TODO; prevent multiple reads of same file
+                // TODO: only load if different to currently-loaded passage(s)
                 const usfm = ref[1];
                 const passageContents = await fileManager.loadScripture(usfm.book, usfm.initialChapter, translation);
 

@@ -1,11 +1,10 @@
 import React from 'react';
-
 import Accordion from 'react-bootstrap/Accordion';
-import { WindowTypes } from '../utils/enums';
-
-import '../styles/sidepanel.scss'
 
 import manifest from '../../../public/manifest.json';
+import { WindowTypes } from '../utils/enums';
+
+import '../styles/sidepanel.scss';
 
 type SidepanelProps = {
     panelType?: symbol;
@@ -41,7 +40,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
         );
     });
 
-    contents = (() => { //TODO: this is horrible, fix it
+    contents = (() => { //TODO: (BIBLE-64) this is horrible, fix it
         switch (panelType) {
             case WindowTypes.Scripture.Type:
                 return <>

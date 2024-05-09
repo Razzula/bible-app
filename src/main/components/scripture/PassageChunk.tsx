@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
+import { useSelector, useStore } from 'react-redux';
+import { InlineAnchor, Store } from 'sidenotes';
+import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
+
+import { RootState } from '../../redux/rootReducer';
+import { isOfHeaderType, isOfParagraphType } from '../../utils/general';
 import Footnote from './Footnote';
 
 import '../../styles/Bible.scss';
-import { InlineAnchor, Store } from 'sidenotes';
-import { isOfParagraphType, isOfHeaderType } from '../../utils/general';
-import { useSelector, useStore } from 'react-redux';
-import { RootState } from '../../redux/rootReducer';
-import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 type PassageChunkProps = {
     contents: any;
@@ -22,7 +23,7 @@ type PassageChunkProps = {
 }
 
 type PassageTokenProps = {
-    content: Section;
+    section: Section;
     classes: string[];
     topNoteID?: string;
     handleTokenSelected?: Function;
@@ -32,7 +33,7 @@ type Section = {
     id: string;
     type: string;
     content: string;
-    children?: any; //TODO
+    children?: Array<Section>;
     token?: string;
 }
 
@@ -69,7 +70,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
     function generateContents(item: Section): JSX.Element | JSX.Element[] | null {
 
         if (item.token === undefined) {
-            item.token = item.id; //TODO TEMP!
+            item.token = item.id; //TODO: (BIBLE-101) TEMP!
         }
 
         // footnotes
@@ -123,18 +124,18 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         if (item.type !== undefined) {
             classes.push(item.type);
         }
-        if (item.token !== undefined || true) { // TODO only do this for valid tokens
+        if (item.token !== undefined) { // TODO: (BIBLE-101) ensure some tokens are excluded (`it` tags, for example)
             classes.push('text');
         }
 
         if (item.children) { // if node is a parent, recursively generate its contents
-            contents = <span className={classes.join(' ')}>{item.children.map(generateContents)}</span>; //TODO; precent undefined type
+            contents = <span className={classes.join(' ')}>{item.children.map(generateContents)}</span>; //TODO: prevent undefined type
         }
         else {
             const topNoteID = notesForThisToken?.size > 0 ? notesForThisToken.values().next().value : undefined;
 
             contents = <PassageToken
-                content={item} classes={classes}
+                section={item} classes={classes}
                 topNoteID={topNoteID}
                 handleTokenSelected={handleTokenSelected}
             />;
@@ -146,6 +147,9 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
             let tempChild = contents;
             if (notesForThisToken !== undefined) {
                 notesForThisToken.forEach((noteID: string) => {
+                    // TODO: (BIBLE-100) this is a hacky way to handle this
+                    // the visual highlighting should be handled by the PassageToken component
+                    // this is already done for the functional aspects
                     const tempParent = <InlineAnchor sidenote={noteID}>{tempChild}</InlineAnchor>;
                     tempChild = tempParent;
                 });
@@ -163,22 +167,22 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
 }
 
-function PassageToken({ content, classes, topNoteID, handleTokenSelected }: PassageTokenProps): JSX.Element {
+function PassageToken({ section, classes, topNoteID, handleTokenSelected }: PassageTokenProps): JSX.Element {
 
     const tokenRef = useRef(null);
 
     const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
     const store: Store = useStore();
 
-    const handleTokenClick = (event: React.MouseEvent) => { // TODO same, but for mouseEnter/Leave
+    const handleTokenClick = (event: React.MouseEvent) => { // TODO: (BIBLE-100) same, but for mouseEnter/Leave, for highlighting
         if (handleTokenSelected) {
             event.stopPropagation();
 
-            if (selectedToken === content.id) {
+            if (selectedToken === section.id) {
                 handleTokenSelected(undefined, null);
             }
             else {
-                handleTokenSelected(content.id, tokenRef.current);
+                handleTokenSelected(section.id, tokenRef.current);
             }
         }
         if (topNoteID) {
@@ -187,14 +191,14 @@ function PassageToken({ content, classes, topNoteID, handleTokenSelected }: Pass
         store.dispatch(selectSidenote('Scripture', topNoteID));
     };
 
-    const selectionCSS = (selectedToken && selectedToken !== content.id) ? ' unselected' : '';
+    const selectionCSS = (selectedToken && selectedToken !== section.id) ? ' unselected' : '';
 
     return (
         <span ref={tokenRef}
             className={classes.join(' ') + selectionCSS}
             onClick={handleTokenClick}
         >
-            {content.content /* TODO this is poorly named */}
+            {section.content}
         </span>
     );
 }

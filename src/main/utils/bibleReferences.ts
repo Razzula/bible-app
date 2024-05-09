@@ -172,7 +172,7 @@ export function locateReferences(text: string, currentBook: string | null = null
     }
 
     // detect references
-    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g); // TODO ???
+    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g);
     const matches = [];
 
     for (const match of text.matchAll(pattern)) { // get positions of references

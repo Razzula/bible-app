@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveEditor, setNoActiveEditor } from '../../../../main/redux/actions';
 
 type FloatingToolbarPluginProps = {
-    editorRef: any;
+    editorRef: React.MutableRefObject<null>;
 };
 
 /**

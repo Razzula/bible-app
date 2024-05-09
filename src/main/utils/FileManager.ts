@@ -16,7 +16,7 @@ class FileManager {
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
 
         if (!translation) {
-            translation = 'NKJV'; // TODO: make this a setting
+            translation = 'NKJV'; // TODO: (BIBLE-82) make this a setting
         }
 
         if (this.scriptureCache[book]) {
