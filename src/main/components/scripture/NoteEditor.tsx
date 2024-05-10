@@ -21,6 +21,9 @@ type NoteEditorProps = {
     tokens: string[];
     docID?: string;
     initialNoteContents: string;
+    currentBook: string;
+    translation: string;
+    loadPassage: any;
     updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 }
@@ -38,7 +41,7 @@ type NoteEditorProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteEditorProps): JSX.Element {
+function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBook, translation, loadPassage, updateNotesContents, deleteNote }: NoteEditorProps): JSX.Element {
 
     const ref = useRef(null);
 
@@ -106,7 +109,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, updateNote
 
             <div ref={ref} style={{ height: 'auto' }}>
                 <LexicalComposer initialConfig={{
-                    namespace: 'name',
+                    namespace: currentBook,
                     onError,
                     editorState: JSON.stringify(initialNoteContents),
                     nodes: [AutoLinkNode, BibleReferenceNode]
@@ -122,7 +125,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, updateNote
                     <HistoryPlugin />
 
                     <FloatingToolbarPlugin editorRef={ref} />
-                    <BibleReferencePlugin />
+                    <BibleReferencePlugin translation={translation} loadPassage={loadPassage} />
                 </LexicalComposer>
             </div>
         </div>

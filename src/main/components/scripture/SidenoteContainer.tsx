@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sidenote } from 'sidenotes';
 
-import NoteEditor from './NoteContent';
+import NoteEditor from './NoteEditor';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
@@ -11,6 +11,9 @@ type NoteContentProps = {
     tokens: string[];
     docID?: string;
     initialNoteContents: string;
+    currentBook: string;
+    translation: string;
+    loadPassage: any;
     updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 
@@ -26,7 +29,7 @@ type NoteContentProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, base, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
+function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, base, currentBook, translation, loadPassage, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
 
     return (
         <div style={{ width: 280, height: 'auto' }}>
@@ -36,6 +39,9 @@ function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, bas
                     tokens={tokens}
                     docID={docID}
                     initialNoteContents={initialNoteContents}
+                    currentBook={currentBook}
+                    translation={translation}
+                    loadPassage={loadPassage}
                     updateNotesContents={updateNotesContents}
                     deleteNote={deleteNote}
                 />

@@ -5,46 +5,56 @@ import { $getRoot, NodeKey, TextNode, LexicalNode, $isParagraphNode, $isTextNode
 import { locateReferences } from '../../../utils/bibleReferences';
 import { BibleReference } from '../../scripture/Footnote';
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+
+type BibleReferencePluginProps = {
+    translation: string;
+    loadPassage: any;
+}
 
 export class BibleReferenceNode extends TextNode {
 
     __usfm: any;
+    __translation: string;
+    __loadPassage: any;
 
     static getType() {
         return 'bible-reference';
     }
 
     static clone(node: BibleReferenceNode) {
-        return new BibleReferenceNode(node.__usfm, node.__key);
+        return new BibleReferenceNode(node.__usfm, node.__translation, node.__loadPassage, node.__key);
     }
 
-    constructor(text: string, usfm: any, key?: NodeKey) {
+    constructor(text: string, usfm: any, translation: string, loadPassage: any, key?: NodeKey) {
         super(text, key);
 
-        console.log('BibleReferenceNode', text, usfm);
+        this.__text = text;
         this.__usfm = usfm;
+        this.__translation = translation;
+        this.__loadPassage = loadPassage;
     }
 
     createDOM(config: any) {
 
         const element = document.createElement('span');
-        // Set up any necessary DOM properties here
-        element.style.color = 'pink'; // Example: apply direct styles if needed
 
-        // Mount the React component into the element
-        render(
-            // TODO: (BIBLE-98) pass the necessary props to the component
-            <BibleReference
-                text={this.__text}
-                usfm={this.__usfm}
-                currentBook='GEN'
-                translation='NKJV'
-                loadPassage={() => {}}
-            />,
-            element
-        );
-        // element.innerText = this.__usfm.book + ' ' + this.__usfm.initialChapter + ':' + this.__usfm.initialVerse;
+        element.style.color = this.__usfm.book === config.namespace ? '#ff3344' : '#9900FF';
+        element.style.cursor = 'pointer';
+        element.innerText = this.__text;
+
+        // TODO: (BIBLE-98) display popover with passage (similar to links)
+
+        // const root = createRoot(element);
+        // root.render(
+        //     <BibleReference
+        //         text={this.__text}
+        //         usfm={this.__usfm}
+        //         currentBook={this.__currentBook}
+        //         translation={this.__translation}
+        //         loadPassage={this.__loadPassage}
+        //     />
+        // );
 
         return element;
     }
@@ -53,12 +63,8 @@ export class BibleReferenceNode extends TextNode {
         return true;
     }
 
-    removeDOM(dom: HTMLElement) {
-        unmountComponentAtNode(dom);
-    }
-
     static importJSON(serializedNode: SerializedBibleReferenceNode): BibleReferenceNode {
-        return new BibleReferenceNode(serializedNode.text, serializedNode.usfm);
+        return new BibleReferenceNode(serializedNode.text, serializedNode.usfm, '', null);
     }
 
     exportJSON(): SerializedBibleReferenceNode {
@@ -80,48 +86,8 @@ export type SerializedBibleReferenceNode = Spread<{
     usfm: any;
 }, SerializedLexicalNode>;
 
-function transformTextToBibleReference(node: TextNode): void {
 
-    if (!node.isSimpleText()) {
-        return;
-    }
-
-    const textContent = node.getTextContent();
-
-    // Find only 1st occurrence as transform will be re-run anyway for the rest
-    // because newly inserted nodes are considered to be dirty
-    const references = locateReferences(textContent);
-    if (references.length < 1) {
-        return;
-    }
-
-    const reference = references.find((ref) => ref.usfm);
-    if (!reference) {
-        return;
-    }
-
-    // split the nodes, so that the reference is isolated
-    let targetNode;
-    if (reference.start === 0) {
-        // | John 3:16 says | --> | John 3:16 | says |
-        [targetNode] = node.splitText(reference.end);
-    }
-    else {
-        // | in John 3:16 it says | --> | in | John 3:16 | it says |
-        [, targetNode] = node.splitText(reference.start, reference.end);
-    }
-
-    // replace the reference with the new node
-    console.log(reference.usfm);
-    const bibleRefNode = new BibleReferenceNode(reference.text, reference.usfm);
-    targetNode.replace(bibleRefNode);
-}
-
-function transformBibleReferenceToText(node: BibleReferenceNode): void {
-    // TODO: (BIBLE-98) implement this
-}
-
-function BibleReferencePlugin() {
+function BibleReferencePlugin({ translation, loadPassage }: BibleReferencePluginProps) {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
@@ -138,9 +104,15 @@ function BibleReferencePlugin() {
                     if ($isParagraphNode(child)) {
                         child.getChildren().forEach((innerChild: LexicalNode) => {
                             if ($isTextNode(innerChild)) {
-                                editor.update(() => {
-                                    transformTextToBibleReference(innerChild as TextNode);
-                                });
+                                const textContent = innerChild.getTextContent();
+                                const references = locateReferences(textContent);
+
+                                if (references.length >= 1) {
+                                    editor.update(() => {
+                                        transformTextToBibleReference(innerChild as TextNode, references);
+                                    });
+                                }
+
                             }
                         });
                     }
@@ -149,6 +121,38 @@ function BibleReferencePlugin() {
             });
         });
     }, [editor]);
+
+    function transformTextToBibleReference(node: TextNode, references: any[]): void {
+
+        if (!node.isSimpleText() || references.length < 1) {
+            return;
+        }
+        // Find only 1st occurrence as transform will be re-run anyway for the rest
+        // because newly inserted nodes are considered to be dirty
+        const reference = references.find((ref) => ref.usfm);
+        if (!reference) {
+            return;
+        }
+
+        // split the nodes, so that the reference is isolated
+        let targetNode;
+        if (reference.start === 0) {
+            // | John 3:16 says | --> | John 3:16 | says |
+            [targetNode] = node.splitText(reference.end);
+        }
+        else {
+            // | in John 3:16 it says | --> | in | John 3:16 | it says |
+            [, targetNode] = node.splitText(reference.start, reference.end);
+        }
+
+        // replace the reference with the new node
+        const bibleRefNode = new BibleReferenceNode(reference.text, reference.usfm, translation, loadPassage);
+        targetNode.replace(bibleRefNode);
+    }
+
+    function transformBibleReferenceToText(node: BibleReferenceNode): void {
+        // TODO: (BIBLE-98) implement this
+    }
 
     return null;
 }

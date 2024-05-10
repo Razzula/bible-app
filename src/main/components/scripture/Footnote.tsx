@@ -91,7 +91,7 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
     const refType = (usfm.book === currentBook) ? 'ref internal' : 'ref external';
 
     // contents of footnote popover
-    return (
+    const temp = (
         <OverlayTrigger key={text} trigger={['hover', 'focus']} placement="auto-start"
             overlay={
                 <InnerPopover id='popover-basic'>
@@ -109,6 +109,7 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
             </span>
         </OverlayTrigger>
     );
+    return temp;
 
     async function updatePopoverContents(): Promise<any> {
 

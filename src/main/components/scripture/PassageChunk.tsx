@@ -188,7 +188,13 @@ function PassageToken({ section, classes, topNoteID, handleTokenSelected }: Pass
         if (topNoteID) {
             event.stopPropagation();
         }
-        store.dispatch(selectSidenote('Scripture', topNoteID));
+
+        if (selectedToken === section.id) {
+            store.dispatch(selectSidenote('Scripture', undefined));
+        }
+        else {
+            store.dispatch(selectSidenote('Scripture', topNoteID));
+        }
     };
 
     const selectionCSS = (selectedToken && selectedToken !== section.id) ? ' unselected' : '';

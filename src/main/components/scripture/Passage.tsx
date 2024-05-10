@@ -8,7 +8,7 @@ import { RootState } from '../../redux/rootReducer';
 import FileManager from '../../utils/FileManager';
 import { isOfParagraphType } from '../../utils/general';
 import { FloatingToolbar } from '../lexical/FloatingToolbar';
-import NoteEditor from './NoteContent';
+import NoteEditor from './NoteEditor';
 import PassageChunk from './PassageChunk';
 import SidenotesContainer from './SidenotesContainer';
 
@@ -372,7 +372,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
                         const noteContent = (<NoteEditor
                             sidenoteID={note.id} tokens={note.tokens} docID={docID} initialNoteContents={note.contents}
-                            updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
+                            currentBook={usfm.book} translation={translation}
+                            loadPassage={loadPassage} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
                         />);
                         passageElements.push(<div>{noteContent}</div>);
                     });
@@ -485,7 +486,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     <SidenotesContainer
                         position=''
                         passage={`${usfm.book}.${usfm.chapter}`} notesContents={notesContents} docID={docID}
-                        updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
+                        currentBook={usfm.book} translation={translation}
+                        loadPassage={loadPassage} updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
                     />
                     {/* <SidenotesContainer
                         position=' l'

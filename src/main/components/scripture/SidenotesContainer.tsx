@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import SidenoteContainer from './SidenoteContainer';
+import { LOADIPHLPAPI } from 'dns';
 
 type SidenotesContainerProps = {
     position: string;
@@ -9,6 +10,10 @@ type SidenotesContainerProps = {
     notesContents: any[];
     docID?: string;
 
+    currentBook: string;
+    translation: string;
+
+    loadPassage: any;
     updateNotesContents: (sidenoteID: string, tokens: string[], noteContents: string, callback: Function) => void;
     deleteNote: (sidenoteID: string) => void;
 }
@@ -20,7 +25,7 @@ type SidenotesContainerProps = {
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function SidenotesContainer({ position, passage, notesContents, docID, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
+function SidenotesContainer({ position, passage, notesContents, docID, currentBook, translation, loadPassage, updateNotesContents, deleteNote }: SidenotesContainerProps): JSX.Element {
 
     const [sidenotesElements, setSidenotesElements]: [any, Function] = useState([]);
 
@@ -35,7 +40,8 @@ function SidenotesContainer({ position, passage, notesContents, docID, updateNot
             return (
                 <SidenoteContainer // TODO: switch these ???
                     sidenoteID={noteContents.id} tokens={noteContents.tokens} docID={docID} initialNoteContents={noteContents.contents} base={passage}
-                    updateNotesContents={updateNotesContents} deleteNote={deleteNote}
+                    currentBook={currentBook} translation={translation}
+                    loadPassage={loadPassage} updateNotesContents={updateNotesContents} deleteNote={deleteNote}
                 />
             );
         });
