@@ -8,6 +8,9 @@ type manifest = { usfm: string, 'full-title'?: string, title: string };
 const booksArray: book[] = books;
 const manifestArray: manifest[] = manifest;
 
+export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*-\s*(\d+))?|-(\d+))?(?:.*?([;,].*))?/);
+export const REFERENCE_REGEX2 = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g);
+
 /**
  * Parse the given reference and return relevant USFM (Unified Standard Format Marker).
  *
@@ -42,9 +45,9 @@ const manifestArray: manifest[] = manifest;
  */
 export function getUSFM(reference: string, currentBook: string | null = null, currentChapter = NaN): Array<any> {
 
-    let match = /(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*-\s*(\d+))?|-(\d+))?(?:.*?([;,].*))?/.exec(reference.toUpperCase())
+    let match = REFERENCE_REGEX.exec(reference.toUpperCase())
     /**
-     * 1: book number (optional)               III     
+     * 1: book number (optional)               III
      * 2: book name                            John    Genesis
      * 3: initial chapter                      3       1
      *                                         :
@@ -91,17 +94,12 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                         match[1] = String(match[1].length - 1);
                     }
                 }
-                const bookName = match[1] + match[2];
 
-                booksArray.forEach((book: book) => {
-                    if (book.includes(bookName)) {
-                        usfm.book = book[0];
-                    }
-                });
-
-                if (usfm.book === undefined) { // invalid book name
+                const bookName = getBookName(match[1] + match[2]);
+                if (bookName === undefined) { // invalid book name
                     return [];
                 }
+                usfm.book = bookName;
             }
 
             // chapters, verses
@@ -139,6 +137,31 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     }
 }
 
+function getBookName(bookName: string): string | undefined {
+
+    bookName = bookName.toUpperCase();
+
+    let bookUSFM: string | undefined = undefined;
+    booksArray.forEach((bookList: book) => {
+        if (bookList.includes(bookName)) {
+            bookUSFM = bookList[0];
+            return;
+        }
+    });
+    return bookUSFM;
+}
+
+export function getBookUSFM(bookName: string): any {
+
+    const book = getBookName(bookName);
+
+    return book ? {
+        book: book,
+        initialChapter: 0,
+    } : undefined;
+
+}
+
 /**
  * Locate and extract references from the given text and provide relevant data.
  *
@@ -172,7 +195,7 @@ export function locateReferences(text: string, currentBook: string | null = null
     }
 
     // detect references
-    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g);
+    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g); // TODO: unify with referenceRegex
     const matches = [];
 
     for (const match of text.matchAll(pattern)) { // get positions of references
@@ -233,7 +256,7 @@ export function locateReferences(text: string, currentBook: string | null = null
 
     }
     // final
-    if (matches[i - 1][1] !== text.length) { // ending dud 
+    if (matches[i - 1][1] !== text.length) { // ending dud
         if (data[data.length - 1][1] === false) { // merge with previous
             data[data.length - 1][0] += text.slice(matches[i - 1][1], text.length);
         }
@@ -269,23 +292,19 @@ export function getReferenceText(referenceData: Array<any>): string {
         // multi-reference separator
         if (i !== 0) {
             if ((reference.book !== currentBook) && (reference.initialChapter !== currentChapter)) {
+                // TODO: (BIBLE-103)
                 referenceText += ', ';
             }
             else {
+                // TODO: (BIBLE-103)
                 referenceText += '; ';
             }
         }
 
         // book
-        if (reference.book !== currentBook) {
+        if (reference.book && reference.book !== currentBook) {
             currentBook = reference.book;
-            let bookName = reference.book;
-
-            booksArray.forEach((book: book) => { // get usfm
-                if (book.includes(reference.book)) {
-                    bookName = book[0];
-                }
-            });
+            let bookName = getBookName(reference.book) || reference.book;
 
             manifestArray.forEach((book: manifest) => { // get human-readable book name
                 if (book.usfm === bookName) {

@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useStore } from 'react-redux';
-import { State, Store } from 'sidenotes/dist/src/store';
-import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
-
+import { AutoLinkNode } from '@lexical/link';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector, useStore } from 'react-redux';
+import { State, Store } from 'sidenotes/dist/src/store';
+import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
+import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
+import AutoBibleReferencePlugin from '../lexical/plugins/AutoBibleReferencePlugin';
 import { FloatingToolbarPlugin } from '../lexical/plugins/FloatingToolbarPlugin';
 
 import '../../styles/editor.scss';
-import { EditorState } from 'lexical';
-import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 type NoteContentProps = {
     sidenoteID: string;
@@ -108,7 +108,8 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
                 <LexicalComposer initialConfig={{
                     namespace: 'name',
                     onError,
-                    editorState: JSON.stringify(initialNoteContents)
+                    editorState: JSON.stringify(initialNoteContents),
+                    nodes: [AutoLinkNode]
                 }}>
                     <div className="editor-container">
                         <RichTextPlugin
@@ -119,7 +120,9 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
                     </div>
                     <OnChangePlugin onChange={handleChange} />
                     <HistoryPlugin />
+
                     <FloatingToolbarPlugin editorRef={ref} />
+                    <AutoBibleReferencePlugin />
                 </LexicalComposer>
             </div>
         </div>

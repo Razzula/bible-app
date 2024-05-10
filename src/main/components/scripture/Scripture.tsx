@@ -6,7 +6,7 @@ import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 import FileManager from '../../utils/FileManager';
-import { getReferenceText, getUSFM } from '../../utils/bibleReferences';
+import { getBookUSFM, getReferenceText, getUSFM } from '../../utils/bibleReferences';
 import Passage from './Passage';
 
 import licenses from '../../../../public/licenses.json';
@@ -171,13 +171,21 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             return;
         }
 
-        const result = getUSFM(searchQuery);
-        if (result.length === 0) {
-            setSearchError(true);
-            return;
+        let result = getUSFM(searchQuery);
+        if (result.length > 0) {
+            void loadPassageFromUSFM(result, clearForwardCache);
+        }
+        else {
+            result = getBookUSFM(searchQuery);
+            if (result) {
+                console.log('TODO: (BIBLE-15) load BOOK.0');
+                // TODO: it might be better to instead load a document tab
+            }
+            else {
+                setSearchError(true);
+            }
         }
 
-        void loadPassageFromUSFM(result, clearForwardCache)
     }
 
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false, openInNewTab = false): Promise<void> {
