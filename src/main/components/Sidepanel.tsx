@@ -8,7 +8,7 @@ import '../styles/sidepanel.scss';
 
 type SidepanelProps = {
     panelType?: symbol;
-    createNewTab: (panelType: symbol, data: string) => void;
+    createNewTab: (panelType: symbol, data: string, hidePanel?: boolean) => void;
 }
 
 function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | null {
@@ -17,6 +17,21 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
 
     if (panelType === undefined) {
         return null;
+    }
+
+    function handleCreateNewTab(event: React.MouseEvent, panelType: symbol, data: string): void {
+
+        switch (event.button) {
+            case 0:
+                createNewTab(panelType, data, true);
+                break
+            case 1:
+                event.preventDefault();
+                createNewTab(panelType, data, false);
+                break;
+            default:
+                break;
+        }
     }
 
     const navStructure = manifest.map((bookData, count) => {
@@ -31,7 +46,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                     <div className='chapters-grid'>
                         {bookData.chapters.map((verseCount, index) => {
                             return (
-                                <span className='chapter-button' key={index} onClick={() => createNewTab(WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</span>
+                                <span className='chapter-button' key={index} onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Scripture.Type, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</span>
                             );
                         })}
                     </div>
@@ -44,7 +59,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
         switch (panelType) {
             case WindowTypes.Scripture.Type:
                 return <>
-                    <button onClick={() => createNewTab(panelType, WindowTypes.Scripture.Name)}>new</button>
+                    <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Scripture.Name)}>new</button>
                     <Accordion>
                         {navStructure}
                     </Accordion>
@@ -52,7 +67,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
 
             case WindowTypes.Document.Type:
                 return <>
-                    <button onClick={() => createNewTab(panelType, WindowTypes.Document.Name)}>new</button>
+                    <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Document.Name)}>new</button>
                 </>;
 
             default:

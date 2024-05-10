@@ -18,7 +18,7 @@ function Page(): JSX.Element {
         setSelectedPanel(button);
     }
 
-    function createNewTab(type: symbol, name: string): void {
+    function createNewTab(type: symbol, name: string, hidePanel = false): void {
         //TODO: (BIBLE-64) replace with uuid
         setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
             const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
@@ -28,6 +28,11 @@ function Page(): JSX.Element {
 
             selectTab(name);
             setActiveWindow(newWindow);
+
+            if (hidePanel) {
+                setSelectedPanel(undefined);
+            }
+
             return newWindowsList;
         });
     }
