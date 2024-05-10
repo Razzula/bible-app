@@ -11,12 +11,12 @@ import { State, Store } from 'sidenotes/dist/src/store';
 import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 
-import AutoBibleReferencePlugin from '../lexical/plugins/AutoBibleReferencePlugin';
 import { FloatingToolbarPlugin } from '../lexical/plugins/FloatingToolbarPlugin';
+import BibleReferencePlugin, { BibleReferenceNode } from '../lexical/plugins/BibleReferencePlugin';
 
 import '../../styles/editor.scss';
 
-type NoteContentProps = {
+type NoteEditorProps = {
     sidenoteID: string;
     tokens: string[];
     docID?: string;
@@ -32,13 +32,13 @@ type NoteContentProps = {
 /**
  * A React component to display and edit the contents of a sidenote.
  *
- * @param {SidenoteContentProps} props - The properties passed to the component.
+ * @param {NoteEditorProps} props - The properties passed to the component.
  *   - id (string): The unique identifier of the sidenote.
  *   - initialNoteContents (string): The initial contents of the sidenote.
  *
  * @returns {JSX.Element} A JSX Element of a `div` containing the sidenote.
  */
-function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
+function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, updateNotesContents, deleteNote }: NoteEditorProps): JSX.Element {
 
     const ref = useRef(null);
 
@@ -109,7 +109,7 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
                     namespace: 'name',
                     onError,
                     editorState: JSON.stringify(initialNoteContents),
-                    nodes: [AutoLinkNode]
+                    nodes: [AutoLinkNode, BibleReferenceNode]
                 }}>
                     <div className="editor-container">
                         <RichTextPlugin
@@ -122,7 +122,7 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
                     <HistoryPlugin />
 
                     <FloatingToolbarPlugin editorRef={ref} />
-                    <AutoBibleReferencePlugin />
+                    <BibleReferencePlugin />
                 </LexicalComposer>
             </div>
         </div>
@@ -130,4 +130,4 @@ function NoteContent({ sidenoteID, tokens, docID, initialNoteContents, updateNot
 
 }
 
-export default NoteContent;
+export default NoteEditor;

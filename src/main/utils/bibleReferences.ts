@@ -1,5 +1,6 @@
 import books from '../../../public/books.json';
 import manifest from '../../../public/manifest.json';
+import { autoUpdate } from '@floating-ui/react';
 
 type usfm = { book: string, initialChapter?: number, finalChapter?: number, initialVerse?: number, finalVerse?: number };
 type book = string | string[];
@@ -200,32 +201,50 @@ export function locateReferences(text: string, currentBook: string | null = null
 
     for (const match of text.matchAll(pattern)) { // get positions of references
         if (match.index !== undefined) {
-            matches.push([match.index, match.index + match[0].length]);
+            matches.push({
+                start: match.index,
+                end: match.index + match[0].length,
+            });
         }
     }
 
     if (matches.length === 0) {
-        return [[text, false]];
+        return [{
+            start: 0,
+            end: text.length,
+            usfm: false,
+            text,
+        }];
     }
 
-    const data = [];
+    const data: { start: number, end: number, usfm: any, text: string }[] = [];
 
     // extract references
     let i;
 
     // initial
-    if (matches[0][0] !== 0) {
-        data.push([text.slice(0, matches[0][0]), false]);
+    if (matches[0].start !== 0) {
+        data.push({
+            start: 0,
+            end: matches[0].start,
+            usfm: false,
+            text: text.slice(0, matches[0].start),
+        });
     }
     // middle
     for (i = 0; i < matches.length; i++) {
 
         // reference
-        const displayText = text.slice(matches[i][0], matches[i][1]);
+        const displayText = text.slice(matches[i].start, matches[i].end);
         const usfm = getUSFM(displayText, currentBook, currentChapter);
-        if (usfm.length !== 0) { // invalid reference
+        if (usfm.length !== 0) { // valid reference
 
-            data.push([displayText, usfm[0]]); // reference
+            data.push({
+                start: matches[i].start,
+                end: matches[i].end,
+                usfm: usfm[0],
+                text: displayText,
+            }); // reference
 
             if (usfm[0].book !== undefined) {
                 currentBook = usfm[0].book;
@@ -236,32 +255,50 @@ export function locateReferences(text: string, currentBook: string | null = null
 
         }
         else { // invalid reference
-            if (data.length > 0 && data[data.length - 1][1] === false) { // merge with previous
-                data[data.length - 1][0] += displayText;
+            if (data.length > 0 && data[data.length - 1].usfm === false) { // merge with previous
+                data[data.length - 1].text += displayText;
+                data[data.length - 1].end = matches[i].end;
             }
             else {
-                data.push([displayText, false]);
+                data.push({
+                    start: matches[i].start,
+                    end: matches[i].end,
+                    usfm: false,
+                    text: displayText,
+                });
             }
         }
 
         // post-reference
         if (i < matches.length - 1) {
-            if (data[data.length - 1][1] === false) { // merge with previous
-                data[data.length - 1][0] += text.slice(matches[i][1], matches[i + 1][0]);
+            if (data[data.length - 1].usfm === false) { // merge with previous
+                data[data.length - 1].text += text.slice(matches[i].end, matches[i + 1].start);
+                data[data.length - 1].end = matches[i + 1].start;
             }
             else {
-                data.push([text.slice(matches[i][1], matches[i + 1][0]), false]);
+                data.push({
+                    start: matches[i].end,
+                    end: matches[i + 1].start,
+                    usfm: false,
+                    text: text.slice(matches[i].end, matches[i + 1].start),
+                });
             }
         }
 
     }
     // final
-    if (matches[i - 1][1] !== text.length) { // ending dud
-        if (data[data.length - 1][1] === false) { // merge with previous
-            data[data.length - 1][0] += text.slice(matches[i - 1][1], text.length);
+    if (matches[i - 1].end !== text.length) { // ending dud
+        if (data[data.length - 1].usfm === false) { // merge with previous
+            data[data.length - 1].text += text.slice(matches[i - 1].end, text.length);
+            data[data.length - 1].end = text.length;
         }
         else {
-            data.push([text.slice(matches[i - 1][1], text.length), false]);
+            data.push({
+                start: matches[i - 1].end,
+                end: text.length,
+                usfm: false,
+                text: text.slice(matches[i - 1].end, text.length),
+            });
         }
     }
 

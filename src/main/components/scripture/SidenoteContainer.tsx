@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sidenote } from 'sidenotes';
 
-import NoteContent from './NoteContent';
+import NoteEditor from './NoteContent';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/sidenotes.scss';
@@ -31,7 +31,7 @@ function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, bas
     return (
         <div style={{ width: 280, height: 'auto' }}>
             <Sidenote key={sidenoteID} sidenote={sidenoteID} base={base}>
-                <NoteContent
+                <NoteEditor
                     sidenoteID={sidenoteID}
                     tokens={tokens}
                     docID={docID}

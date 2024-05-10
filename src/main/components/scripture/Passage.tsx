@@ -8,7 +8,7 @@ import { RootState } from '../../redux/rootReducer';
 import FileManager from '../../utils/FileManager';
 import { isOfParagraphType } from '../../utils/general';
 import { FloatingToolbar } from '../lexical/FloatingToolbar';
-import NoteContent from './NoteContent';
+import NoteEditor from './NoteContent';
 import PassageChunk from './PassageChunk';
 import SidenotesContainer from './SidenotesContainer';
 
@@ -48,6 +48,8 @@ type Note = {
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
 function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, translation, docID, selectedNoteGroup }: PassageProps): JSX.Element {
+    // TODO: (BIBLE-98) create a lightwight version of the Passage component, which only renders the passage, without any notes or interactions (this will be used by the references)
+    // furthermore, redux should not be used in this component, as these will be mounted in the references, which are not connected to the store
 
     const [formattedContent, setFormattedContent]: [any[], Function] = useState([]);
     const [passage, setPassage]: [JSX.Element, Function] = useState(<></>);
@@ -368,7 +370,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     splits.forEach((split: string) => {
                         const note = notesContents.find((note: any) => note.id === split);
 
-                        const noteContent = (<NoteContent
+                        const noteContent = (<NoteEditor
                             sidenoteID={note.id} tokens={note.tokens} docID={docID} initialNoteContents={note.contents}
                             updateNotesContents={handleUpdateNotesContents} deleteNote={handleDeleteNote}
                         />);

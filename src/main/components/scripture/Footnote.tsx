@@ -15,6 +15,14 @@ type FootnoteProps = {
     translation: string;
 }
 
+type ReferenceProps = {
+    text: string;
+    usfm: any;
+    loadPassage: (usfm: object, isFootnote: boolean, openInNewTab?: boolean) => void;
+    currentBook: string;
+    translation: string;
+}
+
 // popover with passage
 const InnerPopover = forwardRef(
     ({ popper, children, show: _, ...props }: any, ref: any) => {
@@ -46,62 +54,15 @@ const InnerPopover = forwardRef(
  *   - Hovering over a reference will display the passage in a popover.
  */
 function Footnote({ contents, loadPassage, currentBook, currentChapter, translation }: FootnoteProps): JSX.Element {
-    const [noteContents, setNoteContents]: [string | undefined, Function] = useState();
 
     const data = locateReferences(contents, currentBook, currentChapter);
-    const fileManager = FileManager.getInstance();
 
     // format references
-    const references = data.map((ref) => {
-        if (ref[1]) {
-
-            const refType = (ref[1].book === currentBook) ? 'ref internal' : 'ref external';
-
-            // format passage
-            const usfm = {"book": currentBook, "initialChapter": currentChapter};
-            const notePassage = (<Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />);
-            // contents of footnote popover
-            return (
-                <OverlayTrigger key={ref[0]} trigger={['hover', 'focus']} placement="auto-start" overlay={<InnerPopover id='popover-basic'>{notePassage}</InnerPopover>}>
-                    <span className={refType} onMouseEnter={updatePopoverContents} onClick={() => loadPassage(ref[1], true)} onAuxClick={() => loadPassage(ref[1], true, true)}>{ref[0]}</span>
-                </OverlayTrigger>
-            );
-
-            async function updatePopoverContents(): Promise<any> {
-
-                // TODO: only load if different to currently-loaded passage(s)
-                const usfm = ref[1];
-                const passageContents = await fileManager.loadScripture(usfm.book, usfm.initialChapter, translation);
-
-                if (!passageContents) {
-                    setNoteContents(null);
-                    return;
-                }
-
-                // trim to specific verses
-                let initalVerse = 1, finalVerse = passageContents.length
-
-                if (usfm.initialVerse) {
-                    initalVerse = usfm.initialVerse;
-
-                    if (usfm.finalVerse) {
-                        finalVerse = usfm.finalVerse;
-                    }
-                    else {
-                        finalVerse = initalVerse;
-                    }
-                }
-
-                const slicedPassageContents: any = {};
-                for (let i = initalVerse; i <= finalVerse; i++) {
-                    slicedPassageContents[i] = passageContents[i];
-                }
-                slicedPassageContents[initalVerse][0].verse = initalVerse;
-
-                setNoteContents([slicedPassageContents]);
-            }
+    const references = data.map((reference) => {
+        if (reference.usfm) {
+            return <BibleReference text={reference.text} usfm={reference.usfm} currentBook={currentBook} translation={translation} loadPassage={loadPassage} />
         }
-        return ref;
+        return reference.text;
     });
 
     // popover with footnote contents
@@ -120,6 +81,67 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
         </OverlayTrigger>
     );
 
+}
+
+export function BibleReference({ text, usfm, currentBook, translation, loadPassage }: ReferenceProps) {
+
+    const [noteContents, setNoteContents]: [string | undefined, Function] = useState();
+    const fileManager = FileManager.getInstance();
+
+    const refType = (usfm.book === currentBook) ? 'ref internal' : 'ref external';
+
+    // contents of footnote popover
+    return (
+        <OverlayTrigger key={text} trigger={['hover', 'focus']} placement="auto-start"
+            overlay={
+                <InnerPopover id='popover-basic'>
+                    <Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />
+                </InnerPopover>
+            }
+        >
+            <span
+                className={refType}
+                onMouseEnter={updatePopoverContents}
+                onClick={() => loadPassage(usfm, true)}
+                onAuxClick={() => loadPassage(usfm, true, true)}
+            >
+                {text}
+            </span>
+        </OverlayTrigger>
+    );
+
+    async function updatePopoverContents(): Promise<any> {
+
+        // TODO: only load if different to currently-loaded passage(s)
+        const passageContents = await fileManager.loadScripture(usfm.book, usfm.initialChapter, translation);
+
+        if (!passageContents) {
+            setNoteContents(null);
+            return;
+        }
+
+        // trim to specific verses
+        let initalVerse = 1, finalVerse = passageContents.length
+
+        if (usfm.initialVerse) {
+            initalVerse = usfm.initialVerse;
+
+            if (usfm.finalVerse) {
+                finalVerse = usfm.finalVerse;
+            }
+            else {
+                finalVerse = initalVerse;
+            }
+        }
+
+        const slicedPassageContents: any = {};
+        for (let i = initalVerse; i <= finalVerse; i++) {
+            slicedPassageContents[i] = passageContents[i];
+        }
+        slicedPassageContents[initalVerse][0].verse = initalVerse;
+
+        setNoteContents([slicedPassageContents]);
+    }
 }
 
 export default Footnote;
