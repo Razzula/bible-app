@@ -1,3 +1,5 @@
+# pylint: disable=fixme, line-too-long, invalid-name, superfluous-parens, trailing-whitespace, arguments-differ
+"""Extract and process data from input directory and create new files in the output directory."""
 import sys
 import os
 import json
@@ -260,12 +262,12 @@ def simplify(data, outDir, file, chapter):  # HTML to JSON
         else:
 
             # HEADER
-            if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): # TODO
+            if (elementClass in ['s', 's1', 'sp', 'ms', 'qa', 'd']): # TODO: (BIBLE-88) handle Psalm headers properly
                 header = element.text
                 return
 
             # NEW PARAGRAPH
-            if (elementClass in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']): # TODO
+            if (elementClass in ['p', 'm', 'pmr', 'pc', 'q1', 'q2', 'q3', 'qr']):
                 div = elementClass
 
             elif (elementClass not in ['version', 'content', 'verse', 'chapter', 'book', 'note']):
@@ -273,7 +275,7 @@ def simplify(data, outDir, file, chapter):  # HTML to JSON
 
             # FOOTNOTE
             if ('note' in elementClass):
-                # TODO; allow nested children with formatting
+                # TODO: (BIBLE-53) allow nested children with formatting
                 noteContents = element.text.strip()
                 noteContents = re.sub(r'#(?:(\d+):(\d+))?', '', noteContents)
 

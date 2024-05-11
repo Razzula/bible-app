@@ -1,3 +1,4 @@
+# pylint: disable=fixme, line-too-long, invalid-name, superfluous-parens, trailing-whitespace, arguments-differ
 import pytest
 import os
 import shutil
@@ -27,7 +28,7 @@ def setup_teardown_module():
 
     yield  # RUN TESTS
 
-    # TEARDOWN  
+    # TEARDOWN
     shutil.rmtree(os.path.join(directory, '_test'))
 
 
