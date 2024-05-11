@@ -1,7 +1,10 @@
+"""Test tokenise.py"""
+# pylint: disable=fixme, line-too-long, invalid-name, superfluous-parens, trailing-whitespace, arguments-differ
+
 from tokenise import tokenise
 
-
 def test_GEN_1_1():
+    """Test GEN 1:1 tokenisation"""
 
     inputs = [
         (
@@ -25,7 +28,7 @@ def test_GEN_1_1():
         )
     ]
 
-    strongs = { 
+    strongs = {
         0: { "strongs": "7225", "eng": "In the beginning" },
         1: { "strongs": "1254", "eng": "created" },
         2: { "strongs": "430", "eng": "God" },

@@ -1,3 +1,5 @@
+# pylint: disable=fixme, line-too-long, invalid-name, superfluous-parens, trailing-whitespace, arguments-differ
+"""Visualiser for token mapping"""
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'  # Hide pygame welcome message
 import pygame
@@ -5,10 +7,11 @@ from pygame import event
 
 
 class Text:
+    """Class for text objects"""
 
     def __init__(self, window, font, message, x, y, colour=(0, 0, 0)):
         self.window = window
-        
+
         self.message = message
         self.x = x
         self.y = y
@@ -18,15 +21,17 @@ class Text:
         self.textRect.top = self.y
 
     def write(self):
+        """Write the text to the screen"""
         # Sets text object
         # Parameters are the text, enabling anti-aliasing, text colour, and background colour
         # Now add to the screen!
         self.window.blit(self.text, self.textRect)
 
 class Window():
-    
+    """Class for the token mapping visualiser window"""
+
     def __init__(self):
-        
+
         # Need this at the start of a pygame file or nothing works. ¯\_(ツ)_/¯
         pygame.init()
 
@@ -38,8 +43,9 @@ class Window():
 
         # font object, you can change this pretty easily
         self.font = pygame.font.SysFont('bahnschrift', 16)
-    
+
     def draw(self, baseTokens, mappedObjects, title=None):
+        """Draw the token mapping visualisation"""
 
         # CLEAN INPUT
         mappedObjects = [obj for obj in mappedObjects if obj.get('type', None) != 'note']
@@ -54,20 +60,20 @@ class Window():
         y = 10  # This you can set yourself for this program
         objects_to_map = {}
         for objIndex, obj in enumerate(mappedObjects):
-            
+
             x += 10  # A bit of odd padding
-            colour = (0, 0, 0) if (obj.get('token', None) is not None) else (255, 0, 0) # if it's unmapped, make it red
+            colour = (0, 0, 0) if (obj.get('token', None) is not None) else (255, 0, 0)  # if it's unmapped, make it red
 
             # it
-            if (format := obj.get('type', None)):
-                if ('it' in format):
+            if (tokenFormat := obj.get('type', None)):
+                if ('it' in tokenFormat):
                     obj['content'] = f'[{obj["content"]}]'
                     colour = (182, 182, 182)
-            
+
             new_obj = Text(self.window, self.font, obj['content'], x, y, colour)
             new_obj.write()
             objects_to_map[objIndex] = new_obj
-            
+
             # Make sure we base the next x off the end of the last object's width
             x = new_obj.textRect.right
         endWidth = new_obj.textRect.right
@@ -80,14 +86,14 @@ class Window():
 
             x += 10  # A bit of odd padding
             colour = (0, 0, 0) if self.isMapped(objIndex, mappedObjects) else (182, 182, 182) # if it's unmapped, make it gray
-            
+
             new_obj = Text(self.window, self.font, obj['eng'], x, y, colour)
             new_obj.write()
             map_objects[objIndex] = new_obj
-            
+
             # Make sure we base the next x off the end of the last object's width
             x = new_obj.textRect.right + 5
-            
+
             if (int(objIndex) + 1 < len(baseTokens)):
                 # The divider
                 pygame.draw.line(self.window, (0, 0, 0), (x, y), (x, y + self.font.get_height()))
@@ -126,12 +132,14 @@ class Window():
                     return
 
     def isMapped(self, token, mappedObjects):
+        """Check if a token is mapped to any objects"""
         return any((str(mapping.get('token')) == str(token)) for mapping in mappedObjects)
 
 
 if (__name__ == "__main__"):
 
     def main():
+        """Main function for testing the visualiser"""
         window = Window()
 
         # GEN.1.1
