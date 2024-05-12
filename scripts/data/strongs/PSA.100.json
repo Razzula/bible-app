@@ -110,6 +110,9 @@
             "eng": "you lands",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine singular"
@@ -146,7 +149,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "the",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -228,6 +235,9 @@
                     "attributes": [
                         "common plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -283,7 +293,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u03081\u20442\u00d7\u0099O\u03083\u20444",
             "eng": "that",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -370,6 +384,9 @@
                         "Perfect",
                         "third person masculine singular"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -407,6 +424,12 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -441,6 +464,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -481,6 +507,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -519,6 +548,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -559,6 +591,9 @@
                     "attributes": [
                         "common plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -609,7 +644,14 @@
             "transliteration": "lA\u030a\u008dw,",
             "native": "\u00d7\u009cO\u0308\u009dO\u0308\u0097\u00d7\u0095O\u03081",
             "eng": "to Him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "8": {
             "strongs": {
@@ -644,6 +686,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -657,7 +702,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444\u00d7\u0099O\u03083\u20444",
             "eng": "For",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -731,6 +780,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -748,6 +800,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
                 }
             ]
         },
@@ -805,6 +860,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }

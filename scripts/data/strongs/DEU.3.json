@@ -77,6 +77,9 @@
             "eng": "Bashan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -155,6 +158,9 @@
             "eng": "of Bashan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -184,6 +190,9 @@
                         "Qal",
                         "Infinitive construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -241,6 +250,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -258,6 +270,9 @@
                     "attributes": [
                         "l"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -338,7 +353,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aA\u0302\u00b7lay",
             "native": "\u00d7\u0090O\u0308\u03bc\u00d7\u009cO\u0308\u00b7\u00d7\u0099O\u0308\u0099",
             "eng": "to me",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common singular"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -348,7 +370,11 @@
             "transliteration": "a\u0302\u0080\u0099al-",
             "native": "\u00d7\u0090O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "not",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -377,7 +403,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u030a\u008dA\u0302\u00b7a\u03011 \u0304A\u030a\u008dw,",
             "native": "\u00d7\u0090O\u03081\u00d7aO\u0308\u0094\u00d7\u0095O\u03081",
             "eng": "him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -387,7 +420,11 @@
             "transliteration": "kA\u0303\u00ae",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u0308\u00a3\u00d7\u0099",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "8": {
             "strongs": {
@@ -409,6 +446,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -439,7 +479,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u030a\u008dA\u0302\u00b7a\u03011 \u0304A\u030a\u008dw",
             "native": "\u00d7\u0090O\u03081\u00d7aO\u0308\u009b\u00d7\u0095O\u03081",
             "eng": "him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -455,6 +502,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -489,6 +539,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -506,6 +559,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -523,6 +579,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -556,7 +615,14 @@
             "transliteration": "lA\u030a\u008dw,",
             "native": "\u00d7\u009cO\u03081\u20444O\u0308\u0094\u00d7\u0095O\u03081",
             "eng": "to him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "18": {
             "strongs": {
@@ -650,6 +716,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327O\u03081\u20442\u00d7\u0090O\u0308\u00b1\u00d7\u009eO\u03081\u00d7 \u0308O\u0308 \u0301O\u0308\u0094\u00d7\u0099",
             "eng": "of the Amorites",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -778,6 +847,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -801,6 +873,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -812,7 +887,11 @@
             "transliteration": "gam",
             "native": "\u00d7\u0092O\u0308\u00b7O\u03081\u20444O\u0308\u009b\u00d7\u009d",
             "eng": "also",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "6": {
             "strongs": {
@@ -822,7 +901,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -869,6 +952,9 @@
             "eng": "of Bashan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -891,6 +977,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -925,6 +1014,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -950,6 +1042,9 @@
                         "Consecutive imperfect",
                         "first person common plural"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -961,7 +1056,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u0093O\u03083\u20444",
             "eng": "until",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "15": {
             "strongs": {
@@ -971,7 +1070,11 @@
             "transliteration": "bilA\u0302\u00b7tA\u0303\u00ae",
             "native": "\u00d7\u0091O\u0308 \u0301O\u03081\u20444\u00d7\u009cO\u0308\u00b0\u00d7aO\u0308 \u0301O\u03081\u20444O\u0308\u00a5\u00d7\u0099",
             "eng": "no",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "16": {
             "strongs": {
@@ -997,7 +1100,14 @@
             "transliteration": "lA\u030a\u008dw",
             "native": "\u00d7\u009cO\u0308\u0096\u00d7\u0095O\u03081",
             "eng": "he",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "18": {
             "strongs": {
@@ -1051,7 +1161,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -1084,6 +1198,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -1103,6 +1220,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -1119,6 +1239,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308 \u0301O\u0308\u0094\u00d7\u0095\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -1247,6 +1370,12 @@
                     "attributes": [
                         "m"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine plural"
                 }
             ]
         },
@@ -1385,6 +1514,9 @@
                     "attributes": [
                         "b"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -1595,6 +1727,9 @@
             "eng": "rural",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -1628,7 +1763,11 @@
             "transliteration": "mE\u0301\u0099A\u0302\u00b7a\u0302\u0080\u0099A\u030a\u008da\u0301 \u0327\u008f.",
             "native": "\u00d7\u009eO\u0308\u00b0\u00d7\u0090O\u03081O\u03081\u20442\u00d7\u0093\u00d7\u0083",
             "eng": "a great",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         }
     },
     "6": {
@@ -1665,7 +1804,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u030a\u008dA\u0302\u00b7wA\u0302\u00b7a\u03011 \u0304A\u0308\u0081m,",
             "native": "\u00d7\u0090\u00d7\u0095O\u03081\u00d7aO\u0308 \u0327O\u0308\u0094\u00d7\u009d",
             "eng": "them",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine plural"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -1847,6 +1993,9 @@
             "eng": "women",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine plural"
@@ -1868,6 +2017,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -1912,6 +2064,9 @@
             "eng": "the livestock",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine singular"
@@ -1952,6 +2107,9 @@
             "eng": "of the cities",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine plural"
@@ -1983,7 +2141,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7nA\u030a\u00ab.",
             "native": "\u00d7\u009cO\u0308 \u0327O\u03081\u20442\u00d7 \u00d7\u0095O\u03081\u20444\u00d7\u0083",
             "eng": "for ourselves",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common plural"
+                }
+            ]
         }
     },
     "8": {
@@ -2028,6 +2193,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -2045,6 +2213,9 @@
             "eng": "that",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "pronoun",
                     "attributes": [
                         "third person feminine singular"
@@ -2060,7 +2231,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -2071,6 +2246,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u0094\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -2146,6 +2324,9 @@
             "eng": "of the Amorites",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2204,6 +2385,9 @@
             "eng": "of the Jordan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2261,7 +2445,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u0093O\u03083\u20444",
             "eng": "to",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "16": {
             "strongs": {
@@ -2395,6 +2583,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2427,7 +2618,14 @@
             "transliteration": "lA\u030a\u008dw",
             "native": "\u00d7\u009cO\u0308\u0096\u00d7\u0095O\u03081",
             "eng": "it",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "8": {
             "strongs": {
@@ -2493,6 +2691,9 @@
             "eng": "of the plain",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -2532,6 +2733,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0092O\u0308 \u0301O\u03081\u20444\u00d7\u009cO\u0308\u00b0\u00d7\u00a2O\u0308 \u0327\u00d7\u0093O\u0308\u0099",
             "eng": "Gilead",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -2574,6 +2778,9 @@
             "eng": "Bashan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2590,7 +2797,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u0093O\u03083\u20444",
             "eng": "as far as",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "9": {
             "strongs": {
@@ -2702,6 +2913,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2720,7 +2934,11 @@
             "transliteration": "kA\u0303\u00ae",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u0308\u00a3\u00d7\u0099",
             "eng": "For",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -2730,7 +2948,11 @@
             "transliteration": "raq-",
             "native": "\u00d7 \u0308O\u0308\u00b7\u00d7\u00a7O\u03083\u20444",
             "eng": "only",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -2776,6 +2998,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0091O\u0308 \u0327O\u03081\u20444\u00d7\u00a9O\u0308 \u0327\u00d7\u0081O\u0308\u0097\u00d7\u009f",
             "eng": "of Bashan",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -2837,6 +3062,9 @@
             "eng": "of the Rephaim",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -2853,7 +3081,11 @@
             "transliteration": "hinA\u0302\u00b7nA\u0303ah",
             "native": "\u00d7\u0094O\u0308 \u0301\u00d7 O\u0308\u03bcO\u03081\u20444O\u0308\u00a4\u00d7\u0094",
             "eng": "indeed",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interjection"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -2869,6 +3101,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -3047,6 +3282,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -3104,6 +3342,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -3163,6 +3404,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -3175,6 +3419,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u00a7\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -3192,6 +3439,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u03081O\u03081\u20444O\u0308\u009b\u00d7\u0090\u00d7a",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -3235,6 +3485,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -3251,6 +3504,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308 \u0301O\u0308\u0091\u00d7\u0095\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -3308,7 +3564,11 @@
             "transliteration": "a\u0302\u0080\u0098al-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "by",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -3395,6 +3655,9 @@
             "eng": "of Gilead",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -3423,6 +3686,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -3491,6 +3757,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -3534,6 +3803,9 @@
             "eng": "of Gilead",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -3574,6 +3846,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0091O\u0308 \u0327O\u03081\u20444\u00d7\u00a9O\u0308 \u0327\u00d7\u0081\u00d7\u009fO\u0308\u0099",
             "eng": "Bashan",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -3653,6 +3928,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular construct"
@@ -3686,6 +3964,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7O\u03081\u20442\u00d7\u009eO\u0308\u00b0\u00d7 O\u0308\u00b7\u00d7\u00a9O\u0308\u00b6O\u03081\u20444\u00d7\u0081O\u0308\u0091\u00d7\u0094",
             "eng": "of Manasseh",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -3739,6 +4020,9 @@
             "eng": "of Argob",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -3780,6 +4064,9 @@
             "eng": "Bashan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -3797,6 +4084,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308\u00a5\u00d7\u0095O\u03081\u20444\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -3941,7 +4231,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "6": {
             "strongs": {
@@ -4003,7 +4297,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u0093O\u03083\u20444",
             "eng": "as far as",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -4032,6 +4330,9 @@
             "eng": "of the Geshurite",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -4054,6 +4355,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -4097,7 +4401,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u030a\u008dA\u0302\u00b7a\u03011 \u0304A\u0308\u0081m",
             "native": "\u00d7\u0090O\u03081\u00d7aO\u0308 \u0327O\u0308 \u0308\u00d7\u009d",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine plural"
+                }
+            ]
         },
         "15": {
             "strongs": {
@@ -4107,7 +4418,11 @@
             "transliteration": "a\u0302\u0080\u0098al-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "after",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "16": {
             "strongs": {
@@ -4123,6 +4438,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -4134,7 +4452,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "18": {
             "strongs": {
@@ -4145,6 +4467,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0091O\u0308 \u0327O\u03081\u20444\u00d7\u00a9O\u0308 \u0327\u00d7\u0081\u00d7\u009fO\u0308\u0099",
             "eng": "Bashan",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4194,7 +4519,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f",
             "native": "\u00d7\u00a2O\u0308\u00b7O\u0308\u0096\u00d7\u0093",
             "eng": "to",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "22": {
             "strongs": {
@@ -4205,6 +4534,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0099O\u03081\u20444O\u0308\u00a5\u00d7\u0095O\u03081\u00d7\u009d",
             "eng": "day",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4222,6 +4554,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u00b6O\u03081\u20444O\u03081\u20442\u00d7\u0094\u00d7\u0083",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -4289,7 +4624,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -4300,6 +4639,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0092O\u0308 \u0301O\u03081\u20444\u00d7\u009cO\u0308\u00b0\u00d7\u00a2O\u0308 \u0327O\u03081\u20442\u00d7\u0093\u00d7\u0083",
             "eng": "Gilead",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4363,6 +4705,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -4398,7 +4743,11 @@
             "transliteration": "min-",
             "native": "\u00d7\u009eO\u0308 \u0301\u00d7\u009fO\u03083\u20444",
             "eng": "from",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -4409,6 +4758,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0092O\u0308 \u0301O\u03081\u20444\u00d7\u009cO\u0308\u00b0\u00d7\u00a2O\u0308 \u0327\u00d7\u0093O\u0308\u0099",
             "eng": "Gilead",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4432,6 +4784,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
                 }
             ]
         },
@@ -4497,6 +4852,9 @@
             "eng": "of the river",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -4541,6 +4899,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
                 }
             ]
         },
@@ -4571,6 +4932,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7 O\u0308\u00b7O\u03081\u20444O\u0308\u0094\u00d7\u0097O\u0308\u00b7\u00d7\u009c",
             "eng": "the River",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4649,6 +5013,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine singular"
@@ -4670,6 +5037,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -4741,6 +5111,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
                 }
             ]
         },
@@ -4770,6 +5143,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327O\u03081\u20442\u00d7\u00a2O\u03082\u00d7 \u0308O\u0308 \u0327\u00d7\u0091O\u0308 \u0327\u00d7\u0094O\u0308\u0099",
             "eng": "of the Arabah",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -4805,6 +5181,9 @@
             "eng": "the Salt",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -4820,7 +5199,11 @@
             "transliteration": "taA\u0302\u00b7a\u0301 \u0327\u00a5aa\u03011 \u0304",
             "native": "\u00d7aO\u0308\u00b7O\u03081\u20444O\u0308\u009b\u00d7\u0097O\u0308\u00b7\u00d7a",
             "eng": "below",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -4849,6 +5232,9 @@
             "eng": "of Pisgah",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -4871,6 +5257,9 @@
                     "attributes": [
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         }
@@ -4909,7 +5298,14 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304A\u0302\u00b7a\u0301 \u0327\u03bcem,",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u0308\u00b0\u00d7\u009bO\u0308\u00b6O\u0308\u0094\u00d7\u009d",
             "eng": "you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -4925,6 +5321,9 @@
                     "attributes": [
                         "b"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -4943,6 +5342,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308 \u0301O\u0308\u0096\u00d7\u0095\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -5007,6 +5409,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5034,7 +5439,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem",
             "native": "\u00d7\u009cO\u0308 \u0327\u00d7\u009bO\u0308\u00b6O\u0308\u009c\u00d7\u009d",
             "eng": "you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -5044,7 +5456,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -5055,6 +5471,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u00a4\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -5072,6 +5491,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u03081O\u03081\u20444\u00d7\u0090\u00d7aO\u0308\u0099",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -5101,6 +5523,9 @@
                         "Qal",
                         "Infinitive construct"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -5179,6 +5604,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5278,7 +5706,11 @@
             "transliteration": "raq",
             "native": "\u00d7 \u0308O\u0308\u00b7O\u0308 \u00d7\u00a7",
             "eng": "But",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -5294,6 +5726,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5317,6 +5752,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5340,6 +5778,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5370,7 +5811,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u03081\u20442\u00d7\u0099O\u03083\u20444",
             "eng": "that",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -5411,7 +5856,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem;",
             "native": "\u00d7\u009cO\u0308 \u0327\u00d7\u009bO\u0308\u00b6O\u0308\u0091\u00d7\u009d",
             "eng": "you have",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -5452,6 +5904,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5496,7 +5951,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem.",
             "native": "\u00d7\u009cO\u0308 \u0327\u00d7\u009bO\u0308\u00b6O\u03081\u20442\u00d7\u009d\u00d7\u0083",
             "eng": "you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         }
     },
     "20": {
@@ -5508,7 +5970,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f",
             "native": "\u00d7\u00a2O\u0308\u00b7O\u0308 \u00d7\u0093",
             "eng": "Until",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -5584,6 +6050,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5592,7 +6061,14 @@
             "transliteration": "kA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem",
             "native": "\u00d7\u009bO\u0308 \u0327O\u03081\u20444\u00d7\u009bO\u0308\u00b6\u00d7\u009dO\u0308\u0092",
             "eng": "as to you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -5627,7 +6103,11 @@
             "transliteration": "a\u0301 \u0327\u00a1am-",
             "native": "\u00d7\u0092O\u0308\u00b7\u00d7\u009dO\u03083\u20444",
             "eng": "also",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "9": {
             "strongs": {
@@ -5654,7 +6134,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -5665,6 +6149,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u0095\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -5722,6 +6209,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -5800,6 +6290,9 @@
             "eng": "the Jordan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -5870,6 +6363,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -5914,7 +6410,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem.",
             "native": "\u00d7\u009cO\u0308 \u0327\u00d7\u009bO\u0308\u00b6O\u03081\u20442\u00d7\u009d\u00d7\u0083",
             "eng": "you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         }
     },
     "21": {
@@ -5932,6 +6435,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -5988,6 +6494,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -6004,6 +6513,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308 \u0301O\u0308\u0096\u00d7\u0095\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -6050,6 +6562,9 @@
                     "attributes": [
                         "cdc"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -6062,6 +6577,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7 \u0308O\u03081\u00d7\u0090O\u03081O\u0308\u0097\u00d7a",
             "eng": "have seen",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "verb",
                     "attributes": [
@@ -6080,7 +6598,11 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aa\u03011 \u0304",
             "native": "\u00d7\u0090O\u0308\u03bc\u00d7aO\u0308\u00a9",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -6167,6 +6689,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -6203,6 +6728,9 @@
             "eng": "kings",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine plural"
@@ -6220,6 +6748,9 @@
             "eng": "these",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "pronoun",
                     "attributes": [
                         "common plural"
@@ -6235,7 +6766,11 @@
             "transliteration": "kA\u0303an-",
             "native": "\u00d7\u009bO\u0308\u03bcO\u03081\u20444O\u03081\u20442\u00d7\u009fO\u03083\u20444",
             "eng": "so",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "19": {
             "strongs": {
@@ -6307,6 +6842,9 @@
             "eng": "the kingdoms",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine plural"
@@ -6375,7 +6913,14 @@
             "transliteration": "A\u030a\u00a1A\u0308\u0081mA\u0302\u00b7mA\u0308\u0081h.",
             "native": "\u00d7\u00a9O\u0308 \u0327O\u03081\u20442\u00d7\u0081\u00d7\u009eO\u0308 \u0327O\u03081\u20444\u00d7\u0094\u00d7\u0083",
             "eng": "there",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                },
+                {
+                    "pos": "third person feminine singular"
+                }
+            ]
         }
     },
     "22": {
@@ -6412,6 +6957,9 @@
                         "Imperfect",
                         "second person masculine plural"
                     ]
+                },
+                {
+                    "pos": "third person masculine plural"
                 }
             ]
         },
@@ -6423,7 +6971,11 @@
             "transliteration": "kA\u0303\u00ae",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u0308\u009a\u00d7\u0099",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -6457,6 +7009,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine plural"
                 }
             ]
         },
@@ -6487,6 +7042,9 @@
             "eng": "fights",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "verb",
                     "attributes": [
                         "Nifal",
@@ -6501,14 +7059,25 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7a\u0301 \u0327\u03bcem.",
             "native": "\u00d7\u009cO\u0308 \u0327\u00d7\u009bO\u0308\u00b6O\u03081\u20442\u00d7\u009d\u00d7\u0083",
             "eng": "for you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "9": {
             "strongs": "H",
             "transliteration": "s",
             "native": "\u00d7\u00a1",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "punctuation"
+                }
+            ]
         }
     },
     "23": {
@@ -6545,7 +7114,11 @@
             "transliteration": "a\u0302\u0080\u0099el-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7\u009cO\u03083\u20444",
             "eng": "with",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -6581,6 +7154,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -6597,6 +7173,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0094O\u0308 \u0301O\u0308\u0096\u00d7\u0095\u00d7\u0090",
             "eng": "that",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -6735,7 +7314,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6O\u03081\u20442\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -6751,6 +7334,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -6762,7 +7348,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6O\u0308 \u0308\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "9": {
             "strongs": {
@@ -6778,6 +7368,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -6795,6 +7388,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "direct object marker"
                 }
             ]
         },
@@ -6812,6 +7408,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -6824,6 +7423,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0097O\u03082\u00d7\u0096O\u0308 \u0327\u00d7\u00a7O\u0308 \u0327O\u0308\u0091\u00d7\u0094",
             "eng": "mighty",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "adjective",
                     "attributes": [
@@ -6857,7 +7459,11 @@
             "transliteration": "mA\u0303\u00ae-",
             "native": "\u00d7\u009eO\u0308 \u0301\u00d7\u0099O\u03083\u20444",
             "eng": "who",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interrogative"
+                }
+            ]
         },
         "15": {
             "strongs": {
@@ -6892,6 +7498,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine plural"
@@ -6919,6 +7528,9 @@
                     "attributes": [
                         "b"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -6984,6 +7596,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -7013,6 +7628,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         }
@@ -7045,7 +7663,11 @@
             "transliteration": "nA\u0308\u0081,",
             "native": "\u00d7 O\u0308 \u0327O\u03081\u20444O\u0308\u0097\u00d7\u0090",
             "eng": "I pray",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interjection"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -7080,7 +7702,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -7091,6 +7717,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u00a3\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -7108,6 +7737,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0098O\u03081\u20444\u00d7\u0095O\u03081\u00d7\u0091O\u0308 \u0327O\u0308\u0094\u00d7\u0094",
             "eng": "good",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "adjective",
                     "attributes": [
@@ -7166,6 +7798,9 @@
             "eng": "the Jordan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -7184,6 +7819,9 @@
             "eng": "mountain",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -7201,6 +7839,9 @@
             "eng": "pleasant",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "adjective",
                     "attributes": [
                         "masculine singular"
@@ -7217,6 +7858,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u00b6O\u03081\u20444O\u0308\u0096\u00d7\u0094",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -7239,6 +7883,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -7299,7 +7946,14 @@
             "transliteration": "bA\u0303\u00ae",
             "native": "\u00d7\u0091O\u0308 \u0301O\u03081\u20444\u00d7\u0099O\u0308\u0099",
             "eng": "with me",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common singular"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -7309,7 +7963,14 @@
             "transliteration": "lE\u0301\u0099A\u0302\u00b7maA\u0302\u00b7a\u0302\u0080\u0098anA\u0302\u00b7a\u0301 \u0327\u03bcem,",
             "native": "\u00d7\u009cO\u0308\u00b0\u00d7\u009eO\u0308\u00b7O\u0308\u00a3\u00d7\u00a2O\u0308\u00b7\u00d7 O\u0308\u00b0\u00d7\u009bO\u0308\u00b6O\u0308\u0094\u00d7\u009d",
             "eng": "on your account",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine plural"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -7361,7 +8022,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aA\u0302\u00b7lA\u0308\u0081y;",
             "native": "\u00d7\u0090O\u0308\u03bc\u00d7\u009cO\u0308 \u0327O\u0308\u0091\u00d7\u0099",
             "eng": "to me",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common singular"
+                }
+            ]
         },
         "8": {
             "strongs": {
@@ -7414,7 +8082,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aA\u0302\u00b7lay",
             "native": "\u00d7\u0090O\u0308\u03bc\u00d7\u009cO\u0308\u00b7\u00d7\u0099O\u0308\u0099",
             "eng": "to me",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common singular"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -7424,14 +8099,25 @@
             "transliteration": "raa\u0301 \u0327\u0087-",
             "native": "\u00d7 \u0308O\u0308\u00b7\u00d7\u0091O\u03083\u20444",
             "eng": "Enough of that",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "12": {
             "strongs": "H",
             "transliteration": "lA\u0308\u0081a\u0301 \u0327\u03bc,",
             "native": "\u00d7\u009cO\u0308 \u0327O\u0308\u0094\u00d7\u009aO\u0308\u00b0",
             "eng": "to",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person feminine singular"
+                }
+            ]
         },
         "13": {
             "strongs": {
@@ -7441,7 +8127,11 @@
             "transliteration": "a\u0302\u0080\u0099al-",
             "native": "\u00d7\u0090O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "no",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "14": {
             "strongs": {
@@ -7488,7 +8178,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aA\u0302\u00b7lay",
             "native": "\u00d7\u0090O\u0308\u03bc\u00d7\u009cO\u0308\u00b7O\u0308\u009b\u00d7\u0099",
             "eng": "to Me",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common singular"
+                }
+            ]
         },
         "17": {
             "strongs": {
@@ -7498,7 +8195,11 @@
             "transliteration": "a\u0302\u0080\u0098A\u030a\u008dA\u0302\u00b7wa\u0301 \u0327\u008f",
             "native": "\u00d7\u00a2O\u0308\u0096\u00d7\u0095O\u03081\u00d7\u0093",
             "eng": "more",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "18": {
             "strongs": {
@@ -7514,6 +8215,9 @@
                     "attributes": [
                         "b"
                     ]
+                },
+                {
+                    "pos": "article"
                 },
                 {
                     "pos": "noun",
@@ -7532,6 +8236,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u00b6O\u03081\u20444O\u03081\u20442\u00d7\u0094\u00d7\u0083",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -7588,6 +8295,9 @@
             "eng": "of Pisgah",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -7635,6 +8345,9 @@
                     "attributes": [
                         "cdc"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -7652,6 +8365,9 @@
                     "attributes": [
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -7675,6 +8391,9 @@
                     "attributes": [
                         "feminine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -7698,6 +8417,9 @@
                     "attributes": [
                         "feminine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -7721,6 +8443,9 @@
                     "attributes": [
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -7769,6 +8494,9 @@
                     "attributes": [
                         "cdc"
                     ]
+                },
+                {
+                    "pos": "second person masculine singular"
                 }
             ]
         },
@@ -7780,7 +8508,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444\u00d7\u0099O\u03083\u20444",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "13": {
             "strongs": {
@@ -7826,7 +8558,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "16": {
             "strongs": {
@@ -7837,6 +8573,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0099O\u0308\u00b7O\u03081\u20444\u00d7 \u0308O\u0308\u00b0\u00d7\u0093O\u0308\u03bcO\u03081\u20444O\u0308\u00a5\u00d7\u009f",
             "eng": "Jordan",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -7855,6 +8594,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u00b6O\u03081\u20444O\u03081\u20442\u00d7\u0094\u00d7\u0083",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -7898,7 +8640,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -7940,6 +8686,9 @@
                         "Imperative",
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -7965,6 +8714,9 @@
                         "Imperative",
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -7976,7 +8728,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444\u00d7\u0099O\u03083\u20444",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -8047,6 +8803,9 @@
             "eng": "people",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -8063,6 +8822,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u00b6O\u03081\u20444O\u0308\u0094\u00d7\u0094",
             "eng": "this",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "pronoun",
                     "attributes": [
@@ -8121,7 +8883,14 @@
             "transliteration": "a\u0302\u0080\u0099A\u030a\u008dA\u0302\u00b7wA\u0302\u00b7a\u03011 \u0304A\u0308\u0081m,",
             "native": "\u00d7\u0090\u00d7\u0095O\u03081\u00d7aO\u0308 \u0327O\u0308\u0094\u00d7\u009d",
             "eng": "shall cause them",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                },
+                {
+                    "pos": "third person masculine plural"
+                }
+            ]
         },
         "15": {
             "strongs": {
@@ -8131,7 +8900,11 @@
             "transliteration": "a\u0302\u0080\u0099ea\u03011 \u0304-",
             "native": "\u00d7\u0090O\u0308\u00b6\u00d7aO\u03083\u20444",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "16": {
             "strongs": {
@@ -8142,6 +8915,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u0096\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the land",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -8229,6 +9005,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "common singular"
@@ -8244,14 +9023,22 @@
             "transliteration": "mA\u030a\u00abl",
             "native": "\u00d7\u009eO\u0308\u0096\u00d7\u0095O\u03081\u20444\u00d7\u009c",
             "eng": "opposite",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "4": {
             "strongs": "H",
             "transliteration": "bA\u0303aa\u03011 \u0304",
             "native": "\u00d7\u0091O\u0308\u03bcO\u03081\u20444O\u0308\u00a5\u00d7\u0099\u00d7a",
             "eng": "unto",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -8276,7 +9063,11 @@
             "transliteration": "pI\u0300\u0084",
             "native": "\u00d7\u00a4",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "punctuation"
+                }
+            ]
         }
     }
 }

@@ -27,6 +27,9 @@
             "eng": "of Ascents",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine plural"
@@ -66,7 +69,11 @@
             "transliteration": "lA\u030a\u00abA\u0302\u00b7lA\u0303a",
             "native": "\u00d7\u009c\u00d7\u0095O\u03081\u20444\u00d7\u009cO\u0308\u03bcO\u0308\u00a3\u00d7\u0099",
             "eng": "If it had not been",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -116,7 +123,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7nA\u030a\u00ab;",
             "native": "\u00d7\u009cO\u0308 \u0327O\u0308\u0091\u00d7 \u00d7\u0095O\u03081\u20444",
             "eng": "on our side",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common plural"
+                }
+            ]
         },
         "8": {
             "strongs": {
@@ -145,7 +159,11 @@
             "transliteration": "nA\u0308\u0081",
             "native": "\u00d7 O\u0308 \u0327O\u0308\u009d\u00d7\u0090",
             "eng": "now",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interjection"
+                }
+            ]
         },
         "10": {
             "strongs": {
@@ -175,7 +193,11 @@
             "transliteration": "lA\u030a\u00abA\u0302\u00b7lA\u0303a",
             "native": "\u00d7\u009c\u00d7\u0095O\u03081\u20444\u00d7\u009cO\u0308\u03bcO\u0308\u00a3\u00d7\u0099",
             "eng": "If it had not been",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -225,7 +247,14 @@
             "transliteration": "lA\u0308\u0081A\u0302\u00b7nA\u030a\u00ab;",
             "native": "\u00d7\u009cO\u0308 \u0327O\u0308\u0091\u00d7 \u00d7\u0095O\u03081\u20444",
             "eng": "on our side",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common plural"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -259,7 +288,14 @@
             "transliteration": "a\u0302\u0080\u0098A\u0308\u0081A\u0302\u00b7lA\u0303aA\u0302\u00b7nA\u030a\u00ab",
             "native": "\u00d7\u00a2O\u0308 \u0327\u00d7\u009cO\u0308\u03bcO\u0308\u00a3\u00d7\u0099\u00d7 \u00d7\u0095O\u03081\u20444",
             "eng": "against us",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common plural"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -288,7 +324,11 @@
             "transliteration": "a\u0302\u0080\u0099A\u0308\u0083A\u0302\u00b7zay",
             "native": "\u00d7\u0090O\u03082O\u0308\u00ad\u00d7\u0096O\u0308\u00b7\u00d7\u0099",
             "eng": "Then",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -323,6 +363,9 @@
                         "Perfect",
                         "third person common plural"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -364,6 +407,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine plural"
                 }
             ]
         },
@@ -372,7 +418,14 @@
             "transliteration": "bA\u0308\u0081A\u0302\u00b7nA\u030a\u00ab.",
             "native": "\u00d7\u0091O\u0308 \u0327O\u03081\u20444O\u03081\u20442\u00d7 \u00d7\u0095O\u03081\u20444\u00d7\u0083",
             "eng": "against us",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "first person common plural"
+                }
+            ]
         }
     },
     "4": {
@@ -384,7 +437,11 @@
             "transliteration": "a\u0302\u0080\u0099A\u0308\u0083A\u0302\u00b7zay",
             "native": "\u00d7\u0090O\u03082O\u0308\u00ad\u00d7\u0096O\u0308\u00b7\u00d7\u0099",
             "eng": "Then",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -395,6 +452,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u009eO\u0308\u00b7O\u03081\u20444O\u0308\u00a3\u00d7\u0099O\u0308 \u0301\u00d7\u009d",
             "eng": "the waters",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -419,6 +479,9 @@
                         "Perfect",
                         "third person common plural"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -436,6 +499,9 @@
                     "attributes": [
                         "masculine singular"
                     ]
+                },
+                {
+                    "pos": "third person feminine singular"
                 }
             ]
         },
@@ -466,7 +532,11 @@
             "transliteration": "a\u0302\u0080\u0098al-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "over",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -482,6 +552,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         }
@@ -495,7 +568,11 @@
             "transliteration": "a\u0302\u0080\u0099A\u0308\u0083A\u0302\u00b7zay",
             "native": "\u00d7\u0090O\u03082O\u0308\u00ad\u00d7\u0096O\u0308\u00b7\u00d7\u0099",
             "eng": "then",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -524,7 +601,11 @@
             "transliteration": "a\u0302\u0080\u0098al-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u009cO\u03083\u20444",
             "eng": "over",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -540,6 +621,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -552,6 +636,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7O\u0308\u009d\u00d7\u009eO\u0308\u00b7O\u03081\u20444O\u0308\u0097\u00d7\u0099O\u0308 \u0301\u00d7\u009d",
             "eng": "the waters",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -569,6 +656,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0096O\u0308\u03bcO\u03081\u20444O\u03081\u20442\u00d7\u0099\u00d7\u0093\u00d7\u0095O\u03081\u00d7 O\u0308 \u0301O\u03081\u20442\u00d7\u0099\u00d7\u009d\u00d7\u0083",
             "eng": "swollen",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -655,6 +745,9 @@
                         "Perfect",
                         "third person masculine singular"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -695,6 +788,9 @@
                     "attributes": [
                         "cdc"
                     ]
+                },
+                {
+                    "pos": "third person masculine plural"
                 }
             ]
         }
@@ -714,6 +810,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },
@@ -811,6 +910,9 @@
             "eng": "the snare",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -895,6 +997,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         },

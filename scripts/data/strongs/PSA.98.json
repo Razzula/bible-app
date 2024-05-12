@@ -102,7 +102,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u03081\u20442\u00d7\u0099O\u03083\u20444",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "7": {
             "strongs": {
@@ -166,7 +170,14 @@
             "transliteration": "lA\u030a\u008dw",
             "native": "\u00d7\u009cO\u03081\u20444O\u0308\u00a5\u00d7\u0095O\u03081",
             "eng": "Him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -182,6 +193,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -222,6 +236,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -278,6 +295,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -313,6 +333,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7O\u0308\u009d\u00d7\u0092O\u03081\u20444\u00d7\u0095O\u03081\u00d7\u0099O\u0308 \u0301O\u0308\u0097\u00d7\u009d",
             "eng": "of the nations",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -354,6 +377,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -392,6 +418,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -415,6 +444,9 @@
                     "attributes": [
                         "feminine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -503,7 +535,11 @@
             "transliteration": "a\u0302\u0080\u0099apI\u0300\u0084A\u0302\u00b7sA\u0303a-",
             "native": "\u00d7\u0090O\u0308\u00b7\u00d7\u00a4O\u0308\u00b0\u00d7\u00a1O\u0308\u03bc\u00d7\u0099O\u03083\u20444",
             "eng": "the ends [of]",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "9": {
             "strongs": {
@@ -530,7 +566,11 @@
             "transliteration": "a\u0302\u0080\u0099A\u0303aa\u03011 \u0304,",
             "native": "\u00d7\u0090O\u0308\u03bcO\u0308\u009dO\u0308\u0097\u00d7a",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "direct object marker"
+                }
+            ]
         },
         "11": {
             "strongs": {
@@ -563,6 +603,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "first person common plural"
                 }
             ]
         }
@@ -637,6 +680,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327\u00d7\u0090O\u0308 \u0327O\u0308\u0091\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the earth",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -863,6 +909,9 @@
                     ]
                 },
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "feminine plural"
@@ -962,6 +1011,9 @@
             "eng": "the King",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -1018,6 +1070,9 @@
             "eng": "the sea",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "masculine singular"
@@ -1045,6 +1100,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -1095,7 +1153,14 @@
             "transliteration": "a\u0301 \u0327\u0087A\u0308\u0081h.",
             "native": "\u00d7\u0091O\u0308 \u0327O\u03081\u20442\u00d7\u0094O\u03081\u20444\u00d7\u0083",
             "eng": "in it",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person feminine singular"
+                }
+            ]
         }
     },
     "8": {
@@ -1160,7 +1225,11 @@
             "transliteration": "yaA\u0302\u00b7a\u0301 \u0327\u00a5aa\u0301 \u0327\u008f,",
             "native": "\u00d7\u0099O\u0308\u00b7O\u0308\u009dO\u0308\u0097\u00d7\u0097O\u0308\u00b7\u00d7\u0093",
             "eng": "together",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -1249,7 +1318,11 @@
             "transliteration": "kA\u0303\u00ae",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u0308\u00a5\u00d7\u0099",
             "eng": "for",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -1303,6 +1376,9 @@
             "native": "\u00d7\u0094O\u0308 \u0327O\u0308\u00ab\u00d7\u0090O\u0308 \u0327O\u0308\u00a5\u00d7 \u0308O\u0308\u00b6\u00d7\u00a5",
             "eng": "the earth",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [

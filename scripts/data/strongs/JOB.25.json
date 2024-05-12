@@ -53,6 +53,9 @@
             "eng": "the Shuhite",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -137,7 +140,14 @@
             "transliteration": "a\u0302\u0080\u0098imA\u0302\u00b7mA\u030a\u008dw;",
             "native": "\u00d7\u00a2O\u0308 \u0301\u00d7\u009eO\u03081\u20444O\u0308\u0091\u00d7\u0095O\u03081",
             "eng": "to Him",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "third person masculine singular"
+                }
+            ]
         },
         "4": {
             "strongs": {
@@ -195,6 +205,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -208,7 +221,11 @@
             "transliteration": "hA\u0308\u0083A\u0302\u00b7yA\u0303aA\u030a\u00a1",
             "native": "\u00d7\u0094O\u03082\u00d7\u0099O\u0308\u03bcO\u0308\u00a3\u00d7\u00a9\u00d7\u0081",
             "eng": "Is there",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "adverb"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -247,6 +264,9 @@
                     "attributes": [
                         "masculine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -264,6 +284,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "preposition"
                 }
             ]
         },
@@ -275,7 +298,11 @@
             "transliteration": "mA\u0303\u00ae,",
             "native": "\u00d7\u009eO\u0308 \u0301O\u0308\u009dO\u0308\u0097\u00d7\u0099",
             "eng": "whom",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interrogative"
+                }
+            ]
         },
         "6": {
             "strongs": {
@@ -327,6 +354,9 @@
                     "attributes": [
                         "common singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -346,6 +376,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "interrogative"
                 }
             ]
         },
@@ -393,7 +426,11 @@
             "transliteration": "a\u0302\u0080\u0098im-",
             "native": "\u00d7\u00a2O\u0308 \u0301\u00d7\u009dO\u03083\u20444",
             "eng": "before",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -426,6 +463,9 @@
                     "attributes": [
                         "o"
                     ]
+                },
+                {
+                    "pos": "interrogative"
                 }
             ]
         },
@@ -494,7 +534,11 @@
             "transliteration": "hA\u0303an",
             "native": "\u00d7\u0094O\u0308\u03bcO\u0308\u00a3\u00d7\u009f",
             "eng": "if",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interjection"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -504,7 +548,11 @@
             "transliteration": "a\u0302\u0080\u0098aa\u0301 \u0327\u008f-",
             "native": "\u00d7\u00a2O\u0308\u00b7\u00d7\u0093O\u03083\u20444",
             "eng": "even",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -644,6 +692,9 @@
                     "attributes": [
                         "cdc"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -657,7 +708,11 @@
             "transliteration": "a\u0302\u0080\u0099apI\u0300\u0084",
             "native": "\u00d7\u0090O\u0308\u00b7O\u0308\u00ad\u00d7\u00a3",
             "eng": "How",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "2": {
             "strongs": {
@@ -667,7 +722,11 @@
             "transliteration": "kA\u0303\u00ae-",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u03081\u20442\u00d7\u0099O\u03083\u20444",
             "eng": "how much less",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -765,7 +824,11 @@
             "transliteration": "pI\u0300\u0084",
             "native": "\u00d7\u00a4",
             "eng": "-",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "punctuation"
+                }
+            ]
         }
     }
 }

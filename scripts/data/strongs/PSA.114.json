@@ -202,6 +202,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },
@@ -237,6 +240,9 @@
                     "attributes": [
                         "feminine plural construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         }
@@ -251,6 +257,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u0099O\u0308 \u0327O\u03081\u20444O\u0308\u00a3\u00d7\u009d",
             "eng": "The sea",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -313,6 +322,9 @@
             "eng": "Jordan",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "noun",
                     "attributes": [
                         "proper",
@@ -374,6 +386,9 @@
             "native": "\u00d7\u0094O\u0308\u00b6O\u03081\u20442O\u0308\u00ad\u00d7\u0094O\u0308 \u0327\u00d7 \u0308O\u0308 \u0301\u00d7\u0099\u00d7\u009d",
             "eng": "The mountains",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -491,14 +506,25 @@
             "transliteration": "mah-",
             "native": "\u00d7\u009eO\u0308\u00b7\u00d7\u0094O\u03083\u20444",
             "eng": "What [ails]",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "interrogative"
+                }
+            ]
         },
         "2": {
             "strongs": "H",
             "transliteration": "lE\u0301\u0099A\u0302\u00b7a\u0301 \u0327\u03bcA\u0308\u0081",
             "native": "\u00d7\u009cO\u0308\u00b0O\u03081\u20444\u00d7\u009aO\u0308 \u0327O\u0308\u00a3",
             "eng": "you",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "preposition"
+                },
+                {
+                    "pos": "second person masculine singular"
+                }
+            ]
         },
         "3": {
             "strongs": {
@@ -509,6 +535,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7O\u0308\u00ad\u00d7\u0099O\u0308 \u0327O\u03081\u20444\u00d7\u009d",
             "eng": "sea",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -525,7 +554,11 @@
             "transliteration": "kA\u0303\u00ae",
             "native": "\u00d7\u009bO\u0308 \u0301O\u03081\u20444O\u0308\u00a3\u00d7\u0099",
             "eng": "that",
-            "grammar": []
+            "grammar": [
+                {
+                    "pos": "conjunction"
+                }
+            ]
         },
         "5": {
             "strongs": {
@@ -555,6 +588,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7O\u0308\u009d\u00d7\u0099O\u0308\u00b7O\u03081\u20444\u00d7 \u0308O\u0308\u00b0\u00d7\u0093O\u0308\u03bcO\u03081\u20444O\u0308\u0097\u00d7\u009f",
             "eng": "Jordan",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -617,6 +653,9 @@
             "native": "\u00d7\u0094O\u0308\u00b6O\u03081\u20442O\u0308\u00ad\u00d7\u0094O\u0308 \u0327\u00d7 \u0308O\u0308 \u0301\u00d7\u0099\u00d7\u009d",
             "eng": "mountains",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -884,6 +923,9 @@
             "eng": "who turned",
             "grammar": [
                 {
+                    "pos": "article"
+                },
+                {
                     "pos": "verb",
                     "attributes": [
                         "Qal",
@@ -902,6 +944,9 @@
             "native": "\u00d7\u0094O\u0308\u00b7\u00d7\u00a6O\u03081\u20444O\u0308\u00a3\u00d7\u0095O\u03081\u20444\u00d7 \u0308",
             "eng": "the rock",
             "grammar": [
+                {
+                    "pos": "article"
+                },
                 {
                     "pos": "noun",
                     "attributes": [
@@ -981,6 +1026,9 @@
                     "attributes": [
                         "masculine singular construct"
                     ]
+                },
+                {
+                    "pos": "third person masculine singular"
                 }
             ]
         },

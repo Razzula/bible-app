@@ -186,7 +186,7 @@ for book in manifest:
                                                     obj['attributes'] = []
                                                     for componentIndex, component in enumerate(pos[1:]):
                                                         obj['attributes'].append(grammarLong[posIndex][1:][componentIndex])
-                                                    token['grammar'].append(obj)
+                                                token['grammar'].append(obj)
 
                                         elif (language == 'greek'):
                                             # GREEK
@@ -198,9 +198,15 @@ for book in manifest:
                                                 obj['attributes'] = []
                                                 for posIndex, pos in enumerate(gramamrShort[1:]):
                                                     obj['attributes'].append(grammarLong[1:][posIndex])
-                                                token['grammar'].append(obj)
+                                            token['grammar'].append(obj)
 
-                    if (token.get('strongs') or token.get('pos')):
+                    if (token.get('strongs')):
+                        if (not token.get('grammar')):
+                            if (len(token['strongs']) == 1): # GEN.4.22
+                                token['strongs'] = { 'data': None }
+                            else:
+                                pass # error
+                            pass
                         # print(token)
                         verseData[str(tokenCount)] = token
                         tokenCount += 1
