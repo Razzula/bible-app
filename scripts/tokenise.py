@@ -15,6 +15,8 @@ class MatchStrictness(Enum):
     IDENTICAL = 1
     LEMMAS = 2
     SYNONYMS = 3
+    MORPHOLOGY = 'A'
+    BACKUP_MORPHOLOGY = 'B'
 
 IGNORED_CHARS = ''.join(['.', ',', ';', ':', '?', '!', '“', '”', '‘', '’'])
 
@@ -159,7 +161,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
     # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
     # it may be possible to reconstruct the scripture into some larger tokens, which would reduce the number of individual tokens
     newToken = {}
-    final_tokens = []
+    finalTokens = []
     currentToken = -1 # cannot use 'None', as notes will have this token
 
     for token in tokens:
@@ -168,7 +170,7 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
 
         if (currentToken != newTokenID): # new token
             if (newToken):
-                final_tokens.append(newToken)
+                finalTokens.append(newToken)
 
             newToken = token
             currentToken = newTokenID
@@ -177,10 +179,10 @@ def tokenise(scripture, strongs, visualise=False, usfm=None):
                 newToken['content'] += f' {token["content"]}' # TODO: this may not be ideal
 
     if (newToken != {}): # append last token
-        final_tokens.append(newToken)
+        finalTokens.append(newToken)
     pass
 
-    return final_tokens
+    return finalTokens
 
 def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
     """
@@ -197,7 +199,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
             workingTokens.append(new_token)
 
     # DO TWO SWEEPS: FIRST ENOFORCING POS MATCHING, THEN RELAXING IT
-    for posStrictness in [MatchStrictness.IDENTICAL, None]:
+    for posStrictness in [MatchStrictness.MORPHOLOGY, MatchStrictness.BACKUP_MORPHOLOGY, None]:
 
         # DO THREE SWEEPS: FIRST USING LITERAL COMPARISON, THEN EXPANDING ACCEPTANCE CRITERIA TO INCLUDE LEMMAS, AND THEN SYNONYMS
         for matchTolerance in [MatchStrictness.IDENTICAL, MatchStrictness.LEMMAS, MatchStrictness.SYNONYMS]:
@@ -338,7 +340,7 @@ def tokeniseAbstract(TRUE_TOKENS, strongs, tokenCounts, lemmaCounts):
             for tokenIndex, scriptureToken in enumerate(workingTokens):
                 if (tokenIsDirty(scriptureToken)):
                     continue
-                if ((posStrictness is not None) and (scriptureToken['pos'] == 'DT')): # skip articles
+                if ((posStrictness is not None) and ('DT' in scriptureToken['pos'])): # skip articles
                     continue
 
                 # TODO: could we do a uniqueness check initally to prevent re-treading all the time?
@@ -481,7 +483,8 @@ def linkArticles(workingTokens, strongs, allowImplicitArticles=False):
         if (tokenIsDirty(scriptureToken)):
             continue
 
-        if (scriptureToken['pos'] in ['DT', 'IN']): # the, of
+        if (bool(set(scriptureToken['pos']) & set(['DT', 'IN']))): # the, of
+            # TODO: using all articles is not ideal, as it may lead to false positives
             if (len(workingTokens) > scriptureIndex + 1): # this should always be true, really
                 # TODO instead of this, keep iterating until we hit a noun
 
@@ -646,12 +649,12 @@ def tokenIsDirty(token):
     """
     return (token.get('type') in ['note', 'it']) or (token.get('token') is not None)
 
-def tagVersePOS(tokens):
+def tagVersePOS(tokens, englishTag='content'):
     """
     Tag the part-of-speech of each token.
     """
     # tag POS using whole verse context
-    verse = ' '.join([token['content'] for token in tokens if token.get('type') != 'note'])
+    verse = ' '.join([token[englishTag] for token in tokens if token.get('type') != 'note'])
 
     taggedVerse = pos_tag(word_tokenize(verse)) # Penn Treebank POS tags
 
@@ -663,22 +666,35 @@ def tagVersePOS(tokens):
         if (token.get('type') == 'note'):
             continue
 
-        tokenText = token['content']
+        token['pos'] = []
+        tokenText = token[englishTag]
 
         while (currentTaggedWord):
             if (tokenText.startswith(currentTaggedWord[0])):
-                if (not token.get('pos')): # TODO sometimes ignoring later tags might not be ideal
-                    token['pos'] = currentTaggedWord[1]
+                token['pos'].append(currentTaggedWord[1])
                 tokenText = tokenText[len(currentTaggedWord[0]):]
 
                 if (tokenText == ''): # move to next token
                     currentTaggedWord = next(taggedWords, None)
                     break
             else:
-                raise ValueError(f"Failed to match '{tokenText}' with '{currentTaggedWord[0]}'")
+                if (currentTaggedWord[0].startswith(' ')):
+                    raise ValueError(f"Failed to match '{tokenText}' with '{currentTaggedWord[0]}'")
+                currentTaggedWord = (f' {currentTaggedWord[0]}', currentTaggedWord[1]) # add space, in case this was the issue.
+                continue # try again
             currentTaggedWord = next(taggedWords, None)
 
     return tokens
+
+def tagStrongsPOS(tokens):
+    """
+    Tag the part-of-speech of each token.
+    """
+    taggedTokens = tagVersePOS(tokens.values(), 'eng')
+    rebuiltTokens = {}
+    for index, token in enumerate(taggedTokens):
+        rebuiltTokens[str(index + 1)] = token
+    return rebuiltTokens
 
 def getWordnetPOS(inputTag, isStrongsTag=False):
     """
@@ -687,6 +703,8 @@ def getWordnetPOS(inputTag, isStrongsTag=False):
     if (inputTag is None):
         return None
 
+    outputTags = set()
+
     if (isStrongsTag):
         switcher = {
             'adjective': 'a',  # adjective
@@ -694,20 +712,23 @@ def getWordnetPOS(inputTag, isStrongsTag=False):
             'noun': 'n', 'pronoun': 'n', # noun
             'adverb': 'r',  # adverb
         }
-        outputTags = set()
         for tag in inputTag:
             if (posTag := switcher.get(tag['pos'], None)):
                 outputTags.add(posTag)
         return list(outputTags) if (len(outputTags) > 0) else None
     else:
-        return {
+        switcher = {
             'J': 'a',  # adjective
             'V': 'v',  # verb
             'N': 'n',  # noun
             'R': 'r',  # adverb
-        }.get(inputTag[0], None)
+        }
+        for tag in inputTag:
+            if (posTag := switcher.get(tag[0], None)):
+                outputTags.add(posTag)
+        return list(outputTags) if (len(outputTags) > 0) else None
 
-def areTokenGrammarsEquivalent(scriptureToken, strongsToken, strict=True):
+def areTokenGrammarsEquivalent(scriptureToken, strongsToken, strictness):
     """
     Determine if the grammar tags of the two tokens are equivalent.
 
@@ -718,69 +739,70 @@ def areTokenGrammarsEquivalent(scriptureToken, strongsToken, strict=True):
     Returns:
     bool: True if any Hebrew tag matches the Penn Treebank tag for the token, False otherwise.
     """
-    if (not strict):
+    if (strictness is None):
         return True
-
-    scriptureTokenPOS = scriptureToken.get('pos') # (Penn Treebank)
+    if (strictness == MatchStrictness.BACKUP_MORPHOLOGY):
+        return bool(set(scriptureToken['pos']) & set(strongsToken['pos']))
 
     # a strongs token may have multiple grammar tags
-    for tag in strongsToken.get('grammar', []):
-        strongTokenPOS = tag['pos'] # (Hebrew Parsing Tag)
-        match strongTokenPOS:
-            case 'conjunctive waw':
-                if (scriptureTokenPOS in [
-                    'CC',
-                    'IN', # so = and
-                ]):
-                    return True
-            case 'conjunction':
-                if (scriptureTokenPOS in [
-                    'CC',
-                    'IN', # so = and
-                ]):
-                    return True
-            case 'number':
-                if (scriptureTokenPOS == 'CD'):
-                    return True
-            case 'article':
-                if (scriptureTokenPOS == 'DT'):
-                    return True
-            case 'preposition':
-                if (scriptureTokenPOS in ['IN', 'TO']):
-                    return True
-            case 'adjective':
-                if (scriptureTokenPOS in ['JJ', 'JJR', 'JJS']):
-                    return True
-            case 'noun':
-                if (scriptureTokenPOS in [
-                        'NN', 'NNS', 'NNP', 'NNPS',
-                        'DT', 'IN', 'TO', # as we are dealing with Hebrew, sometimes these are tagged as nouns
+    for scriptureTokenPOS in scriptureToken.get('pos', []):
+        for strongTokenTags in strongsToken.get('grammar', []):
+            strongTokenPOS = strongTokenTags['pos'] # (Hebrew Parsing Tag)
+            match strongTokenPOS:
+                case 'conjunctive waw':
+                    if (scriptureTokenPOS in [
+                        'CC',
+                        'IN', # so = and
                     ]):
-                    # it is best to ignore both plural and proper tags, as these differ between English and Hebrew
-                    # for example, 'God' is a single, proper noun, but 'elohim' is a plural, common noun
-                    return True
-            case 'pronoun':
-                if (scriptureTokenPOS in ['PRP', 'PRP$', 'WP', 'WP$']):
-                    return True
-            case 'adverb':
-                if (scriptureTokenPOS in ['RB', 'RBR', 'RBS', 'EX']):
-                    return True
-            case 'interjection':
-                if (scriptureTokenPOS == 'UH'):
-                    return True
-            case 'verb':
-                if (scriptureTokenPOS in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'MD']):
-                    return True
-            case 'interrogative':
-                if (scriptureTokenPOS in ['WDT', 'WP', 'WP$', 'WRB']):
-                    return True
-            case _:
-                if (strongTokenPOS not in ['direct object marker']
-                    and not strongTokenPOS.startswith('third person')
-                    and not strongTokenPOS.startswith('first person')
-                    and not strongTokenPOS.startswith('second person')
-                ): # we ignore these
-                    pass
+                        return True
+                case 'conjunction':
+                    if (scriptureTokenPOS in [
+                        'CC',
+                        'IN', # so = and
+                    ]):
+                        return True
+                case 'number':
+                    if (scriptureTokenPOS == 'CD'):
+                        return True
+                case 'article':
+                    if (scriptureTokenPOS == 'DT'):
+                        return True
+                case 'preposition':
+                    if (scriptureTokenPOS in ['IN', 'TO']):
+                        return True
+                case 'adjective':
+                    if (scriptureTokenPOS in ['JJ', 'JJR', 'JJS']):
+                        return True
+                case 'noun':
+                    if (scriptureTokenPOS in [
+                            'NN', 'NNS', 'NNP', 'NNPS',
+                            'DT', 'IN', 'TO', # as we are dealing with Hebrew, sometimes these are tagged as nouns
+                        ]):
+                        # it is best to ignore both plural and proper tags, as these differ between English and Hebrew
+                        # for example, 'God' is a single, proper noun, but 'elohim' is a plural, common noun
+                        return True
+                case 'pronoun':
+                    if (scriptureTokenPOS in ['PRP', 'PRP$', 'WP', 'WP$']):
+                        return True
+                case 'adverb':
+                    if (scriptureTokenPOS in ['RB', 'RBR', 'RBS', 'EX']):
+                        return True
+                case 'interjection':
+                    if (scriptureTokenPOS == 'UH'):
+                        return True
+                case 'verb':
+                    if (scriptureTokenPOS in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'MD']):
+                        return True
+                case 'interrogative':
+                    if (scriptureTokenPOS in ['WDT', 'WP', 'WP$', 'WRB']):
+                        return True
+                case _:
+                    if (strongTokenPOS not in ['direct object marker']
+                        and not strongTokenPOS.startswith('third person')
+                        and not strongTokenPOS.startswith('first person')
+                        and not strongTokenPOS.startswith('second person')
+                    ): # we ignore these
+                        pass
     return False
 
 def lemmatiseWord(words, posTags, isStrongsTag=False):
@@ -853,7 +875,7 @@ if __name__ == "__main__":
 
     # tokenisePassage('GEN.1', 7, 'NKJV', visualise=True)
 
-    for temp in range(21, 32):
+    for temp in range(1, 32):
         tokenisePassage('GEN.1', temp, 'NKJV', visualise=True)
         # TODO
         # 5: so, the
