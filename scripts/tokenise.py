@@ -273,8 +273,7 @@ class Tokeniser:
                                                     continue
 
                                         elif (matchTolerance == MatchStrictness.SYNONYMS):
-                                            # TODO: better ensure uniqueness
-                                            if (self.tokenCounts[simplifyToken(scriptureToken)][0] == 1 and self.tokenCounts[simplifyToken(strongsToken)][1] == 1): # UNIQUE
+                                            if (self.synonymCounts[simplifyToken(scriptureToken)][0] == 1 and self.synonymCounts[simplifyToken(strongsToken)][1] == 1): # UNIQUE
                                                 # update data to be tokenised
                                                 self.linkTokens(scriptureIndex, strongsTokenID, posStrictness)
                                                 continue
@@ -298,7 +297,7 @@ class Tokeniser:
                                 if (self.tokenCounts.get(simplifyToken(scriptureToken)) == (1, 1)): # UNIQUE
                                     if (contains(strongsToken, scriptureToken, mustMatchWholeWord=True)):
                                         # update data to be tokenised
-                                        self.linkTokens(scriptureIndex, strongsTokenID, posStrictness)
+                                        self.linkTokens(scriptureIndex, strongsTokenID, posStrictness, scriptureToken['content'])
                                         continue
 
                             elif (matchTolerance == MatchStrictness.LEMMAS):
@@ -511,17 +510,41 @@ class Tokeniser:
             self.workingTokens[scriptureTokenIndex] = scriptureToken
 
             # UPDATE BELIEFS # TODO (BIBLE-116)
+            # SCRIPTURE
+            # word
             scriptureWord = simplifyToken(scriptureToken)
             self.tokenCounts[scriptureWord] = (self.tokenCounts[scriptureWord][0] - 1, self.tokenCounts[scriptureWord][1])
+            # lemma
+            for lemma in self.lemmatiseWord(scriptureWord, scriptureToken.get('pos')):
+                self.lemmaCounts[lemma] = (self.lemmaCounts[lemma][0] - 1, self.lemmaCounts[lemma][1])
+            # synonyms
+            for synonym in getSynonyms(scriptureWord):
+                self.synonymCounts[synonym] = (self.synonymCounts[synonym][0] - 1, self.synonymCounts[synonym][1])
 
-            # TODO: currently:
-            # - we are not updating the lemma counts
-            # - we are not updating the synonym counts
-            # - we are not updating the strongs counts (we are not sure which word was used, if multiple are present)
+            # STRONGS
+            # we cannot change the strongs counts as this would damage the accuracy
+            # 'in the beginning God created the heavens'
+            # if we link the first 'the', we now count 'the' as unique, which means the first 'the' may also link a
+            # second time, which would be incorrect
 
+            # if (strongWord == -1): # flagged to skip the strongs token
+            #     return
             # if (strongWord is None):
             #     strongWord = simplifyToken(strongsToken)
+            #     if (' ' in strongWord):
+            #         # we have no way of knowing which of this token's subwords were used, so cannot update our beliefs
+            #         return
+            # else:
+            #     strongWord = simplifyToken(strongWord)
+
+            # # word
             # self.tokenCounts[strongWord] = (self.tokenCounts[strongWord][0], self.tokenCounts[strongWord][1] - 1)
+            # # lemma
+            # for lemma in self.lemmatiseWord(strongWord, strongsToken.get('grammar'), True):
+            #     self.lemmaCounts[lemma] = (self.lemmaCounts[lemma][0], self.lemmaCounts[lemma][1] - 1)
+            # # synonyms
+            # for synonym in getSynonyms(strongWord):
+            #     self.synonymCounts[synonym] = (self.synonymCounts[synonym][0], self.synonymCounts[synonym][1] - 1)
 
         # LINK ARTICLES
         def linkArticles(self, allowImplicitArticles=False):
@@ -546,7 +569,7 @@ class Tokeniser:
                             if (contains(tokenCandidate, scriptureToken['content'], mustMatchWholeWord=True)): # is capitalisation an issue here?
                                 # embedded article
                                 # | the world |
-                                self.linkTokens(scriptureIndex, strongsCandidateID, False)
+                                self.linkTokens(scriptureIndex, strongsCandidateID, False, scriptureToken['content'])
                                 continue
 
                             if (not any(entry['pos'] == 'noun' for entry in tokenCandidate['grammar'])):
@@ -563,7 +586,7 @@ class Tokeniser:
                             if (allowImplicitArticles):
                                 # implicit article
                                 # | world |
-                                self.linkTokens(scriptureIndex, strongsCandidateID, False)
+                                self.linkTokens(scriptureIndex, strongsCandidateID, False, -1)
                                 continue
 
         # REVERT ANOMALIES
@@ -912,7 +935,7 @@ if (__name__ == "__main__"):
     # tokeniser.tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
     # tokeniser.tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
 
-    for temp in range(2, 32):
+    for temp in range(1, 32):
         tokeniser.tokenisePassage('GEN.1', temp, 'NKJV', visualise=True)
         # TODO
         # 5: so, the
