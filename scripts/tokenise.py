@@ -25,9 +25,9 @@ class Tokeniser:
     """A class for tokenising a passage of scripture."""
 
     LEMMA_CACHE = {
-        'spared': ['spare'],
-        # 'kinds': ['kind'],
-        # 'kind': ['kind'],
+        'spared': set(['spare']),
+        # 'kinds': set(['kind']),
+        # 'kind': set(['kind']),
     }
 
     def __init__(self):
@@ -47,20 +47,25 @@ class Tokeniser:
         strongs = data[str(verse)]
 
         if (scripture and strongs):
-            tokenisationJob = self.TokenisationJob(self.lemmatiseWord, self.lemonymous, self.synonymous)
+            tokenisationJob = self.TokenisationJob(translation, self.lemmatiseWord, self.lemonymous, self.synonymous)
             return tokenisationJob.tokenise(scripture, strongs, visualise=visualise, usfm=f'{passage}.{verse}')
         return None
 
     class TokenisationJob:
         """An individual job to tokenise a passage of scripture. This is declared as a subclass, to allow for functions to share data easily."""
 
-        def __init__(self, lemmatiseWord: Callable[[Any, Any, bool], (set | Any)], lemonymous, synonymous):
+        def __init__(self, translation, lemmatiseWord: Callable[[Any, Any, bool], (set | Any)], lemonymous, synonymous):
             self.lemmatiseWord = lemmatiseWord
             self.lemonymous = lemonymous
             self.synonymous = synonymous
 
             self.workingTokens: list = []
             self.strongs: dict = {}
+
+            # SETTINGS
+            # Reverent Capitalisation
+            # in some translations, we can be strict with the capitalisation of some words: He != he (excluding begininng of sentences, wrth gwrs!)
+            self.useReverentCapitalisation = (translation.upper() in ['NKJV'])
 
         def tokenise(self, scripture, strongs, visualise=False, usfm=None):
             """
@@ -509,7 +514,7 @@ class Tokeniser:
             scriptureToken['token'] = strongsTokenID
             self.workingTokens[scriptureTokenIndex] = scriptureToken
 
-            # UPDATE BELIEFS # TODO (BIBLE-116)
+            # UPDATE BELIEFS
             # SCRIPTURE
             # word
             scriptureWord = simplifyToken(scriptureToken)
@@ -556,38 +561,52 @@ class Tokeniser:
 
                 if (tokenIsDirty(scriptureToken)):
                     continue
+                if (len(self.workingTokens) <= scriptureIndex + 1):
+                    break
 
                 if (bool(set(scriptureToken['pos']) & set(['DT', 'IN']))): # the, of
                     # TODO: using all articles is not ideal, as it may lead to false positives
-                    if (len(self.workingTokens) > scriptureIndex + 1): # this should always be true, really
-                        # TODO instead of this, keep iterating until we hit a noun
+                    offset = 1
+                    tokenCandidate = None
+                    while (len(self.workingTokens) > scriptureIndex + offset): # this should always be true, really
+                        nextToken = self.workingTokens[scriptureIndex + offset]
+                        isNoun = bool(set(nextToken['pos']) & set(['NN', 'NNS', 'NNP', 'NNPS']))
+                        isAdjective = bool(set(nextToken['pos']) & set(['JJ', 'JJR', 'JJS']))
+                        if ((not isNoun) and (not isAdjective) or (not nextToken.get('token'))):
+                            break
+                        strongsCandidateID = self.workingTokens[scriptureIndex + offset].get('token')
+                        offset += 1
 
-                        strongsCandidateID = self.workingTokens[scriptureIndex + 1].get('token')
-                        if (strongsCandidateID): # noun is mapped
+                        if (strongsCandidateID): # scripture token is mapped
                             tokenCandidate = self.strongs[str(strongsCandidateID)]
 
+                            # explicit
                             if (contains(tokenCandidate, scriptureToken['content'], mustMatchWholeWord=True)): # is capitalisation an issue here?
                                 # embedded article
                                 # | the world |
                                 self.linkTokens(scriptureIndex, strongsCandidateID, False, scriptureToken['content'])
-                                continue
+                                tokenCandidate = None
+                                break
 
-                            if (not any(entry['pos'] == 'noun' for entry in tokenCandidate['grammar'])):
-                                # TODO: (BIBLE-115) this whole function can be turned from geometric to syntactic
-                                continue
+                            # implicit
+                            # tokenCandidate = self.strongs[str(int(strongsCandidateID) - 1)]
+                            if (isNoun or any([tag['pos'] == 'noun' for tag in tokenCandidate['grammar']])):
+                                if (self.synonymous(tokenCandidate, scriptureToken['content'], matchTolerance=MatchStrictness.SYNONYMS)):
+                                    # explicit article
+                                    # | the | world |
+                                    self.linkTokens(scriptureIndex, int(strongsCandidateID) - 1, False)
+                                    tokenCandidate = None
+                                    break
 
-                            tokenCandidate = self.strongs[str(int(strongsCandidateID) - 1)]
-                            if (self.synonymous(tokenCandidate, scriptureToken['content'], matchTolerance=MatchStrictness.SYNONYMS)):
-                                # explicit article
-                                # | the | world |
-                                self.linkTokens(scriptureIndex, int(strongsCandidateID) - 1, False)
-                                continue
-
-                            if (allowImplicitArticles):
-                                # implicit article
-                                # | world |
-                                self.linkTokens(scriptureIndex, strongsCandidateID, False, -1)
-                                continue
+                    if (allowImplicitArticles and tokenCandidate):
+                        if ( # we are very particular about what we allow to be an implicit article
+                            simplifyToken(scriptureToken) in ['the']
+                            and any([tag['pos'] == 'noun' for tag in tokenCandidate['grammar']])
+                        ):
+                            # implicit article
+                            # | world |
+                            self.linkTokens(scriptureIndex, strongsCandidateID, False, -1)
+                            continue
 
         # REVERT ANOMALIES
         def revertAnomalies(self):
@@ -899,31 +918,6 @@ def areTokenGrammarsEquivalent(scriptureToken, strongsToken, strictness):
                         pass
     return False
 
-## GEN.1.1
-# scripture = [ # NKJV
-#     { "header": "The History of Creation", "type": "p", "content": "In the " },
-#     { "type": "note", "content": "Ps. 102:25; Is. 40:21; (John 1:1-3; Heb. 1:10)" },
-#     { "content": "beginning " },
-#     { "type": "note", "content": "Gen. 2:4; (Ps. 8:3; 89:11; 90:2); Is. 44:24; Acts 17:24; Rom. 1:20; (Heb. 1:2; 11:3); Rev. 4:11" },
-#     { "content": "God created the heavens and the earth. " }
-# ]
-# scripture = [ # ESV
-#     { "header": "The Creation of the World", "type": "p", "content": " " },
-#     { "content": "In the " },
-#     { "type": "note", "content": "Job 38:4-7; Ps. 33:6; 136:5; Isa. 42:5; 45:18; John 1:1-3; Acts 14:15; 17:24; Col. 1:16, 17; Heb. 1:10; 11:3; Rev. 4:11" },
-#     { "content": "beginning, God created the heavens and the earth. " }
-# ]
-# strongs = {
-#     "0": { "strongs": "7225", "eng": "In the beginning" },
-#     "1": { "strongs": "1254", "eng": "created" },
-#     "2": { "strongs": "430", "eng": "God" },
-#     "3": { "strongs": "853", "eng": "-" },
-#     "4": { "strongs": "8064", "eng": "the heavens" },
-#     "5": { "strongs": "853", "eng": "and" },
-#     "6": { "strongs": "776", "eng": "the earth" }
-# }
-
-
 # load thesaurus used for synonyms
 with open(os.path.join(os.path.dirname(__file__), 'data', 'en_thesaurus.json'), 'r', encoding='utf-8') as thesaurusFile:
     thesaurus = json.load(thesaurusFile)
@@ -935,19 +929,13 @@ if (__name__ == "__main__"):
     # tokeniser.tokenisePassage('EST.8', 9, 'NKJV', visualise=True)
     # tokeniser.tokenisePassage('JHN.3', 16, 'NKJV', visualise=True)
 
-    for temp in range(1, 32):
+    for temp in range(20, 32):
         tokeniser.tokenisePassage('GEN.1', temp, 'NKJV', visualise=True)
         # TODO
-        # 5: so, the
+        # 20 'the' heavens (issue before linkArticles, not during)
 
-        # 11, 12 'in itself'?
         # 14 'and' (incorrect assignment)
         # 15, 17 (broad synonym) 'give light'
-        # 18 'and' (incorrect assignment)
-        # 21 'kinds' (incomplete lemma)
-        # 24 'the' (incorrect assumption of noun)
-        # 28 'and'
-        # 29
-        # 30 'Also' (borked distance metric)?
-
-        # non-unique collision : 11 (fruit), 18 (over), 20 (of), 22 (and), 24 (and), 26 (and over), 27 (in), 28 (God)
+        # 21 'kinds' (incomplete lemma),
+        # 28 'and' (BIBLE-118?)
+        # 31
