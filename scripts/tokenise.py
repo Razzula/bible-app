@@ -356,7 +356,6 @@ class Tokeniser:
 
                 # HANDLE NON-UNIQUE TOKENS
                 # if a token is not unique, it may be possible to infer its true token from its positioning
-                # TODO: do a first sweep, ignoring articles, then do a final sweep without exemption
                 for matchTolerance in [MatchStrictness.IDENTICAL, MatchStrictness.LEMMAS, MatchStrictness.SYNONYMS]:
 
                     # get matches
@@ -396,32 +395,35 @@ class Tokeniser:
                                         break
 
                         if (tempCandidates):
-                            candidates[tokenIndex] = tempCandidates
+                            scriptureTokenPos = tokenIndex / len(self.workingTokens)
+
+                            for candidateToken in tempCandidates:
+                                # evaluate candidates, using distance metric
+                                candidateTokenPos = int(candidateToken) / len(strongs)
+                                delta = str(abs(scriptureTokenPos - candidateTokenPos))
+
+                                if (not candidates.get(delta)):
+                                    candidates[delta] = { tokenIndex: [] }
+                                elif (not candidates[delta].get(tokenIndex)):
+                                    candidates[delta][tokenIndex] = []
+
+                                candidates[delta][tokenIndex].append(candidateToken)
+                    pass
 
                     # LINK CLOSEST MATCHES
-                    for tokenIndex, canidateTokens in candidates.items():
-                        scriptureTokenPos = tokenIndex / len(self.workingTokens)
-                        bestCandidateToken: list[int] = [] # [tokenID, delta]
-                        # TODO: this is currrently first-come-first-serve, but it should be the truly closest
+                    # bipartite matching problem (greedy) # TODO: (BIBLE-118) Hungarian algorithm
+                    exhaustedTokens = set()
+                    for delta, tokenMaps in sorted(candidates.items()):
 
-                        for candidateToken in canidateTokens:
-
-                            # evaluate candidates, using distance metric
-                            candidateTokenPos = int(candidateToken) / len(strongs)
-                            delta = abs(scriptureTokenPos - candidateTokenPos)
-
-                            if (not bestCandidateToken or delta < bestCandidateToken[1]):
-                                workingTokensMatchingThisCandidate = [token for token in self.workingTokens if token.get('token') == candidateToken]
-                                if (len(workingTokensMatchingThisCandidate) > 0): # this Strongs token is already in use
-                                    # check if any of these token are 'in competition' with this one
-                                    # TODO if so, we need to determine which one is the best candidate
-                                    if any([equals(self.workingTokens[tokenIndex], token) for token in workingTokensMatchingThisCandidate]):
-                                        continue
-                                bestCandidateToken = (candidateToken, delta)
-
-                        # TODO: uniqueness check
-                        if (bestCandidateToken):
-                            self.linkTokens(tokenIndex, bestCandidateToken[0], False)
+                        for scriptureIndex, strongIndexes in tokenMaps.items():
+                            if (scriptureIndex not in exhaustedTokens): # this Scripture token has not been tokenised
+                                for strongIndex in strongIndexes:
+                                    strongsCandidate = strongs[str(strongIndex)]
+                                    workingTokensMatchingThisCandidate = [token for token in self.workingTokens if token.get('token') == strongIndex]
+                                    if (len(workingTokensMatchingThisCandidate) < len(strongsCandidate['eng'].split(' '))): # this Strongs token is already in use
+                                        self.linkTokens(scriptureIndex, strongIndex, False)
+                                        exhaustedTokens.add(scriptureIndex)
+                                        break
                     pass
 
                     # REVERT AGAIN
@@ -511,7 +513,7 @@ class Tokeniser:
             # TODO: enforce that a boundary is not crossed
 
             # LINK
-            scriptureToken['token'] = strongsTokenID
+            scriptureToken['token'] = str(strongsTokenID)
             self.workingTokens[scriptureTokenIndex] = scriptureToken
 
             # UPDATE BELIEFS
