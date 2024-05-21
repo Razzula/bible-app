@@ -33,7 +33,7 @@ class Tokeniser:
     def __init__(self):
         pass
 
-    def tokenisePassage(self, passage, verse, translation, visualise=False):
+    def tokenisePassage(self, passage, verse, translation, visualise=False, includeNotes=True):
         """
         Load, and tokenise, a passage of scripture.
         """
@@ -48,7 +48,7 @@ class Tokeniser:
 
         if (scripture and strongs):
             tokenisationJob = self.TokenisationJob(translation, self.lemmatiseWord, self.lemonymous, self.synonymous)
-            return tokenisationJob.tokenise(scripture, strongs, visualise=visualise, usfm=f'{passage}.{verse}')
+            return tokenisationJob.tokenise(scripture, strongs, visualise=visualise, includeNotes=includeNotes, usfm=f'{passage}.{verse}')
         return None
 
     class TokenisationJob:
@@ -67,7 +67,7 @@ class Tokeniser:
             # in some translations, we can be strict with the capitalisation of some words: He != he (excluding begininng of sentences, wrth gwrs!)
             self.useReverentCapitalisation = (translation.upper() in ['NKJV'])
 
-        def tokenise(self, scripture, strongs, visualise=False, usfm=None):
+        def tokenise(self, scripture, strongs, visualise=False, includeNotes=True, usfm=None):
             """
             Tokenise a passage of scripture, using a strongs dictionary.
             """
@@ -79,7 +79,8 @@ class Tokeniser:
             for chunk in scripture:
 
                 if (chunk.get('type') == 'note'):
-                    tokens.append(chunk) # notes don't need tokenising, but are left in the array to preserve the order
+                    if (includeNotes):
+                        tokens.append(chunk) # notes don't need tokenising, but are left in the array to preserve the order
                     continue
 
                 if (chunk.get('content') == ' '): # ignore whitespace
@@ -192,6 +193,9 @@ class Tokeniser:
             if (visualise):
                 window = token_vis.Window()
                 window.draw(strongs, tokens, title=usfm) # this is blocking
+
+            if (not includeNotes):
+                return tokens
 
             # RECONSTRUCT TOKENS
             # we originally tokenised the scripture into individual words, whereas the target tokens may be larger chunks,
@@ -947,7 +951,6 @@ if (__name__ == "__main__"):
     for temp in range(1, 32):
         tokeniser.tokenisePassage('GEN.1', temp, 'NKJV', visualise=True)
         # TODO
-        # 20 'the' heavens (issue before linkArticles, not during)
 
         # 14 'and' (incorrect assignment)
         # 15, 17 (broad synonym) 'give light'
