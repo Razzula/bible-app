@@ -138,7 +138,7 @@ class Tokeniser:
                         self.lemmaCounts[lemma] = (1, 0)
 
                 # synonyms
-                for synonym in getSynonyms(tokenContent):
+                for synonym in getSynonyms(scriptureToken):
                     if (exisitngCount := self.synonymCounts.get(synonym)):
                         self.synonymCounts[synonym] = (exisitngCount[0] + 1, exisitngCount[1])
                     else:
@@ -166,7 +166,7 @@ class Tokeniser:
                         self.lemmaCounts[lemma] = (0, 1)
 
                 # synonyms
-                for synonym in getSynonyms(tokenContent):
+                for synonym in getSynonyms(strongsToken):
                     if (exisitngCount := self.synonymCounts.get(synonym)):
                         self.synonymCounts[synonym] = (exisitngCount[0], exisitngCount[1] + 1)
                     else:
@@ -313,18 +313,16 @@ class Tokeniser:
                                 pass # TODO: GEN.21
 
                             elif (matchTolerance == MatchStrictness.SYNONYMS):
-                                for subword in simplifyToken(strongsToken).split(' '): # INCOMPLETE
+                                scriptureWord = simplifyToken(scriptureToken)
+                                scriptureCount = self.synonymCounts.get(scriptureWord, (0, 0))[0]
+                                strongCount = self.synonymCounts.get(strongsToken, (0, 0))[1]
 
-                                    scriptureWord = simplifyToken(scriptureToken)
-                                    scriptureCount = self.synonymCounts.get(scriptureWord, (0, 0))[0]
-                                    strongCount = self.synonymCounts.get(subword, (0, 0))[1]
-
-                                    if (scriptureCount == 1 and strongCount == 1): # UNIQUE
-                                        synonym = self.synonymous(scriptureWord, subword, matchTolerance)
-                                        if (synonym):
-                                            # update data to be tokenised
-                                            self.linkTokens(scriptureIndex, strongsIndex, posStrictness)
-                                            break
+                                if (scriptureCount == 1 and strongCount == 1): # UNIQUE
+                                    synonym = self.synonymous(scriptureToken, strongsToken, matchTolerance)
+                                    if (synonym):
+                                        # update data to be tokenised
+                                        self.linkTokens(scriptureIndex, strongsIndex, posStrictness)
+                                        break
                     pass
 
                     # # BRIDGE GAPS # note: this is problematic
@@ -393,7 +391,7 @@ class Tokeniser:
                                         break
 
                                 elif (matchTolerance == MatchStrictness.SYNONYMS):
-                                    synonyms = self.synonymous(scriptureToken, word, matchTolerance, exhaustive=True)
+                                    synonyms = self.synonymous(scriptureToken, strongsToken, matchTolerance, exhaustive=True)
                                     if (synonyms):
                                         tempCandidates.append(int(strongsIndex))
                                         break
@@ -529,7 +527,7 @@ class Tokeniser:
             for lemma in self.lemmatiseWord(scriptureWord, scriptureToken.get('pos')):
                 self.lemmaCounts[lemma] = (self.lemmaCounts[lemma][0] - 1, self.lemmaCounts[lemma][1])
             # synonyms
-            for synonym in getSynonyms(scriptureWord):
+            for synonym in getSynonyms(scriptureToken):
                 self.synonymCounts[synonym] = (self.synonymCounts[synonym][0] - 1, self.synonymCounts[synonym][1])
 
             # STRONGS
@@ -543,7 +541,7 @@ class Tokeniser:
                 for lemma in self.lemmatiseWord(strongWord, strongsToken.get('grammar'), True):
                     self.lemmaCounts[lemma] = (self.lemmaCounts[lemma][0], self.lemmaCounts[lemma][1] - 1)
                 # synonyms
-                for synonym in getSynonyms(strongWord):
+                for synonym in getSynonyms(strongsToken):
                     self.synonymCounts[synonym] = (self.synonymCounts[synonym][0], self.synonymCounts[synonym][1] - 1)
 
         # LINK ARTICLES
@@ -586,7 +584,7 @@ class Tokeniser:
                             for candidateTokenIndex, candidateToken in enumerate(self.strongs):
                                 if (candidateToken['token'] != nounTokenCandidateID):
                                     continue
-                                if (self.synonymous(candidateToken, scriptureToken['content'], matchTolerance=MatchStrictness.SYNONYMS)): # is capitalisation an issue here?
+                                if (self.synonymous(candidateToken, scriptureToken, matchTolerance=MatchStrictness.SYNONYMS)): # is capitalisation an issue here?
                                     # embedded article
                                     # (both the article and the noun are within the same Strongs token)
                                     # | the world |
@@ -598,7 +596,7 @@ class Tokeniser:
                                 break
 
                             if (isNoun or any([tag['pos'] == 'noun' for tag in tokenCandidate['grammar']])):
-                                if (self.synonymous(tokenCandidate, scriptureToken['content'], matchTolerance=MatchStrictness.SYNONYMS)):
+                                if (self.synonymous(tokenCandidate, scriptureToken, matchTolerance=MatchStrictness.SYNONYMS)):
                                     # explicit article
                                     # | the | world |
                                     self.linkTokens(scriptureIndex, int(strongsNounCandidateIndex) - 1, enforcePOS=False)
@@ -706,8 +704,8 @@ class Tokeniser:
             if (lemmas := (list(self.lemonymous(scriptureToken, strongsToken)))):
                 return lemmas
         if (matchTolerance == MatchStrictness.SYNONYMS):
-            a = getSynonyms(simplifyToken(scriptureToken))
-            b = getSynonyms(simplifyToken(strongsToken))
+            a = getSynonyms(scriptureToken)
+            b = getSynonyms(strongsToken)
             return a & b
 
         return False
@@ -722,17 +720,25 @@ class Tokeniser:
 
 # NEED TO LEMMATISE SYNONYMS!
 
-def getSynonyms(word, posTags=None):
+def getSynonyms(token):
     """
     Get the synonyms of a word.
     """
+    word = simplifyToken(token)
+    isStrongsTag = (token.get('strongs') is not None)
+    posTags = getWordnetPOS(token.get('grammar' if isStrongsTag else 'pos'), isStrongsTag)
+
     synonyms = set([word])
 
-    synonymCandidates = thesaurus.get(word)
-    if (synonymCandidates):
-        for synonymList in synonymCandidates: # list of synonyms for the strongs word
-            for synonym in synonymList:
-                synonyms.add(synonym)
+    if (posTags):
+        synonymPOSes = thesaurus.get(word)
+        if (synonymPOSes):
+            for posTag in posTags:
+                synonymCandidates = synonymPOSes.get(posTag)
+                if (synonymCandidates):
+                    for synonymList in synonymCandidates: # list of synonyms for the strongs word
+                        for synonym in synonymList:
+                            synonyms.add(synonym)
     return synonyms
 
 def equals(scriptureToken, strongsToken):
