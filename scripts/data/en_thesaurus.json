@@ -1053,8 +1053,8 @@
     },
     "aggregation": {
         "n": [
-            [ "collection" ],
-            [ "collection", "assembling", "collecting" ]
+            [ "collection", "gathering together", "gathering" ],
+            [ "collection", "assembling", "collecting", "gathering together", "gathering" ]
         ]
     },
     "aggressive": {
@@ -13193,7 +13193,8 @@
     },
     "rule": {
         "n": [
-            [ "convention", "pattern", "formula", "normal" ]
+            [ "convention", "pattern", "formula", "normal" ],
+            [ "reign", "dominion" ]
         ],
         "v": [
             [ "decree", "rule out" ],
@@ -15516,7 +15517,7 @@
     "collection": {
         "n": [
             [ "accumulation", "aggregation", "assemblage" ],
-            [ "assembling", "aggregation", "collecting" ],
+            [ "assembling", "aggregation", "collecting", "gathering together", "gathering", "collection" ],
             [ "ingathering", "appeal", "solicitation" ]
         ]
     },
@@ -31386,7 +31387,7 @@
             [ "realise", "realize", "understand" ],
             [ "figure", "visualise", "project", "imag", "fancy", "picture", "envision", "visualize" ],
             [ "view", "take in", "watch", "catch" ],
-            [ "find", "witness" ]
+            [ "find", "witness", "behold", "see" ]
         ]
     },
     "seed": {
@@ -33691,6 +33692,9 @@
         ],
         "n": [
             [ "sol", "soh" ]
+        ],
+        "_": [
+            [ "then", "and", "also" ]
         ]
     },
     "so far": {
@@ -40955,7 +40959,7 @@
             [ "come up", "get hold", "line up" ],
             [ "incu", "obtain", "get", "receive" ],
             [ "retrieve", "regain", "recover" ],
-            [ "see", "witness" ]
+            [ "see", "witness", "behold" ]
         ]
     },
     "find out": {
@@ -52282,7 +52286,7 @@
             [ "witnesser", "informant" ]
         ],
         "v": [
-            [ "see", "find" ]
+            [ "see", "find", "behold" ]
         ]
     },
     "wizard": {
@@ -52804,6 +52808,121 @@
     "zoological": {
         "a": [
             [ "being" ]
+        ]
+    },
+    "and": {
+        "_": [
+            [ "then", "so", "and", "also" ]
+        ]
+    },
+    "then": {
+        "_": [
+            [ "and", "so", "also" ]
+        ]
+    },
+    "between": {
+        "_": [
+            [ "from" ]
+        ]
+    },
+    "from": {
+        "_": [
+            [ "between" ]
+        ]
+    },
+    "on": {
+        "_": [
+            [ "over" ]
+        ]
+    },
+    "over": {
+        "_": [
+            [ "on" ]
+        ]
+    },
+    "sky": {
+        "n": [
+            [ "heaven", "heavens", "sky" ]
+        ]
+    },
+    "heaven": {
+        "n": [
+            [ "sky", "heavens" ]
+        ]
+    },
+    "that": {
+        "_": [
+            [ "which", "whose" ]
+        ]
+    },
+    "which": {
+        "_": [
+            [ "that", "whose", "which" ]
+        ]
+    },
+    "also": {
+        "_": [
+            [ "and", "then", "so", "also" ]
+        ]
+    },
+    "reign": {
+        "n": [
+            [ "rule", "dominion", "reign" ]
+        ]
+    },
+    "dominion": {
+        "n": [
+            [ "rule", "reign" ]
+        ]
+    },
+    "cattle": {
+        "n": [
+            [ "livestock", "animals", "cattle" ]
+        ]
+    },
+    "livestock": {
+        "n": [
+            [ "cattle", "animals" ]
+        ]
+    },
+    "animals": {
+        "n": [
+            [ "livestock", "cattle" ]
+        ]
+    },
+    "behold": {
+        "v": [
+            [ "find", "see" ]
+        ]
+    },
+    "heavens": {
+        "n": [
+            [ "heaven", "sky" ]
+        ]
+    },
+    "whose": {
+        "_": [
+            [ "that", "which" ]
+        ]
+    },
+    "gathering together": {
+        "n": [
+            [ "collection", "assembling", "aggregation", "collecting", "gathering together", "gathering" ]
+        ]
+    },
+    "assembling": {
+        "n": [
+            [ "gathering together" ]
+        ]
+    },
+    "collecting": {
+        "n": [
+            [ "gathering together" ]
+        ]
+    },
+    "gathering": {
+        "n": [
+            [ "assembling", "collection" ]
         ]
     }
 }
