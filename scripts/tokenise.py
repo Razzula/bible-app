@@ -315,7 +315,7 @@ class Tokeniser:
                             elif (matchTolerance == MatchStrictness.SYNONYMS):
                                 scriptureWord = simplifyToken(scriptureToken)
                                 scriptureCount = self.synonymCounts.get(scriptureWord, (0, 0))[0]
-                                strongCount = self.synonymCounts.get(strongsToken, (0, 0))[1]
+                                strongCount = self.synonymCounts.get(simplifyToken(strongsToken), (0, 0))[1]
 
                                 if (scriptureCount == 1 and strongCount == 1): # UNIQUE
                                     synonym = self.synonymous(scriptureToken, strongsToken, matchTolerance)
@@ -726,7 +726,10 @@ def getSynonyms(token):
     """
     word = simplifyToken(token)
     isStrongsTag = (token.get('strongs') is not None)
-    posTags = getWordnetPOS(token.get('grammar' if isStrongsTag else 'pos'), isStrongsTag)
+    posTags = list(
+        set('_')
+        | set(getWordnetPOS(token.get('grammar' if isStrongsTag else 'pos'), isStrongsTag))
+    )
 
     synonyms = set([word])
 
@@ -839,7 +842,7 @@ def getWordnetPOS(inputTag, isStrongsTag=False):
     Convert either a Penn Treebank POS tag, or a Strongs morphology tag, to a WordNet POS tag.
     """
     if (inputTag is None):
-        return None
+        return set()
 
     outputTags = set()
 
@@ -853,7 +856,7 @@ def getWordnetPOS(inputTag, isStrongsTag=False):
         for tag in inputTag:
             if (posTag := switcher.get(tag['pos'], None)):
                 outputTags.add(posTag)
-        return list(outputTags) if (len(outputTags) > 0) else None
+        return outputTags if (len(outputTags) > 0) else set()
     else:
         switcher = {
             'J': 'a',  # adjective
@@ -864,7 +867,7 @@ def getWordnetPOS(inputTag, isStrongsTag=False):
         for tag in inputTag:
             if (posTag := switcher.get(tag[0], None)):
                 outputTags.add(posTag)
-        return list(outputTags) if (len(outputTags) > 0) else None
+        return outputTags if (len(outputTags) > 0) else set()
 
 def areTokenGrammarsEquivalent(scriptureToken, strongsToken, strictness):
     """

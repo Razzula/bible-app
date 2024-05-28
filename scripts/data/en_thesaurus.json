@@ -4711,6 +4711,9 @@
     "also": {
         "r": [
             [ "besides", "likewise", "too", "as wel" ]
+        ],
+        "_": [
+            [ "and" ]
         ]
     },
     "alt": {
@@ -13948,7 +13951,7 @@
     },
     "behold": {
         "v": [
-            [ "lay eyes on" ]
+            [ "lay eyes on", "see" ]
         ]
     },
     "beholden": {
@@ -14894,6 +14897,9 @@
         "r": [
             [ "betwixt" ],
             [ "'tween" ]
+        ],
+        "_": [
+            [ "from" ]
         ]
     },
     "betwixt": {
@@ -18255,7 +18261,7 @@
     },
     "bos taurus": {
         "n": [
-            [ "cattle", "cows", "oxen" ]
+            [ "cattle", "cows", "oxen", "livestock" ]
         ]
     },
     "bosky": {
@@ -47447,7 +47453,7 @@
     },
     "cattle": {
         "n": [
-            [ "kine", "bos taurus", "cows", "oxen" ]
+            [ "kine", "bos taurus", "cows", "oxen", "livestock", "stock", "farm animal", "cattle" ]
         ]
     },
     "cattle farm": {
@@ -52621,6 +52627,9 @@
             [ "assembling", "aggregation", "collecting" ],
             [ "compendium" ],
             [ "ingathering", "appeal", "solicitation" ]
+        ],
+        "_": [
+            [ "gathering together" ]
         ]
     },
     "collection plate": {
@@ -58153,7 +58162,7 @@
     },
     "cows": {
         "n": [
-            [ "kine", "cattle", "bos taurus", "oxen" ]
+            [ "kine", "cattle", "bos taurus", "oxen", "livestock" ]
         ]
     },
     "coxa": {
@@ -78442,7 +78451,7 @@
     },
     "kine": {
         "n": [
-            [ "cattle", "cows", "oxen" ]
+            [ "cattle", "cows", "oxen", "livestock" ]
         ]
     },
     "kinetic": {
@@ -80414,7 +80423,7 @@
     },
     "lay eyes on": {
         "v": [
-            [ "behold" ]
+            [ "behold", "see" ]
         ]
     },
     "lay in": {
@@ -83278,7 +83287,7 @@
     },
     "livestock": {
         "n": [
-            [ "stock", "farm animal" ]
+            [ "stock", "farm animal", "cattle" ]
         ]
     },
     "livid": {
@@ -98212,6 +98221,9 @@
         ],
         "r": [
             [ "along" ]
+        ],
+        "_": [
+            [ "over", "upon", "on" ]
         ]
     },
     "on a higher floor": {
@@ -100395,6 +100407,9 @@
         "r": [
             [ "all over" ],
             [ "o'er" ]
+        ],
+        "_": [
+            [ "on", "upon" ]
         ]
     },
     "over again": {
@@ -101158,7 +101173,7 @@
     },
     "oxen": {
         "n": [
-            [ "kine", "cattle", "bos taurus", "cows" ]
+            [ "kine", "cattle", "bos taurus", "cows", "livestock" ]
         ]
     },
     "ox-eyed": {
@@ -104702,7 +104717,8 @@
             [ "visit" ],
             [ "figure", "visualise", "project", "imag", "fancy", "picture", "envision", "visualize" ],
             [ "view", "take in", "watch", "catch" ],
-            [ "find", "witness" ]
+            [ "find", "witness" ],
+            [ "behold", "lay eyes on", "see" ]
         ]
     },
     "see red": {
@@ -107626,6 +107642,9 @@
             [ "radiate", "glow", "beam" ],
             [ "smooth", "smoothen", "polish" ],
             [ "reflect" ]
+        ],
+        "_": [
+            [ "give light" ]
         ]
     },
     "shiner": {
@@ -110154,6 +110173,9 @@
     "sky": {
         "v": [
             [ "pitch", "toss", "flip" ]
+        ],
+        "n": [
+            [ "heaven" ]
         ]
     },
     "sky-blue": {
@@ -112040,6 +112062,9 @@
         ],
         "n": [
             [ "sol", "soh" ]
+        ],
+        "_": [
+            [ "and", "then", "so" ]
         ]
     },
     "so far": {
@@ -117554,7 +117579,7 @@
             [ "gunstock" ],
             [ "inventory" ],
             [ "bloodline", "origin", "ancestry", "line of descent", "descent", "blood", "parentage", "line", "blood line", "lineage", "stemm", "pedigree" ],
-            [ "livestock", "farm animal" ],
+            [ "livestock", "farm animal", "cattle" ],
             [ "malcolm stock" ],
             [ "neckcloth" ],
             [ "stock certificate" ],
@@ -125092,6 +125117,9 @@
         ],
         "r": [
             [ "and so", "and then", "so" ]
+        ],
+        "_": [
+            [ "and", "so" ]
         ]
     },
     "thenal": {
@@ -132420,7 +132448,7 @@
     },
     "farm animal": {
         "n": [
-            [ "stock", "livestock" ]
+            [ "stock", "livestock", "cattle" ]
         ]
     },
     "farm out": {
@@ -148426,7 +148454,8 @@
     },
     "heaven": {
         "n": [
-            [ "eden", "nirvana", "shangri-la", "paradise", "promised land" ]
+            [ "eden", "nirvana", "shangri-la", "paradise", "promised land" ],
+            [ "sky" ]
         ]
     },
     "heavenly": {
@@ -175878,6 +175907,52 @@
     "zygotic": {
         "a": [
             [ "cell" ]
+        ]
+    },
+    "and": {
+        "_": [
+            [ "then", "so" ],
+            [ "also" ]
+        ]
+    },
+    "from": {
+        "_": [
+            [ "between" ]
+        ]
+    },
+    "which": {
+        "_": [
+            [ "that" ]
+        ]
+    },
+    "that": {
+        "_": [
+            [ "which" ]
+        ]
+    },
+    "upon": {
+        "_": [
+            [ "over", "on" ]
+        ]
+    },
+    "give light": {
+        "_": [
+            [ "shine" ]
+        ]
+    },
+    "whose": {
+        "_": [
+            [ "which in" ]
+        ]
+    },
+    "which in": {
+        "_": [
+            [ "whose" ]
+        ]
+    },
+    "gathering together": {
+        "_": [
+            [ "collection" ]
         ]
     }
 }
