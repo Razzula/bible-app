@@ -19,7 +19,7 @@ def checkFilesExist(translation, passage):
         # Skip the test (expected fail) if the required files are missing
         pytest.xfail(f"Missing required files: {', '.join(missingFiles)}")
 
-@pytest.mark.parametrize('passage,verse,translation,expectedTokens', [
+@pytest.mark.parametrize('verse,translation,expectedTokens', [
     # GENESIS 1
     ('1',  'NKJV', [1,1,1, 3, 2, 5,5, 6, 7,7]),
     ('2',  'NKJV', [1,1, 2, 3,3, 4,4, 5,5, None, 6, 7,7, 8,8,8, 9,9,9, 10,10, 11,11, 12, 13,13, 14,14,14]),
@@ -58,7 +58,7 @@ def test_Genesis1(verse, translation, expectedTokens):
 
     tokenisePassage('GEN.1', verse, translation, expectedTokens)
 
-@pytest.mark.parametrize('passage,verse,translation,expectedTokens', [
+@pytest.mark.parametrize('verse,translation,expectedTokens', [
     # JOHN 1
     ('1',  'NKJV', [1,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 17, 15, 14]),
     ('2',  'NKJV', [1, 2, 3,3, 4, 5, 7]),
