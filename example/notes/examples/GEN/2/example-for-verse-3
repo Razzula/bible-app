@@ -1,32 +1,6 @@
 {
-    "tokens": ["GEN.2.3"],
-    "contents": {
-        "root": {
-            "children": [
-                {
-                    "children": [
-                        {
-                            "detail": 0,
-                            "format": 0,
-                            "mode": "normal",
-                            "style": "",
-                            "text": "this is a note for Genesis 2:3",
-                            "type": "text",
-                            "version": 1
-                        }
-                    ],
-                    "direction": "ltr",
-                    "format": "",
-                    "indent": 0,
-                    "type": "paragraph",
-                    "version": 1
-                }
-            ],
-            "direction": "ltr",
-            "format": "",
-            "indent": 0,
-            "type": "root",
-            "version": 1
-        }
-    }
+    "tokens": [
+        "GEN.2.3"
+    ],
+    "contents": "<p>This is a note for <b>Genesis 2:3</b>!</p>"
 }

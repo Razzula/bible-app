@@ -6,7 +6,6 @@ import { createRoot } from 'react-dom/client';
 import { Store, setup } from 'sidenotes';
 import rootReducer from './redux/rootReducer';
 
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 

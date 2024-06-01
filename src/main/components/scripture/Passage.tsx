@@ -7,7 +7,6 @@ import { setActiveToken } from '../../redux/actions';
 import { RootState } from '../../redux/rootReducer';
 import FileManager from '../../utils/FileManager';
 import { isOfParagraphType } from '../../utils/general';
-import { FloatingToolbar } from '../lexical/FloatingToolbar';
 import NoteEditor from './NoteEditor';
 import PassageChunk from './PassageChunk';
 import SidenotesContainer from './SidenotesContainer';
@@ -78,31 +77,6 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             setTokenPopoverIsOpen(false);
         }
     }, [selectedToken]);
-
-    // popver for note editors
-    const { currentEditorRef, currentEditor } = useSelector((state: RootState) => ({
-        currentEditorRef: state.passage.activeRef,
-        currentEditor: state.passage.activeEditor,
-    }));
-    const editorPopoverIsOpen = useSelector((state: RootState) => state.passage.activeRef !== null);
-
-    const { refs: editorFloatRefs, floatingStyles: editorFloatStyles, context: editorFloatContext } = useFloating({
-        open: editorPopoverIsOpen,
-        // onOpenChange: setIsJackOpen,
-        placement: 'top',
-        middleware: [offset(10), flip(), shift()],
-        whileElementsMounted: autoUpdate,
-    });
-
-    useEffect(() => {
-        if (currentEditorRef !== null) {
-            editorFloatRefs.setReference(currentEditorRef.current);
-            currentEditorRef.current.focus();
-        }
-        else {
-            editorFloatRefs.setReference(null);
-        }
-    }, [currentEditorRef]);
 
     useEffect(() => {
         if (shouldLoad) {
@@ -196,7 +170,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         const newNoteContents: Note = {
             id,
             tokens: [selectedToken],
-            contents: defaultNoteContents
+            contents: defaultNoteContents['contents']
         };
 
         setNotesContents((currentNotesContents: Note[]) => {
@@ -503,14 +477,6 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     <div ref={tokenFloatRefs.setFloating} style={tokenFloatStyles}>
                         {/* NEW NOTE BUTTON */}
                         <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
-                    </div>
-                </FloatingFocusManager>
-            )}
-
-            {editorPopoverIsOpen && (
-                <FloatingFocusManager context={editorFloatContext} modal={false} initialFocus={-1}>
-                    <div ref={editorFloatRefs.setFloating} className='popover' style={editorFloatStyles}>
-                        <FloatingToolbar editor={currentEditor} />
                     </div>
                 </FloatingFocusManager>
             )}

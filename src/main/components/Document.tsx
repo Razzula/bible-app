@@ -1,11 +1,5 @@
 import React from 'react';
-
-import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
+import { Editor } from '@tinymce/tinymce-react';
 
 import '../styles/document.scss'
 import '../styles/editor.scss';
@@ -20,29 +14,39 @@ type DocumentProps = {
  */
 function Document({ initialContents }: DocumentProps): JSX.Element {
 
-    function onError(error: Error): void {
-        console.error(error);
+    function handleEditorChange(content: string, editor: any): void {
+        // do something
     }
 
     // GENERATE JSX
     return (
         <>
             <div className='document'>
-                <LexicalComposer initialConfig={{
-                    namespace: 'name',
-                    onError,
-                    // editorState: JSON.stringify(initialNoteContents)
-                }}>
-                    <div className="editor-container">
-                        <RichTextPlugin
-                            contentEditable={<ContentEditable className="editor-input" />}
-                            placeholder={<div className="editor-placeholder">Enter some plain text...</div>}
-                            ErrorBoundary={LexicalErrorBoundary}
-                        />
-                    </div>
-                    {/* <OnChangePlugin onChange={handleChange} /> */}
-                    <HistoryPlugin />
-                </LexicalComposer>
+                {/* @ts-ignore */}
+                <Editor
+                    initialValue={initialContents || ''}
+                    init={{
+                        licenseKey: 'gpl',
+                        // tinymceScriptSrc: 'http://localhost:3180/tinymce/tinymce.min.js', // this did not work, and so is added to index.html
+
+                        plugins: [
+                            'autoresize'
+                        ],
+
+                        setup: (editor) => {
+                            editor.on('init', () => {
+                                // do something
+                            });
+                        },
+
+                        menubar: false,
+                        toolbar: false,
+                        statusbar: false,
+                        branding: false,
+                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }',
+                    }}
+                    onEditorChange={handleEditorChange}
+                />
             </div>
         </>
     );

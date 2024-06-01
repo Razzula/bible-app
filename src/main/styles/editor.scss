@@ -1,41 +1,19 @@
-.editor-container {
-    background: #fff;
-    // margin: 20px auto 20px auto;
-    // border-radius: 2px;
-    // max-width: 600px;
-    color: #000;
-    position: relative;
-    line-height: 20px;
-    font-weight: 400;
-    text-align: left;
-    height: auto;
+.tox.tox-tinymce {
+    border-radius: 0 !important;
 }
 
-.editor-input {
-    resize: none;
-    font-size: 15px;
-    caret-color: rgb(5, 5, 5);
-    position: relative;
-    tab-size: 1;
-    outline: 0;
-    padding: 15px 10px;
-    caret-color: #444;
+.tox .tox-editor-header {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
 }
 
-.editor-placeholder {
-    color: #999;
-    overflow: hidden;
-    position: absolute;
-    text-overflow: ellipsis;
-    top: 15px;
-    left: 10px;
-    font-size: 15px;
-    user-select: none;
-    display: inline-block;
-    pointer-events: none;
+.tox .tox-sidebar-wrap {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
-.editor-paragraph {
-    margin: 0 0 15px 0;
-    position: relative;
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow {
+    border-radius: 0 !important;
 }
