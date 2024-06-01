@@ -32,7 +32,7 @@ type NoteContentProps = {
 function SidenoteContainer({ sidenoteID, tokens, docID, initialNoteContents, base, currentBook, translation, loadPassage, updateNotesContents, deleteNote }: NoteContentProps): JSX.Element {
 
     return (
-        <div style={{ width: 280, height: 'auto' }}>
+        <div style={{ width: 'auto', height: 'auto' }}>
             <Sidenote key={sidenoteID} sidenote={sidenoteID} base={base}>
                 <NoteEditor
                     sidenoteID={sidenoteID}

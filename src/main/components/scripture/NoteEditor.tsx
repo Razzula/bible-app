@@ -25,6 +25,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
 
     const [currentNoteContents, setCurrentNoteContents] = useState(initialNoteContents);
     const [committedNoteContents, setCommittedNoteContents] = useState(initialNoteContents);
+    const [isReadOnly, setIsReadOnly] = useState(true);
 
     const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
     const isSaved = (currentNoteContents === committedNoteContents);
@@ -38,8 +39,11 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
     }, [sidenoteID, initialNoteContents]);
 
     useEffect(() => {
-        if (!isSelected && !isSaved) {
-            updateNotesContents(sidenoteID, tokens, currentNoteContents, saveNoteContentsCallback);
+        if (!isSelected) {
+            setIsReadOnly(true);
+            if (!isSaved) {
+                updateNotesContents(sidenoteID, tokens, currentNoteContents, saveNoteContentsCallback);
+            }
         }
     }, [isSelected]);
 
@@ -66,12 +70,19 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
         }
     }
 
+    function handleEditClick(event: React.MouseEvent): void {
+        event.stopPropagation();
+        setIsReadOnly(false);
+        store.dispatch(selectSidenote(docID, sidenoteID));
+    }
+
     return (
         <div
             style={{ height: 'auto', backgroundColor: backgroundColour }}
             onClick={handleSelection}
         >
             <div>
+                {isReadOnly ? <button className='btn btn-default' onClick={handleEditClick}>Edit</button> : null}
                 <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
                 <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
             </div>
@@ -80,13 +91,13 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
                 {/* @ts-ignore */}
                 <Editor
                     initialValue={initialNoteContents}
-                    disabled={!isSelected}
+                    disabled={isReadOnly}
                     init={{
                         licenseKey: 'gpl',
                         // tinymceScriptSrc: 'http://localhost:3180/tinymce/tinymce.min.js', // this did not work, and so is added to index.html
 
                         plugins: [
-                            'autoresize'
+                            'autoresize',
                         ],
 
                         setup: (editor) => {

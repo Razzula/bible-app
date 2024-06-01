@@ -19,6 +19,10 @@ article {
     margin-bottom: 20px;
 }
 
+.sidenote {
+    width: 320px !important;
+}
+
 .sidenotes.l {
     right: 0;
     left: -300px;
@@ -35,6 +39,7 @@ article {
 .sidenote {
     background-color: fuchsia; //testing
     border-radius: 4px;
+    width: 100% !important;
 }
 
 test {

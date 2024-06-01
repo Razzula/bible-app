@@ -130,6 +130,7 @@ span.bdit {
 
 span.text {
     cursor: pointer;
+    user-select: none;
 
     &:hover {
         text-decoration-line: underline;
