@@ -39,6 +39,11 @@ class FileManager {
         return result;
     }
 
+    public async loadResource(path: string, fileName: string): Promise<any> {
+        // currently we don't cache resources, as they are not expected to be accessed frequently
+        return await window.electronAPI.loadResource(path, fileName);
+    }
+
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
         return await window.electronAPI.loadNotes(group, book, chapter);
     }
@@ -49,6 +54,10 @@ class FileManager {
 
     public async deleteNote(id: string, selectedNoteGroup: string, book: string, chapter: string): Promise<boolean> {
         return await window.electronAPI.deleteNote(id, selectedNoteGroup, book, chapter);
+    }
+
+    public async getResourceChildren(path: string, mode: any): Promise<any> {
+        return await window.electronAPI.getResourceChildren(path, mode);
     }
 }
 

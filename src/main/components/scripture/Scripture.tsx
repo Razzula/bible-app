@@ -12,6 +12,8 @@ import Passage from './Passage';
 import licenses from '../../../../public/licenses.json';
 import { WindowTypes } from '../../utils/enums';
 
+import '../../styles/scripture.scss';
+
 declare global {
     interface Window {
         [index: string]: any;

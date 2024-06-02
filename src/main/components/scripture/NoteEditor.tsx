@@ -14,6 +14,7 @@ import '../../styles/editor.scss';
 import parse, { DOMNode, domToReact } from 'html-react-parser';
 import { locateReferences } from '../../utils/bibleReferences';
 import { BibleReference } from './Footnote';
+import ReadOnlyHTMLRenderer from '../common/ReadOnlyHTMLRenderer';
 
 type NoteEditorProps = {
     sidenoteID: string;
@@ -84,24 +85,6 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
         store.dispatch(selectSidenote(docID, sidenoteID));
     }
 
-    const transform = (domNode: any) => {
-        if (domNode.type === 'text') {
-            // split text element contents according to USFM detection
-            const segments = locateReferences(domNode.data);
-            const elements = segments.map((segment, index) => {
-                if (segment.usfm) {
-                    return (
-                        <BibleReference key={index} text={segment.text} usfm={segment.usfm} currentBook={currentBook} translation={translation} loadPassage={loadPassage} />
-                    );
-                }
-                return (
-                    segment.text
-                );
-            });
-            return <>{elements}</>;
-        }
-    };
-
     return (
         <div
             style={{ height: 'auto', backgroundColor: backgroundColour }}
@@ -118,7 +101,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
                 {isReadOnly ? (
                     // MOCK (READ-ONLY) EDITOR
                     <div className="mock-editor">
-                        {parse(currentNoteContents, { replace: transform })}
+                        <ReadOnlyHTMLRenderer actualHTMLContents={currentNoteContents} currentBook={currentBook} translation={translation} loadPassage={loadPassage} />
                     </div>
                 ) : (
                     // TINYMCE EDITOR
@@ -140,6 +123,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
                                     if (docID) {
                                         store.dispatch(repositionSidenotes(docID));
                                     }
+                                    editor.execCommand('mceAutoResize');
 
                                     editor.on('ExecCommand', (e) => {
                                         console.log(`The ${e.command} command was fired.`);
@@ -154,11 +138,14 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
                                 });
                             },
 
+                            autoresize_bottom_margin: 16,
+                            autoresize_overflow_padding: 0,
+
                             menubar: false,
                             toolbar: false,
                             statusbar: false,
                             branding: false,
-                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }',
+                            content_style: 'body { font-family:ArialMT,Helvetica Neue,Arial,Liberation Sans,FreeSans,sans-serif; font-size:14px; }',
                         }}
                         onEditorChange={handleEditorChange}
                     />

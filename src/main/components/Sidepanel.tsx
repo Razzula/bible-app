@@ -65,6 +65,16 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                     </Accordion>
                 </>;
 
+            case WindowTypes.Resource.Type:
+                return (
+                    <span
+                        className='chapter-button'
+                        onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Resource.Type, 'Matthew Henry')}
+                    >
+                        Matthew Henry <i>Commentary on the Whole Bible</i> (1706)
+                    </span>
+                );
+
             case WindowTypes.Document.Type:
                 return <>
                     <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Document.Name)}>new</button>

@@ -5,6 +5,7 @@ import Document from './Document';
 import Scripture from './scripture/Scripture';
 
 import { WindowTypes } from '../utils/enums';
+import Resource from './Resource';
 
 type WindowProps = {
     windowToLoad: symbol;
@@ -22,6 +23,10 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
         case WindowTypes.Document.Type:
             return (
                 <Document initialContents={null} />
+            );
+        case WindowTypes.Resource.Type:
+            return (
+                <Resource resourcePath='MHC/VOL.1' resourceFileName='preface.html' createNewTab={createNewTab} />
             );
         case WindowTypes.Settings.Type:
             return (

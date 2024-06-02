@@ -3,7 +3,11 @@ const WindowTypes = Object.freeze({
 		'Name': 'Scripture',
 		'Type': Symbol("Scripture")
 	},
-	Document: {
+	Resource: {
+		'Name': 'resource',
+		'Type': Symbol("resource")
+	},
+    Document: {
 		'Name': 'document',
 		'Type': Symbol("document")
 	},

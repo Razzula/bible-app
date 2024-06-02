@@ -1,0 +1,20 @@
+.resource {
+    .scroll {
+        max-height: calc(100vh - 32px - 25px) !important; // allow room for tabbar and input-group
+            // tabbar (32px)
+            // navbar (25px)
+    }
+}
+
+.resource-content {
+    // center {
+        * {
+            font-family: Times New Roman !important;
+        }
+    // }
+
+    background-color: #181a1b; //181a1b
+    padding: 50px 50px 50px 50px;
+    margin-bottom: 20px;
+}
+

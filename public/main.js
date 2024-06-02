@@ -36,6 +36,8 @@ app.whenReady().then(() => {
     ipcMain.handle('deleteNote', (event, fileName, group, book, chapter) => handleDeleteNote(fileName, group, book, chapter))
     ipcMain.handle('loadScripture', (event, fileName, localPath) => handleLoadScripture(fileName, localPath))
     ipcMain.handle('loadDocument', (event, fileName) => handleLoadDocument(fileName))
+    ipcMain.handle('loadResource', (event, filePath, fileName) => handleLoadResource(filePath, fileName))
+    ipcMain.handle('getResourceChildren', (event, parentDirectory, detectionMode) => getResourceChildren(parentDirectory, detectionMode))
 
     createWindow()
 
@@ -55,14 +57,26 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+async function readJSONFile(fileName, localPath) {
+
+    try {
+        return JSON.parse(await readFile(fileName, localPath));
+    }
+    catch (err) {
+        console.error('Error:', err);
+        return null;
+    }
+
+}
+
 async function readFile(fileName, localPath) {
 
     const dirName = app.getPath("documents");
-
     try {
-        return await JSON.parse(fs.readFileSync(path.join(dirName, 'bible-app', localPath, fileName), 'utf8'));
+        return await fs.readFileSync(path.join(dirName, 'bible-app', localPath, fileName), 'utf8');
     }
     catch (err) {
+        console.error('Error:', err);
         return null;
     }
 
@@ -146,7 +160,7 @@ async function handleLoadNotes(group, book, chapter) {
     }
 
     for await (const fileName of fileNames) {
-        const fileContents = await readFile(fileName, localPath);
+        const fileContents = await readJSONFile(fileName, localPath);
 
         if (fileContents) {
             fileContents.id = fileName;
@@ -165,7 +179,7 @@ async function handleDeleteNote(fileName, group, book, chapter) {
 }
 
 async function handleLoadScripture(fileName, localPath, data) {
-    return await readFile(
+    return await readJSONFile(
         fileName,
         path.join('Scripture', localPath),
         data
@@ -174,8 +188,17 @@ async function handleLoadScripture(fileName, localPath, data) {
 
 async function handleLoadDocument(filename) {
 
-    const fileContents = await readFile(filename, 'documents');
+    const fileContents = await readJSONFile(filename, 'documents');
 
+    return fileContents;
+}
+
+async function handleLoadResource(filePath, filename) {
+
+    const fileContents = await readFile(filename, path.join('resources', filePath));
+    if (filename.endsWith('json')) {
+        return JSON.parse(fileContents);
+    }
     return fileContents;
 }
 
@@ -186,7 +209,7 @@ async function handleInitialSetup() {
     const rootDir = path.join(dirName, 'bible-app');
     createDirectoryIfNotExist(rootDir);
 
-    ['Scripture', 'notes', 'documents'].forEach(item => {
+    ['Scripture', 'notes', 'resources', 'documents'].forEach(item => {
         const directoryPath = path.join(rootDir, item);
         createDirectoryIfNotExist(directoryPath);
     });
@@ -200,5 +223,46 @@ function createDirectoryIfNotExist(dirPath) {
     catch (err) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
+
+}
+
+async function getResourceChildren(parentDirectory, detectionMode) {
+
+    const dirName = app.getPath("documents");
+    const resourcePath = path.join('resources', parentDirectory);
+    const fullResourcePath = path.join(dirName, 'bible-app', resourcePath);
+
+    const resources = [];
+    let items = [];
+    try {
+        items = fs.readdirSync(fullResourcePath);
+    }
+    catch (err) {
+        return resources;
+    }
+
+    const manifest = await readJSONFile('manifest.json', resourcePath);
+    if (!manifest) {
+        console.error('Error:', 'Manifest not found');
+        return resources;
+    }
+
+    for (const item of items) {
+        const itemPath = path.join(fullResourcePath, item);
+        const stat = fs.statSync(itemPath);
+
+        if (detectionMode === 'dir' && stat.isDirectory()) {
+            const childManifest = await readJSONFile('manifest.json', path.join(resourcePath, item));
+            if (childManifest) {
+                resources.push({ title: childManifest.title, path: item });
+            }
+        }
+        else if (stat.isFile() && !['manifest.json', manifest?.landing].includes(item)) {
+            // deprecated
+            resources.push(item);
+        }
+    }
+
+    return resources;
 
 }
