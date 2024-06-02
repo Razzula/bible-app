@@ -1,11 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useStore } from 'react-redux';
 import { State, Store } from 'sidenotes/dist/src/store';
-import { deselectSidenote, repositionSidenotes, resetAllSidenotes, selectSidenote, updateSidenote } from 'sidenotes/dist/src/store/ui/actions';
+import { deselectSidenote, repositionSidenotes, selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { isSidenoteSelected } from 'sidenotes/dist/src/store/ui/selectors';
 import { Editor } from '@tinymce/tinymce-react';
 
+// import 'tinymce/tinymce.min.css';
+import 'tinymce/skins/ui/oxide/skin.min.css';
+// import 'tinymce/skins/content/default/content.min.css';
+// import 'tinymce/skins/content/default/content.inline.min.css';
+
 import '../../styles/editor.scss';
+import parse, { DOMNode, domToReact } from 'html-react-parser';
+import { locateReferences } from '../../utils/bibleReferences';
+import { BibleReference } from './Footnote';
 
 type NoteEditorProps = {
     sidenoteID: string;
@@ -76,6 +84,24 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
         store.dispatch(selectSidenote(docID, sidenoteID));
     }
 
+    const transform = (domNode: any) => {
+        if (domNode.type === 'text') {
+            // split text element contents according to USFM detection
+            const segments = locateReferences(domNode.data);
+            const elements = segments.map((segment, index) => {
+                if (segment.usfm) {
+                    return (
+                        <BibleReference key={index} text={segment.text} usfm={segment.usfm} currentBook={currentBook} translation={translation} loadPassage={loadPassage} />
+                    );
+                }
+                return (
+                    segment.text
+                );
+            });
+            return <>{elements}</>;
+        }
+    };
+
     return (
         <div
             style={{ height: 'auto', backgroundColor: backgroundColour }}
@@ -87,47 +113,56 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
                 <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
             </div>
 
-            <div ref={ref} style={{ height: 'auto' }}>
-                {/* @ts-ignore */}
-                <Editor
-                    initialValue={initialNoteContents}
-                    disabled={isReadOnly}
-                    init={{
-                        licenseKey: 'gpl',
-                        // tinymceScriptSrc: 'http://localhost:3180/tinymce/tinymce.min.js', // this did not work, and so is added to index.html
+            <div className="tinymce-wrapper" ref={ref} style={{ height: 'auto' }}>
 
-                        plugins: [
-                            'autoresize',
-                        ],
+                {isReadOnly ? (
+                    // MOCK (READ-ONLY) EDITOR
+                    <div className="mock-editor">
+                        {parse(currentNoteContents, { replace: transform })}
+                    </div>
+                ) : (
+                    // TINYMCE EDITOR
+                    /* @ts-ignore */
+                    <Editor
+                        initialValue={initialNoteContents}
+                        disabled={isReadOnly}
+                        init={{
+                            licenseKey: 'gpl',
+                            // tinymceScriptSrc: 'http://localhost:3180/tinymce/tinymce.min.js', // this did not work, and so is added to index.html
 
-                        setup: (editor) => {
-                            editor.on('init', () => {
+                            plugins: [
+                                'autoresize',
+                            ],
 
-                                if (docID) {
-                                    store.dispatch(repositionSidenotes(docID));
-                                }
+                            setup: (editor) => {
+                                editor.on('init', () => {
 
-                                editor.on('ExecCommand', (e) => {
-                                    console.log(`The ${e.command} command was fired.`);
-                                });
-
-                                editor.on('NodeChange', () => {
                                     if (docID) {
-                                        // TODO: make this more efficient (only update when necessary)
                                         store.dispatch(repositionSidenotes(docID));
                                     }
-                                });
-                            });
-                        },
 
-                        menubar: false,
-                        toolbar: false,
-                        statusbar: false,
-                        branding: false,
-                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }',
-                    }}
-                    onEditorChange={handleEditorChange}
-                />
+                                    editor.on('ExecCommand', (e) => {
+                                        console.log(`The ${e.command} command was fired.`);
+                                    });
+
+                                    editor.on('NodeChange', () => {
+                                        if (docID) {
+                                            // TODO: make this more efficient (only update when necessary)
+                                            store.dispatch(repositionSidenotes(docID));
+                                        }
+                                    });
+                                });
+                            },
+
+                            menubar: false,
+                            toolbar: false,
+                            statusbar: false,
+                            branding: false,
+                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; }',
+                        }}
+                        onEditorChange={handleEditorChange}
+                    />
+                )}
             </div>
         </div>
     );

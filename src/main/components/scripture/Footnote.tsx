@@ -90,6 +90,11 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
 
     const refType = (usfm.book === currentBook) ? 'ref internal' : 'ref external';
 
+    function handleClick(event: React.MouseEvent, usfm: any, isFootnote: boolean, openInNewTab?: boolean) {
+        event.stopPropagation();
+        loadPassage(usfm, isFootnote, openInNewTab);
+    }
+
     // contents of footnote popover
     const temp = (
         <OverlayTrigger key={text} trigger={['hover', 'focus']} placement="auto-start"
@@ -102,8 +107,8 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
             <span
                 className={refType}
                 onMouseEnter={updatePopoverContents}
-                onClick={() => loadPassage(usfm, true)}
-                onAuxClick={() => loadPassage(usfm, true, true)}
+                onClick={(e) => handleClick(e, usfm, true)}
+                onAuxClick={(e) => handleClick(e, usfm, true, true)}
             >
                 {text}
             </span>

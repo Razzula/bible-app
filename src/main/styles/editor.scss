@@ -1,4 +1,5 @@
 .tox.tox-tinymce {
+    background-color: #ffffff !important;
     border-radius: 0 !important;
 }
 
@@ -16,4 +17,12 @@
 .tox .tox-toolbar__primary,
 .tox .tox-toolbar__overflow {
     border-radius: 0 !important;
+}
+
+.mock-editor {
+    font-family: Helvetica,Arial,sans-serif;
+    font-size:14px;
+    color: #000000;
+    background-color: #ffffff;
+    padding: 17px;
 }
