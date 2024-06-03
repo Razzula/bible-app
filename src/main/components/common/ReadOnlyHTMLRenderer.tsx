@@ -13,7 +13,7 @@ type ReadOnlyHTMLRendererProps = {
     loadPassage: any;
 }
 
-function ReadOnlyHTMLRenderer({ actualHTMLContents, currentBook, translation, loadPassage }: ReadOnlyHTMLRendererProps): JSX.Element {
+function ReadOnlyHTMLRenderer({ actualHTMLContents, currentBook, translation, loadPassage }: ReadOnlyHTMLRendererProps): JSX.Element | null {
 
     const transform = (domNode: any) => {
         if (domNode.type === 'text') {
@@ -33,9 +33,9 @@ function ReadOnlyHTMLRenderer({ actualHTMLContents, currentBook, translation, lo
         }
     };
 
-    return (<>
+    return actualHTMLContents ? (<>
         {parse(actualHTMLContents, { replace: transform })}
-    </>);
+    </>) : null;
 }
 
 export default ReadOnlyHTMLRenderer;

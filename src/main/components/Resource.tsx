@@ -6,11 +6,10 @@ import licenses from '../../../public/licenses.json';
 import { WindowTypes } from '../utils/enums';
 
 import '../styles/resource.scss'
-import { getReferenceText } from '../utils/bibleReferences';
-import { use } from 'chai';
+import { getReferenceText, getUSFM } from '../utils/bibleReferences';
 
 type ResourceProps = {
-    resourcePath: string;
+    rootResourcePath: string;
     resourceFileName: string;
     createNewTab: any;
 }
@@ -19,40 +18,50 @@ type ResourceProps = {
  * A React component to display ...
  * @returns {JSX.Element}
  */
-function Resource({ resourcePath, createNewTab }: ResourceProps): JSX.Element {
+function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Element {
 
-    const [rootManifest, setRootManifest] = useState<any>(null);
-    const [currentManifest, setCurrentManifest] = useState<any>(null);
+    const [navTreeArray, setNavTreeArray] = useState<any[]>([]);
+
+    const [currentBook, setCurrentBook] = useState<string | undefined>(undefined);
     const [htmlContents, setHtmlContents] = useState('');
     const [childrenDocuments, setChildrenDocuments] = useState<JSX.Element[] | null>(null);
 
     const fileManager = FileManager.getInstance();
 
+    const navTreeElement = navTreeArray.map((element, index) => {
+        if (index < navTreeArray.length - 1) {
+            return (<>
+                <span className='chapter-button' onClick={() => travelToNavTreeNode(index)}>{element.title}</span>
+                <span> {'>'} </span>
+            </>);
+        }
+        return (<span>{element.title}</span>);
+    });
+
+    const rootManifest = navTreeArray[0];
+    const currentManifest = navTreeArray[navTreeArray.length - 1];
+    const resourcePath = navTreeArray?.map((element) => element.path).join('/');
+
     useEffect(() => {
         const loadRootManifest = async () => {
-            const manifest = await fileManager.loadResource(resourcePath, 'manifest.json');
+            const manifest = await fileManager.loadResource(rootResourcePath, 'manifest.json');
             if (manifest) {
-                setRootManifest(manifest);
+                manifest.path = rootResourcePath;
+                setNavTreeArray([manifest]);
             }
             else {
-                console.error('Failed to load manifest for', resourcePath);
+                console.error('Failed to load manifest for', rootResourcePath);
             }
         }
         loadRootManifest();
-    }, []);
-
-    useEffect(() => {
-        const loadResource = async () => {
-
-            const currentManifest = await fileManager.loadResource(resourcePath, 'manifest.json');
-            setCurrentManifest(currentManifest);
-        }
-        loadResource();
-    }, [resourcePath]);
+        // setResourcePath(rootResourcePath);
+    }, [rootResourcePath]);
 
     useEffect(() => {
         const loadResource = async () => {
             if (currentManifest) {
+                console.log(currentManifest);
+                console.log(resourcePath);
 
                 if (currentManifest.landing) {
                     const htmlContents = await fileManager.loadResource(resourcePath, currentManifest.landing);
@@ -61,15 +70,28 @@ function Resource({ resourcePath, createNewTab }: ResourceProps): JSX.Element {
 
                 if (currentManifest.children) {
                     const childrenDocuments = await fileManager.getResourceChildren(resourcePath, currentManifest.children);
-                    console.log(childrenDocuments);
                     setChildrenDocuments(childrenDocuments.map((child: any) => {
+
+                        if (currentManifest.usfm) {
+                            if (currentManifest.children === 'usfm-chapter') {
+                                const usfm = getUSFM(child.path);
+                                if (usfm) {
+                                    child.title = usfm[0]?.initialChapter ;
+                                }
+                            }
+                        }
+
                         return (
-                            <div key={child.title}>
-                                <a onClick={() => {/* TODO: navigate here */}}>{child.title}</a>
+                            <div key={child.title ?? child.path}>
+                                <span className='chapter-button' onClick={() => travelDownNavTree(child)}>{child.title}</span>
                             </div>
                         );
                     }));
                 }
+            }
+
+            if (currentManifest.usfm) {
+                setCurrentBook(currentManifest.usfm);
             }
         }
         if (currentManifest) {
@@ -81,14 +103,46 @@ function Resource({ resourcePath, createNewTab }: ResourceProps): JSX.Element {
         createNewTab(WindowTypes.Scripture.Type, getReferenceText(usfm));
     }
 
+    async function travelDownNavTree(child: any) {
+        if (resourcePath) {
+            const newResourcePath = resourcePath + '/' + child.path;
+            let newCurrentManifest: any = {};
+            if (currentManifest && currentManifest.children !== 'dir') {
+                // this is a leaf node, so we manage the resource directly
+                // load file directly
+                const htmlContents = await fileManager.loadResource(newResourcePath, '');
+                setHtmlContents(htmlContents);
+                // a leaf node has no children
+                setChildrenDocuments(null);
+
+                newCurrentManifest.title = child.title;
+            }
+            else {
+                newCurrentManifest = await fileManager.loadResource(newResourcePath, 'manifest.json');
+            }
+            newCurrentManifest.path = child.path;
+            setNavTreeArray([...navTreeArray, newCurrentManifest])
+        }
+    }
+
+    function travelToNavTreeNode(index: number) {
+        setNavTreeArray(navTreeArray.slice(0, index + 1));
+    }
+
     // GENERATE JSX
     return (
         <div className='resource'>
-            <span>{resourcePath}</span> {/* TODO: display a navigable title structure */}
+
+            <div className='resource-header'>
+                <div className='anchor-left'>
+                    <span>{navTreeElement}</span>
+                </div>
+                <div className='anchor-right'>
+                    {rootManifest?.author} <i>({rootManifest?.year})</i>
+                </div>
+            </div>
+
             <div className='scroll'>
-                <center>
-                    <h4>{rootManifest?.title}</h4>
-                </center>
                 {childrenDocuments ?
                     <div className='resource-content'>
                         {/* NAVIGATION PANE */}
@@ -100,7 +154,7 @@ function Resource({ resourcePath, createNewTab }: ResourceProps): JSX.Element {
                 : null}
                 <div className='resource-content'>
                     {/* RESOURCE DISPLAY */}
-                    <ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook='' translation='NKJV' loadPassage={loadPassage} />
+                    <ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />
                 </div>
                 <p className="notice">{licenses.PUBLIC_DOMAIN}</p>
             </div>

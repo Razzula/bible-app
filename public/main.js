@@ -247,6 +247,8 @@ async function getResourceChildren(parentDirectory, detectionMode) {
         return resources;
     }
 
+    const filesToIgnore = ['manifest.json', manifest?.landing];
+
     for (const item of items) {
         const itemPath = path.join(fullResourcePath, item);
         const stat = fs.statSync(itemPath);
@@ -257,9 +259,8 @@ async function getResourceChildren(parentDirectory, detectionMode) {
                 resources.push({ title: childManifest.title, path: item });
             }
         }
-        else if (stat.isFile() && !['manifest.json', manifest?.landing].includes(item)) {
-            // deprecated
-            resources.push(item);
+        else if (stat.isFile() && !filesToIgnore.includes(item)) {
+            resources.push({ path: item });
         }
     }
 

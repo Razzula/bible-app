@@ -1,8 +1,8 @@
 .resource {
     .scroll {
-        max-height: calc(100vh - 32px - 25px) !important; // allow room for tabbar and input-group
+        max-height: calc(100vh - 32px - 48px) !important; // allow room for tabbar and input-group
             // tabbar (32px)
-            // navbar (25px)
+            // navbar (48px)
     }
 }
 
@@ -13,8 +13,34 @@
         }
     // }
 
-    background-color: #181a1b; //181a1b
+    background-color: #181a1b;
     padding: 50px 50px 50px 50px;
     margin-bottom: 20px;
+}
+
+.resource-header {
+    display: flex;
+    padding: 5px;
+    height: 48px;
+}
+
+.anchor-centre {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+}
+
+.anchor-left {
+    flex: 1;
+    text-align: left;
+    padding: 10px;
+    padding-left: 20px;
+}
+
+.anchor-right {
+    flex: 1;
+    text-align: right;
+    padding: 10px;
+    padding-right: 20px;
 }
 

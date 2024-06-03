@@ -26,7 +26,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
             );
         case WindowTypes.Resource.Type:
             return (
-                <Resource resourcePath='MHC/VOL.1' resourceFileName='preface.html' createNewTab={createNewTab} />
+                <Resource rootResourcePath='MHC' resourceFileName='preface.html' createNewTab={createNewTab} />
             );
         case WindowTypes.Settings.Type:
             return (

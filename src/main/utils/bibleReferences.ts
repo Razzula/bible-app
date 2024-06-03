@@ -9,8 +9,7 @@ type manifest = { usfm: string, 'full-title'?: string, title: string };
 const booksArray: book[] = books;
 const manifestArray: manifest[] = manifest;
 
-export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*-\s*(\d+))?|-(\d+))?(?:.*?([;,].*))?/);
-export const REFERENCE_REGEX2 = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g);
+export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*(?:-|–|—)\s*(\d+))?|(?:-|–|—)(\d+))?(?:.*?([;,].*))?/);
 
 /**
  * Parse the given reference and return relevant USFM (Unified Standard Format Marker).
@@ -196,7 +195,7 @@ export function locateReferences(text: string, currentBook: string | null = null
     }
 
     // detect references
-    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*-\s*\d+)?|-\d+)?/g); // TODO: unify with referenceRegex
+    const pattern = RegExp(/(?:(?:I+ |[123]+ ?)?(?:[A-Za-z]+)\.? *|(?<=([;,])) ?)\d+(?::\s*\d+(?:\s*(?:-|–|—)\s*\d+)?|(?:-|–|—)\d+)?/g); // TODO: unify with referenceRegex
     const matches = [];
 
     for (const match of text.matchAll(pattern)) { // get positions of references
