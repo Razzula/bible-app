@@ -17,8 +17,8 @@ Whilst this application requires data from the Bible in order to function, this 
 |--|--|
 | Genesis 1-2 | 56 |
 | Deuteronomy 28 | 68 |
-| John 1 | 51 |
 | Matthew 5 | 48 |
+| John 1 | 51 |
 | _Total_ | <span style="color: green">223</span> _(<500)_ |
 
 > Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.
@@ -33,8 +33,8 @@ Whilst this application requires data from the Bible in order to function, this 
 |--|--|--|
 | Genesis 1-2 | 56 | <span style="color: green">4</span> _(<50)_ |
 | Deuteronomy 28 | 68 | <span style="color: green">7</span> _(<50)_ |
-| John 1 | 51 | <span style="color: green">6</span> _(<50)_ |
 | Matthew 5 | 48 | <span style="color: green">3</span> _(<50)_ |
+| John 1 | 51 | <span style="color: green">6</span> _(<50)_ |
 | _Total_ | <span style="color: green">223</span> _(<500)_ | |
 
 > Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved. The ESV text may not be quoted in any publication made available to the public by a Creative Commons license. The ESV may not be translated in whole or in part into any other language
