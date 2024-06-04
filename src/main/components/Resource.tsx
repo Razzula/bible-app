@@ -60,8 +60,6 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
     useEffect(() => {
         const loadResource = async () => {
             if (currentManifest) {
-                console.log(currentManifest);
-                console.log(resourcePath);
 
                 if (currentManifest.landing) {
                     const htmlContents = await fileManager.loadResource(resourcePath, currentManifest.landing);
@@ -69,14 +67,14 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 }
 
                 if (currentManifest.children) {
-                    const childrenDocuments = await fileManager.getResourceChildren(resourcePath, currentManifest.children);
-                    setChildrenDocuments(childrenDocuments.map((child: any) => {
+                    let childrenDocuments = await fileManager.getResourceChildren(resourcePath, currentManifest.children);
 
+                    childrenDocuments = childrenDocuments.map((child: any) => {
                         if (currentManifest.usfm) {
                             if (currentManifest.children === 'usfm-chapter') {
                                 const usfm = getUSFM(child.path);
                                 if (usfm) {
-                                    child.title = usfm[0]?.initialChapter ;
+                                    child.title = usfm[0]?.initialChapter;
                                 }
                             }
                         }
@@ -86,7 +84,14 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                 <span className='chapter-button' onClick={() => travelDownNavTree(child)}>{child.title}</span>
                             </div>
                         );
-                    }));
+                    });
+
+                    if (currentManifest.children === 'usfm-chapter') {
+                        // children are ordered alphabetically by default, so we need to sort them numerically
+                        childrenDocuments = childrenDocuments.sort((a: any, b: any) => Number(a.key) - Number(b.key));
+                    }
+
+                    setChildrenDocuments(childrenDocuments);
                 }
             }
 

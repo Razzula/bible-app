@@ -56,7 +56,7 @@ class FileManager {
         return await window.electronAPI.deleteNote(id, selectedNoteGroup, book, chapter);
     }
 
-    public async getResourceChildren(path: string, mode: any): Promise<any> {
+    public async getResourceChildren(path: string, mode: any): Promise<any[]> {
         return await window.electronAPI.getResourceChildren(path, mode);
     }
 }
