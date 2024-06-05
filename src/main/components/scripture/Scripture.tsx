@@ -13,6 +13,7 @@ import licenses from '../../../../public/licenses.json';
 import { WindowTypes } from '../../utils/enums';
 
 import '../../styles/scripture.scss';
+import { isElectronApp } from '../../../main/utils/general';
 
 declare global {
     interface Window {
@@ -34,7 +35,7 @@ type ScriptureProps = {
 function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchError, setSearchError] = useState(false);
-    const [translationsList, setTranslationsList] = useState('');
+    const [translationsList, setTranslationsList] = useState<React.JSX.Element[]>([]);
     const [selectedTranslation, setSelectedTranslation] = useState('');
     const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
     const [showFootnotes, setShowFootnotes] = useState(true)
@@ -45,8 +46,8 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     const [passages, setPassages]: [JSX.Element[], Function] = useState([]);
 
-    const [noteGroupsList, setNoteGroupsList] = useState('');
-    const [selectedNoteGroup, setSelectedNoteGroup] = useState('');
+    const [noteGroupsList, setNoteGroupsList] = useState<React.JSX.Element[]>([]);
+    const [selectedNoteGroup, setSelectedNoteGroup] = useState<string | undefined>(undefined);
 
     const fileManager = FileManager.getInstance();
 
@@ -132,7 +133,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }
 
     async function getTranslationList(): Promise<void> {
-        const translations = await window.electronAPI.getDirectories('Scripture');
+        const translations = await fileManager.getDirectories('Scripture');
 
         if (translations.length === 0) {
             setPassages([
@@ -155,14 +156,14 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }
 
     async function getNoteGroupsList(): Promise<void> {
-        const noteGroups = await window.electronAPI.getDirectories('notes');
+        const noteGroups = await fileManager.getDirectories('notes');
 
         const noteGroupsList = noteGroups.map((noteGroupName: string) => {
             return <option key={noteGroupName} value={noteGroupName}>{noteGroupName}</option>;
         });
 
         setNoteGroupsList(noteGroupsList);
-        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key : ''); // TODO: (BIBLE-82) make this a setting
+        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key ?? undefined : undefined); // TODO: (BIBLE-82) make this a setting
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
@@ -224,6 +225,13 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                     if (chapterContents) {
                         chaptersContents.push(chapterContents);
                     }
+                    else {
+                        if (!isElectronApp()) {
+                            if (window.confirm('Warning: This is a demo environment. Only a limited selection of chapters are available.\n\n For more information, please see README.md')) {
+                                window.open('https://github.com/Razzula/bible-app/tree/main/example/Scripture');
+                            }
+                        }
+                    }
 
                 }
 
@@ -236,7 +244,9 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                     key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
                 />;
             })
+            .filter((passage: JSX.Element | undefined) => passage !== undefined)
         );
+        console.log('passages', passages);
 
         deselect();
 
@@ -251,48 +261,47 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                 historyStacks[1] = new Array<string>();
             }
             setHistoryStacks(historyStacks);
-        }
-        else {
-            setSearchError(true);
-        }
 
-        setTimeout(() => { // TODO: make this in response
+            setTimeout(() => { // TODO: make this in response
 
-            // scroll to verse if specified
-            if (Array.isArray(usfm)) { // only scroll to first passage
-                usfm = usfm[0];
-            }
-            if (usfm.initialVerse) { // might need to move into state
+                // scroll to verse if specified
+                if (Array.isArray(usfm)) { // only scroll to first passage
+                    usfm = usfm[0];
+                }
+                if (usfm.initialVerse) { // might need to move into state
 
-                const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
+                    const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
 
-                // jump to passage
-                const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
-                if (element) {
-                    element.scrollIntoView();
+                    // jump to passage
+                    const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
+                    if (element) {
+                        element.scrollIntoView();
+                    }
+                    else {
+                        document.getElementById(docID)?.scrollIntoView(); // goto top
+                    }
+
+                    // highlight passage
+                    for (let verse = usfm.initialVerse; verse <= range; verse++) {
+
+                        const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
+                        for (const e of elements) {
+                            const element = e as HTMLElement;
+                            element.classList.remove('blink');
+                            element.offsetWidth; // allow repetition
+                            element.classList.add('blink');
+                        }
+                    }
+
                 }
                 else {
                     document.getElementById(docID)?.scrollIntoView(); // goto top
                 }
-
-                // highlight passage
-                for (let verse = usfm.initialVerse; verse <= range; verse++) {
-
-                    const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
-                    for (const e of elements) {
-                        const element = e as HTMLElement;
-                        element.classList.remove('blink');
-                        element.offsetWidth; // allow repetition
-                        element.classList.add('blink');
-                    }
-
-                }
-
-            }
-            else {
-                document.getElementById(docID)?.scrollIntoView(); // goto top
-            }
-        }, 100);
+            }, 100);
+        }
+        else {
+            setSearchError(true);
+        }
 
     }
 

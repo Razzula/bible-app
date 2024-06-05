@@ -4,6 +4,7 @@ import Page from './Page';
 
 import '../styles/dark.scss';
 import '../styles/App.scss';
+import { isElectronApp } from '../utils/general';
 
 /**
  * A React component to display the main application.
@@ -11,7 +12,10 @@ import '../styles/App.scss';
  */
 function App(): JSX.Element {
 
-    window.electronAPI.setupApp();
+    if (isElectronApp()) {
+        console.log('Electron app detected');
+        window.electronAPI.setupApp();
+    }
 
     // GENERATE JSX
     return (

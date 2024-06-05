@@ -35,3 +35,7 @@ export function isOfHeaderType(type: string): string | undefined {
     return undefined;
 
 }
+
+export function isElectronApp(): boolean {
+    return !!(window.electronAPI);
+}
