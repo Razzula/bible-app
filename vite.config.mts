@@ -15,4 +15,5 @@ export default defineConfig({
     server: {
         port: 3180,
     },
+    base: '/bible-app/',
 });
