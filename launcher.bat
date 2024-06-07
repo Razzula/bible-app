@@ -1,1 +1,1 @@
-cmd /c git checkout main && git pull && yarn install && yarn electron:serve
+cmd /c git checkout main && git pull && bun install && bun run electron:serve
