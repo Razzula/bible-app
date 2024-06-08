@@ -33,7 +33,7 @@ type ScriptureProps = {
  * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
  */
 function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
-    const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState<React.JSX.Element[]>([]);
     const [selectedTranslation, setSelectedTranslation] = useState('');
@@ -77,13 +77,18 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }, [queryToLoad]);
 
     useEffect(() => {
-        if (searchQuery !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
-            loadPassageFromString(searchQuery);
+        if (searchQuery !== '') {
+            if (selectedTranslation !== '' && selectedNoteGroup !== '') {
+                loadPassageFromString(searchQuery);
+            }
+        }
+        else if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
+            loadPassageFromString(queryToLoad);
         }
     }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]);
 
     function handleSearch(): void {
-        if (searchQuery !== undefined) {
+        if (searchQuery !== '') {
             void loadPassageFromString(searchQuery, true);
         }
     }
@@ -170,7 +175,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
-        console.log(searchQuery);
+
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
             return;
         }
