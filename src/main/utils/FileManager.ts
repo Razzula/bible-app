@@ -140,7 +140,7 @@ class MockFileManager extends FileManager {
         }
     };
 
-    private constructor() {
+    public constructor() {
         super();
         this.manifest = {} as any;
         this.init();
@@ -160,7 +160,12 @@ class MockFileManager extends FileManager {
 
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
         const data = await this.loadFile(`Scripture/${translation}/${book}.${chapter}`);
-        return data ? JSON.parse(data) : null;
+        try {
+            return data ? JSON.parse(data) : null;
+        } catch (e) {
+            console.error('404: ' + `Scripture/${translation}/${book}.${chapter}`);
+            return null;
+        }
     }
 
     public async loadResource(path: string, fileName: string): Promise<any> {

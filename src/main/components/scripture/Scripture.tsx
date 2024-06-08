@@ -33,7 +33,7 @@ type ScriptureProps = {
  * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
  */
 function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState<React.JSX.Element[]>([]);
     const [selectedTranslation, setSelectedTranslation] = useState('');
@@ -77,12 +77,15 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }, [queryToLoad]);
 
     useEffect(() => {
-        if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
+        if (searchQuery !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
             loadPassageFromString(searchQuery);
         }
     }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]);
+
     function handleSearch(): void {
-        void loadPassageFromString(searchQuery, true);
+        if (searchQuery !== undefined) {
+            void loadPassageFromString(searchQuery, true);
+        }
     }
 
     function handleBackClick(): void {
@@ -167,6 +170,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
+        console.log(searchQuery);
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
             return;
         }
@@ -255,7 +259,9 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             setSearchError(false);
             setSearchQuery(getReferenceText(usfm)); // format, e.g 'gen1' --> 'Genesis 1'
 
-            historyStacks[0].push(searchQuery)
+            if (searchQuery !== undefined) {
+                historyStacks[0].push(searchQuery)
+            }
             if (clearForwardCache) {
                 historyStacks[1] = new Array<string>();
             }
@@ -346,7 +352,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                             {translationsList}
                         </select>
                         {/* SEARCH BUTTON */}
-                        <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery.length === 0}>Load</button>
+                        <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>Load</button>
                     </div>
 
                     {/* SUB CONTROLS */}
