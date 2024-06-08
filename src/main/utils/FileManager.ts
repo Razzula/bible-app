@@ -138,34 +138,17 @@ class MockFileManager extends FileManager {
                 }
             }
         }
-    } = {
-        'resources': {
-            'MHC': {
-                'VOL.1': {
-                    '01.GEN': ['GEN.0.html', 'GEN.1.html', 'GEN.2.html'],
-                    '05.DEU': ['DEU.0.html', 'DEU.28.html'],
-                },
-                'VOL.2': {},
-                'VOL.3': {},
-                'VOL.4': {},
-                'VOL.5': {
-                    '40.MAT': ['MAT.0.html', 'MAT.5.html'],
-                    '43.JHN': ['JHN.0.html', 'JHN.1.html'],
-                },
-                'VOL.6': {},
-            }
-        },
+    };
 
-        'Scripture': ['NKJV', 'ESV'],
+    private constructor() {
+        super();
+        this.manifest = {} as any;
+        this.init();
+    }
 
-        'notes': {
-            'examples': {
-                'GEN': {
-                    1: ['example-for-verse-5', 'example-for-verse-7', 'second-example-for-verse-5'],
-                    2: ['example-for-verse-3'],
-                }
-            }
-        }
+    private async init() {
+        this.manifest = JSON.parse(await this.loadFile('manifest.json'));
+        console.log(this.manifest);
     }
 
     private async loadFile(path: string): Promise<any> {
@@ -196,7 +179,6 @@ class MockFileManager extends FileManager {
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
         const notes: string[] = this.manifest.notes[group][book][chapter];
-        console.log(notes);
 
         return await Promise.all(
             notes.map(async (note) => {
