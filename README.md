@@ -1,5 +1,9 @@
 # bible-app
 
+## Demo
+
+You can run a lightweight static demo of the application [here](https://razzula.github.io/bible-app/).
+
 ## Installation
 ### Prerequisites
 
