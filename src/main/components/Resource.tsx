@@ -7,6 +7,8 @@ import { WindowTypes } from '../utils/enums';
 
 import '../styles/resource.scss'
 import { getReferenceText, getUSFM } from '../utils/bibleReferences';
+import Passage from './scripture/Passage';
+import { Alert } from 'react-bootstrap';
 
 type ResourceProps = {
     rootResourcePath: string;
@@ -23,7 +25,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
     const [navTreeArray, setNavTreeArray] = useState<any[]>([]);
 
     const [currentBook, setCurrentBook] = useState<string | undefined>(undefined);
-    const [htmlContents, setHtmlContents] = useState('');
+    const [resourceElement, setResourceElement] = useState<JSX.Element | JSX.Element[] | null>(null);
     const [childrenDocuments, setChildrenDocuments] = useState<JSX.Element[] | null>(null);
 
     const fileManager = FileManager.getInstance();
@@ -63,7 +65,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
 
                 if (currentManifest.landing) {
                     const htmlContents = await fileManager.loadResource(resourcePath, currentManifest.landing);
-                    setHtmlContents(htmlContents);
+                    setResourceElement(<ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />);
                 }
 
                 if (currentManifest.children) {
@@ -115,8 +117,63 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
             if (currentManifest && currentManifest.children !== 'dir') {
                 // this is a leaf node, so we manage the resource directly
                 // load file directly
-                const htmlContents = await fileManager.loadResource(newResourcePath, '');
-                setHtmlContents(htmlContents);
+                const fileContents = await fileManager.loadResource(newResourcePath, '');
+
+                if (typeof fileContents === 'string') {
+                    // HTML
+                    setResourceElement(
+                        <ReadOnlyHTMLRenderer actualHTMLContents={fileContents} currentBook={currentManifest.usfm ?? currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />
+                    );
+                }
+                else {
+                    // JSON
+                    if (currentManifest.format && currentManifest.format === 'passage' && currentManifest.usfm) {
+                        // render as a passage
+                        const disclaimer = fileContents.disclaimer ?? null;
+                        const elements: JSX.Element[] = [];
+
+                        elements.push(
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.5em', letterSpacing: 10 }}>
+                                    <b>{currentManifest.title.toUpperCase()}</b>
+                                </div>
+                                <div style={{ fontSize: '1.5em' }}>
+                                    CHAPTER {child.title}.
+                                </div>
+                                <hr style={{ width: 50, marginLeft: 'auto', marginRight: 'auto' }} />
+                            </div>
+                        );
+                        if (disclaimer) {
+                            elements.push(
+                                <Alert variant='warning' style={{ textAlign: 'center' }}>
+                                    <ReadOnlyHTMLRenderer
+                                        actualHTMLContents={disclaimer}
+                                        currentBook={currentBook ?? currentManifest.usfm}
+                                        translation='NKJV' loadPassage={loadPassage}
+                                    />
+                                </Alert>
+                            );
+                            delete fileContents.disclaimer;
+                        }
+                        elements.push(
+                            <div className='passage'>
+                                <Passage
+                                    contents={[fileContents]}
+                                    usfm={{book: currentManifest.usfm, initialChapter: 0}}
+                                    translation='NKJV'
+                                    ignoreFootnotes={true}
+                                />
+                            </div>
+                        );
+
+                        setResourceElement(elements);
+                    }
+                    else {
+                        // render as plain text
+                        // TODO
+                        console.error('Non-passage JSON formats not yet implemented.');
+                    }
+                }
                 // a leaf node has no children
                 setChildrenDocuments(null);
 
@@ -151,15 +208,15 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 {childrenDocuments ?
                     <div className='resource-content'>
                         {/* NAVIGATION PANE */}
-                        <center>
+                        <div style={{ textAlign: 'center' }}>
                             <h3>TABLE OF CONTENTS</h3>
-                        </center>
+                        </div>
                         {childrenDocuments}
                     </div>
                 : null}
-                <div className='resource-content'>
+                <div className='resource-content' style={ navTreeArray[navTreeArray.length - 2]?.format === 'passage' ? { maxWidth: '900px' } : {}}>
                     {/* RESOURCE DISPLAY */}
-                    <ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />
+                    {resourceElement}
                 </div>
                 <p className="notice">{licenses.PUBLIC_DOMAIN}</p>
             </div>

@@ -173,7 +173,7 @@ class MockFileManager extends FileManager {
         return (
             this.loadFile(filePath)
             .then(data => {
-                if (fileName.endsWith('.json')) {
+                if (fileName.endsWith('.json') || path.endsWith('.json')) {
                     return JSON.parse(data);
                 }
                 return data;

@@ -196,7 +196,7 @@ async function handleLoadDocument(filename) {
 async function handleLoadResource(filePath, filename) {
 
     const fileContents = await readFile(filename, path.join('resources', filePath));
-    if (filename.endsWith('json')) {
+    if (filename.endsWith('.json') || filePath.endsWith('.json')) {
         return JSON.parse(fileContents);
     }
     return fileContents;

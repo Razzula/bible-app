@@ -21,7 +21,7 @@ const baseAnchor = 'anchor';
 
 type PassageProps = {
     contents: any;
-    usfm?: any;
+    usfm: any;
     ignoreFootnotes?: boolean;
     renderMode?: string;
     loadPassage?: any;
