@@ -53,14 +53,14 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                     <p>
                                         Whilst this demo does host some passages from the Bible in order to function,
                                         it only provides a very small number of these, due to copyright constraints.
-                                        These can be accessed from the <code>Scripture</code> tab, however any only this small subset of the Bible is available.
+                                        These can be accessed from the <code>Scripture</code> tab, however only this small subset of the Bible is available.
                                     </p>
                                     <p>For more information, including which translations and chapters are inclued, please refer to the <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>README</a>.</p>
                                     <p>
                                         There are also some additional texts included in the <code>Resources</code>, which are in the public domain,
                                         however, these have also been reduced to a smaller subset, in order to minimise the size of the demo.
                                         </p>
-                                    <p>Additionally, please not that this is a static site, and therefore some functionalities, such as saving notes, is not available.</p>
+                                    <p>Additionally, please note that this is a static site, and therefore some functionalities, such as saving notes, is not available.</p>
                                     <hr />
                                     <p>
                                         If you would like to use the full version of the application, please clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
