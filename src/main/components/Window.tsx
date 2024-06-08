@@ -44,29 +44,31 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
             return (
                 <div className='scroll'>
                     <div className='landing-content'>
-                    <p>Hello,</p><p>Welcome to <b>razzula/bible-app</b>!</p>
-                        {
-                            isElectronApp() ? null :
-                            <Alert variant="warning">
-                                <Alert.Heading>⚠</Alert.Heading>
-                                <p>You are using a <u><b>demo</b></u> version of the application!</p>
-                                <p>
-                                    Whilst this demo does host some passages from the Bible in order to function,
-                                    it only provides a very small number of these, due to copyright constraints.
-                                    These can be accessed from the <code>Scripture</code> tab, however any only this small subset of the Bible is available.
-                                </p>
-                                <p>For more information, including which translations and chapters are inclued, please refer to the <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>README</a>.</p>
-                                <p>
-                                    There are also some additional texts included in the <code>Resources</code>, which are in the public domain,
-                                    however, these have also been reduced to a smaller subset, in order to minimise the size of the demo.
+                        <p>Hello,</p><p>Welcome to <b>razzula/bible-app</b>!</p>
+                            {
+                                isElectronApp() ? null :
+                                <Alert variant="warning">
+                                    <Alert.Heading>⚠</Alert.Heading>
+                                    <p>You are using a <u><b>demo</b></u> version of the application!</p>
+                                    <p>
+                                        Whilst this demo does host some passages from the Bible in order to function,
+                                        it only provides a very small number of these, due to copyright constraints.
+                                        These can be accessed from the <code>Scripture</code> tab, however any only this small subset of the Bible is available.
                                     </p>
-                                <p>Additionally, please not that this is a static site, and therefore some functionalities, such as saving notes, is not available.</p>
-                                <hr />
-                                <p>
-                                    If you would like to use the full version of the application, please clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
-                                </p>
-                            </Alert>
-                        }
+                                    <p>For more information, including which translations and chapters are inclued, please refer to the <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>README</a>.</p>
+                                    <p>
+                                        There are also some additional texts included in the <code>Resources</code>, which are in the public domain,
+                                        however, these have also been reduced to a smaller subset, in order to minimise the size of the demo.
+                                        </p>
+                                    <p>Additionally, please not that this is a static site, and therefore some functionalities, such as saving notes, is not available.</p>
+                                    <hr />
+                                    <p>
+                                        If you would like to use the full version of the application, please clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
+                                    </p>
+                                </Alert>
+                            }
+                        <p>You can report any issues encountered <a href='https://github.com/Razzula/bible-app/issues'>here</a>.</p>
+                        <p>:D</p>
                     </div>
                 </div>
             );
