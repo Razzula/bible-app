@@ -148,7 +148,6 @@ class MockFileManager extends FileManager {
 
     private async init() {
         this.manifest = JSON.parse(await this.loadFile('manifest.json'));
-        console.log(this.manifest);
     }
 
     private async loadFile(path: string): Promise<any> {

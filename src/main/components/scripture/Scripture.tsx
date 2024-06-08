@@ -246,7 +246,6 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             })
             .filter((passage: JSX.Element | undefined) => passage !== undefined)
         );
-        console.log('passages', passages);
 
         deselect();
 

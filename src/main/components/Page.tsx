@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Window from './Window';
 import Tabbar from './Tabbar';
 import Sidebar from './Sidebar';
 import Sidepanel from './Sidepanel';
+import { WindowTypes } from '../utils/enums';
 
 function Page(): JSX.Element {
 
@@ -13,6 +14,10 @@ function Page(): JSX.Element {
 
     const [selectedPanel, setSelectedPanel]: [symbol | undefined, Function] = useState(undefined);
     const [selectedTab, setSelectedTab]: [string | undefined, Function] = useState(undefined);
+
+    useEffect(() => {
+        createNewTab(WindowTypes.Landing.Type, 'Welcome!');
+    }, []);
 
     function updateSelectedPanel(button?: symbol): void {
         setSelectedPanel(button);

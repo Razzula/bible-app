@@ -1,20 +1,24 @@
 const WindowTypes = Object.freeze({
 	Scripture: {
 		'Name': 'Scripture',
-		'Type': Symbol("Scripture")
+		'Type': Symbol('Scripture')
 	},
 	Resource: {
 		'Name': 'resource',
-		'Type': Symbol("resource")
+		'Type': Symbol('resource')
 	},
     Document: {
 		'Name': 'document',
-		'Type': Symbol("document")
+		'Type': Symbol('document')
 	},
 	Settings: {
 		'Name': 'settings',
-		'Type': Symbol("settings")
+		'Type': Symbol('settings')
 	},
+    Landing: {
+        'Name': 'landing',
+        'Type': Symbol('landing')
+    }
 });
 
 export { WindowTypes };
