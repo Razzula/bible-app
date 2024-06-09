@@ -14,7 +14,7 @@ This is a public domain text. No rights reserved. May be distributed freely.
 
 The Apocryphal texts (known to Catholics as the Deuterocanonical texts) from the Challoner Douay-Rheims Version of the Bible, a specific revision made by Bishop Richard Challoner between 1749 and 1752 of the original Douay-Rheims Bible, which was translated by scholars at the English College in Douay and Rheims (including Gregory Martin, Richard Bristow, and Thomas Worthington) and published in 1582 (New Testament) and 1609-1610 (Old Testament) as an English translation of the Latin Vulgate Bible.
 
-Only a small portion of this work is included in this repository's example files, to prevent bloating the repository. However, the full text is available, in the format required for use in this application, from https://github.com/Razzula/public-domain-bible-resources/tree/main/dist/CDRV1752
+Only a small portion of this work is included in this repository's example files, to prevent bloating the repository. However, the full text is available, in the format required for use in this application, from https://github.com/Razzula/public-domain-bible-resources/tree/main/dist/DRC1752
 
 ## License
 
