@@ -51,8 +51,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                     <Alert.Heading>⚠</Alert.Heading>
                                     <p>You are using a <u><b>demo</b></u> version of the application!</p>
                                     <p>1. Only a very small number of Bible translations and chapters are included, due to copyright restrictions. (More information <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>here</a>).</p>
-                                    <p>2. Only a small number of additional texts are included, to minimise the size of the demo.</p>
-                                    <p>3. Any changes made (creating or saving notes) are <b>not</b> stored.</p>
+                                    <p>2. Any changes made (creating or saving notes) are <b>not</b> stored.</p>
                                     <hr />
                                     <p>
                                         If you would like to use the full version of the application, you can clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
