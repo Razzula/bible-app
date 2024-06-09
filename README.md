@@ -1,8 +1,16 @@
 # bible-app
 
+The Bible app is composed of two main components: a client application and a file server.
+- [/client](https://github.com/Razzula/bible-app/tree/main/client)
+- [/server](https://github.com/Razzula/bible-app/tree/main/server)
+
+You can install and configure each of these components separately, following the instructions in their respective README files.
+
+If both are configured, you can run them both together using `bun run dev` in the root directory (you will need to run `bun install` here, too, for the concurrency package).
+
 ## Demo
 
-You can run a lightweight static demo of the application [here](https://razzula.github.io/bible-app/).
+You can run a lightweight, static demo of the application [here](https://razzula.github.io/bible-app/).
 
 ## License
 ### GNU GPLv3

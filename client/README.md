@@ -1,5 +1,7 @@
 # bible-app/client
 
+This is the client component of the Bible App. It is a React application that uses Electron to run as a desktop application.
+
 ## Demo
 
 You can run a lightweight static demo of the application [here](https://razzula.github.io/bible-app/).
