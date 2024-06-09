@@ -3,7 +3,9 @@
     "module": "index.ts",
     "type": "module",
     "scripts": {
-        "dev": "bun --hot run ./src/server.js"
+        "dev": "bun --hot run ./src/server.ts",
+        "build": "tsc",
+        "serve": "bun run ./dist/server.js"
     },
     "devDependencies": {
         "@types/archiver": "^6.0.2",
