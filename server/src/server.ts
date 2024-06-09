@@ -22,8 +22,8 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+app.get('/test', (req, res) => {
+    res.send('Hello, World!');
 });
 
 // Endpoint to download a specific file
