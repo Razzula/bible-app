@@ -1,22 +1,23 @@
 {
-    "name": "bible-app-server",
-    "module": "index.ts",
-    "type": "module",
-    "scripts": {
-        "dev": "bun --hot run ./src/server.ts",
-        "build": "tsc",
-        "serve": "bun run ./dist/server.js"
-    },
-    "devDependencies": {
-        "@types/archiver": "^6.0.2",
-        "@types/bun": "latest",
-        "@types/express": "^4.17.21"
-    },
-    "peerDependencies": {
-        "typescript": "^5.0.0"
-    },
-    "dependencies": {
-        "dotenv": "^16.4.5",
-        "express": "^4.19.2"
-    }
+  "name": "bible-app-server",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot run ./src/server.ts",
+    "build": "tsc",
+    "serve": "bun run ./dist/server.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2",
+    "bun-types": "^1.1.12"
+  },
+  "peerDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
 }
