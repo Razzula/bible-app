@@ -1,0 +1,19 @@
+{
+  "name": "bible-app-server",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot run ./src/server.js"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/bun": "latest",
+    "@types/express": "^4.17.21"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
