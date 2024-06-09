@@ -21,7 +21,7 @@ const copyDirectories = async () => {
     const tinymceSrc = join('node_modules', 'tinymce');
     const tinymceDest = join('dist', 'tinymce');
 
-    const exampleSrc = join('example');
+    const exampleSrc = join('..', 'example');
     const exampleDest = join('dist', 'example');
 
     await Promise.all([

@@ -1,11 +1,9 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-dist/*
-public/tinymce/*
-public/example/*
+dist/
+public/tinymce/
+public/example/
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -27,6 +25,5 @@ yarn-debug.log*
 yarn-error.log*
 .nyc_output
 .vscode/settings.json
-.gitignore
 __pycache__
 run.bat

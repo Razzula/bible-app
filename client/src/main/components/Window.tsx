@@ -50,24 +50,16 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                 <Alert variant="warning">
                                     <Alert.Heading>⚠</Alert.Heading>
                                     <p>You are using a <u><b>demo</b></u> version of the application!</p>
-                                    <p>
-                                        Whilst this demo does host some passages from the Bible in order to function,
-                                        it only provides a very small number of these, due to copyright constraints.
-                                        These can be accessed from the <code>Scripture</code> tab, however only this small subset of the Bible is available.
-                                    </p>
-                                    <p>For more information, including which translations and chapters are inclued, please refer to the <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>README</a>.</p>
-                                    <p>
-                                        There are also some additional texts included in the <code>Resources</code>, which are in the public domain,
-                                        however, these have also been reduced to a smaller subset, in order to minimise the size of the demo.
-                                        </p>
-                                    <p>Additionally, please note that this is a static site, and therefore some functionalities, such as saving notes, is not available.</p>
+                                    <p>1. Only a very small number of Bible translations and chapters are included, due to copyright restrictions. (More information <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>here</a>).</p>
+                                    <p>2. Only a small number of additional texts are included, to minimise the size of the demo.</p>
+                                    <p>3. Any changes made (creating or saving notes) are <b>not</b> stored.</p>
                                     <hr />
                                     <p>
-                                        If you would like to use the full version of the application, please clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
+                                        If you would like to use the full version of the application, you can clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
                                     </p>
                                 </Alert>
                             }
-                        <p>You can report any issues encountered <a href='https://github.com/Razzula/bible-app/issues'>here</a>.</p>
+                        <p>You can report any issues encountered, <a href='https://github.com/Razzula/bible-app/issues'>here</a>.</p>
                         <p>:D</p>
                     </div>
                 </div>
