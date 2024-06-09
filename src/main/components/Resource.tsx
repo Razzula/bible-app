@@ -74,7 +74,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                     childrenDocuments = childrenDocuments.map((child: any) => {
                         if (currentManifest.usfm) {
                             if (currentManifest.children === 'usfm-chapter') {
-                                const usfm = getUSFM(child.path);
+                                const usfm = getUSFM(child.path, null, NaN, true);
                                 if (usfm) {
                                     child.title = usfm[0]?.initialChapter;
                                 }

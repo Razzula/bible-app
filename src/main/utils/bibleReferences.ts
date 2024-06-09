@@ -6,7 +6,7 @@ type usfm = { book: string, initialChapter?: number, finalChapter?: number, init
 type book = string | string[];
 type manifest = { usfm: string, 'full-title'?: string, title: string };
 
-const booksArray: book[] = books;
+const booksArray: { canon: book[], apocrypha: book[] } = books;
 const manifestArray: manifest[] = manifest;
 
 export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*(?:-|–|—)\s*(\d+))?|(?:-|–|—)(\d+))?(?:.*?([;,].*))?/);
@@ -43,7 +43,7 @@ export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::
  *   - getUSFM("3:16", "JHN", 2) returns:
  *     [{ book: "JHN", initialChapter: 3, initialVerse: 16 }]
  */
-export function getUSFM(reference: string, currentBook: string | null = null, currentChapter = NaN): Array<any> {
+export function getUSFM(reference: string, currentBook: string | null = null, currentChapter = NaN, includeApocrypha = false): Array<any> {
 
     let match = REFERENCE_REGEX.exec(reference.toUpperCase())
     /**
@@ -95,7 +95,7 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                     }
                 }
 
-                const bookName = getBookName(match[1] + match[2]);
+                const bookName = getBookName(match[1] + match[2], includeApocrypha);
                 if (bookName === undefined) { // invalid book name
                     return [];
                 }
@@ -137,17 +137,27 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     }
 }
 
-function getBookName(bookName: string): string | undefined {
+function getBookName(bookName: string, includeApocrypha = false): string | undefined {
 
     bookName = bookName.toUpperCase();
 
     let bookUSFM: string | undefined = undefined;
-    booksArray.forEach((bookList: book) => {
+    booksArray.canon.forEach((bookList: book) => {
         if (bookList.includes(bookName)) {
             bookUSFM = bookList[0];
             return;
         }
     });
+    if (includeApocrypha) {
+        booksArray.apocrypha.forEach((bookList: book) => {
+            if (bookList.includes(bookName)) {
+                bookUSFM = bookList[0];
+                console.log(bookUSFM);
+                return;
+            }
+        });
+    }
+
     return bookUSFM;
 }
 

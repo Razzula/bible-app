@@ -75,7 +75,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                     </div>
                     <div
                         className='chapter-button'
-                        onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Resource.Type, 'CDRV1752')}
+                        onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Resource.Type, 'DRC1752')}
                     >
                         <i>Apocrypha</i> Challoner Douay Rheims Version (1752)
                     </div>
