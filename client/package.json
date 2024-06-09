@@ -30,7 +30,7 @@
         "electron:dev": "concurrently -k \"cross-env BROWSER=none bun run dev\" \"wait-on tcp:3180 && electron .\"",
         "build": "vite build && bunx --bun postbuild.ts",
         "serve": "vite preview",
-        "predeploy": "vite build && bunx --bun predeploy.ts",
+        "predeploy": "vite build --mode production && bunx --bun predeploy.ts",
         "deploy": "gh-pages -d dist"
     },
     "devDependencies": {

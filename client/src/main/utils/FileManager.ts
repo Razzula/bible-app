@@ -6,7 +6,9 @@ import { isElectronApp } from "./general";
  */
 class FileManager {
     private static instance: FileManager;
-    protected constructor() { }
+    protected constructor() {
+        fetch(`${this.SEVER_URL}/test`); // ping server to wake it up, in case it is sleeping
+    }
 
     public static getInstance(): FileManager {
         if (!FileManager.instance) {
