@@ -21,13 +21,23 @@ class FileManager {
     }
 
     protected scriptureCache: any = {};
+    protected SEVER_URL = (import.meta as any).env.VITE_SERVER_URL;
 
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
         console.error('loadScripture not implemented');
     }
 
     public async loadResource(path: string, fileName: string): Promise<any> {
-        console.error('loadResource not implemented');
+        const filePath = path + (fileName ? `/${fileName}` : '');
+
+        return await fetch(`${this.SEVER_URL}/file/resources/${filePath}`)
+            .then(response => response.text())
+            .then(data => {
+                if (fileName.endsWith('.json') || path.endsWith('.json')) {
+                    return JSON.parse(data);
+                }
+                return data;
+            });
     }
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
@@ -45,8 +55,8 @@ class FileManager {
     }
 
     public async getResourceChildren(path: string, mode: any): Promise<any[]> {
-        console.error('getResourceChildren not implemented');
-        return [];
+        return await fetch(`${this.SEVER_URL}/dir/resources/${path}`)
+            .then(response => response.json());
     }
 
     public async getDirectories(path: string): Promise<string[]> {
@@ -90,7 +100,12 @@ class ElectronFileManager extends FileManager {
 
     public async loadResource(path: string, fileName: string): Promise<any> {
         // currently we don't cache resources, as they are not expected to be accessed frequently
-        return await window.electronAPI.loadResource(path, fileName);
+        const res = await window.electronAPI.loadResource(path, fileName);
+        if (res) {
+            return res;
+        }
+        // if the resource is not found, attempt to fetch it from the server
+        return super.loadResource(path, fileName);
     }
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
@@ -106,7 +121,12 @@ class ElectronFileManager extends FileManager {
     }
 
     public async getResourceChildren(path: string, mode: any): Promise<any[]> {
-        return await window.electronAPI.getResourceChildren(path, mode);
+        const res = await window.electronAPI.getResourceChildren(path, mode);
+        if (res && res.length > 0) {
+            return res;
+        }
+        // if the resource is not found, attempt to fetch it from the server
+        return super.getResourceChildren(path, mode);
     }
 
     public async getDirectories(path: string): Promise<string[]> {
@@ -168,19 +188,6 @@ class MockFileManager extends FileManager {
         }
     }
 
-    public async loadResource(path: string, fileName: string): Promise<any> {
-        const filePath = `resources/${path}` + (fileName ? `/${fileName}` : '');
-        return (
-            this.loadFile(filePath)
-            .then(data => {
-                if (fileName.endsWith('.json') || path.endsWith('.json')) {
-                    return JSON.parse(data);
-                }
-                return data;
-            })
-        );
-    }
-
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
         const notes: string[] = this.manifest.notes[group][book][chapter];
 
@@ -190,34 +197,6 @@ class MockFileManager extends FileManager {
                 data.id = note;
                 return data;
             })
-        );
-    }
-
-    public async getResourceChildren(path: string, mode: any): Promise<any[]> {
-
-        // get manifest of current directory
-        const manifest = JSON.parse(await this.loadFile(`resources/${path}/manifest.json`));
-        const filesToIgnore = ['manifest.json', manifest?.landing];
-
-        // get list of subdirectories
-        const pathList = ['resources'].concat(path.split('/'));
-        let temp: any = this.manifest;
-        pathList.forEach((dir) => {
-            temp = temp[dir];
-        });
-        const children: string[] = mode === 'dir' ? Object.keys(temp) : temp;
-
-        // load manifest for each child
-        return await Promise.all(
-            children.filter((child) => !filesToIgnore.includes(child))
-                .map(async (child) => {
-                    if (mode === 'dir') {
-                        const childManifest = await this.loadFile(`resources/${path}/${child}/manifest.json`);
-                        return { title: JSON.parse(childManifest).title, path: child };
-                    }
-                    return { path: child };
-                }
-            )
         );
     }
 

@@ -14,6 +14,13 @@ if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust '*' to restrict domains as necessary
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
 // Health check endpoint
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -79,14 +86,14 @@ app.get('/dir/*', (req, res) => {
                     }
                 }
             }
-            else if (mode === null) {
+            else if (mode === null) { // no manifest
                 if (stat.isDirectory()) {
                     data.push(item);
                 }
             }
             else if (stat.isFile()) {
                 if (!filesToIgnore.includes(item)) {
-                    data.push(item);
+                    data.push({ path: item });
                 }
             }
         }
