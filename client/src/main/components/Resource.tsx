@@ -216,7 +216,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 : null}
                 <div className='resource-content' style={ navTreeArray[navTreeArray.length - 2]?.format === 'passage' ? { maxWidth: '900px' } : {}}>
                     {/* RESOURCE DISPLAY */}
-                    {resourceElement}
+                    {currentManifest ? resourceElement : 'LOADING...'}
                 </div>
                 <p className="notice">{licenses.PUBLIC_DOMAIN}</p>
             </div>

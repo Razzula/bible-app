@@ -28,7 +28,7 @@
         "setup": "bunx --bun setup.ts",
         "dev": "bunx --bun vite",
         "electron:dev": "concurrently -k \"cross-env BROWSER=none bun run dev\" \"wait-on tcp:3180 && electron .\"",
-        "build": "vite build && bunx --bun postbuild.ts",
+        "build": "vite build --mode production && bunx --bun postbuild.ts",
         "serve": "vite preview",
         "predeploy": "vite build --mode production && bunx --bun predeploy.ts",
         "deploy": "gh-pages -d dist"
