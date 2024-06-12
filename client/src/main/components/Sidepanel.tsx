@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 
 import manifest from '../../../public/manifest.json';
 import { WindowTypes } from '../utils/enums';
 
 import '../styles/sidepanel.scss';
+import FileManager from '../utils/FileManager';
+import { use } from 'chai';
 
 type SidepanelProps = {
     panelType?: symbol;
@@ -13,7 +15,17 @@ type SidepanelProps = {
 
 function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | null {
 
-    let contents: JSX.Element | null = null;
+    const [availableResources, setAvailableResources] = React.useState<string[]>([]);
+
+    let contents: JSX.Element | JSX.Element[] | null = null;
+
+    useEffect(() => {
+        const fileManager = FileManager.getInstance();
+        fileManager.getDirectories('resources').then((dirs) => {
+            console.log(dirs);
+            setAvailableResources(dirs);
+        });
+    }, []);
 
     if (panelType === undefined) {
         return null;
@@ -66,20 +78,17 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                 </>;
 
             case WindowTypes.Resource.Type:
-                return (<>
-                    <div
-                        className='chapter-button'
-                        onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Resource.Type, 'MHC')}
-                    >
-                        Matthew Henry <i>Commentary on the Whole Bible</i> (1706)
-                    </div>
-                    <div
-                        className='chapter-button'
-                        onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Resource.Type, 'DRC1752')}
-                    >
-                        <i>Apocrypha</i> Challoner Douay Rheims Version (1752)
-                    </div>
-                </>);
+                return availableResources.map((resource, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className='chapter-button'
+                            onMouseDown={(event) => handleCreateNewTab(event, panelType, resource)}
+                        >
+                            {resource}
+                        </div>
+                    );
+                });
 
             case WindowTypes.Document.Type:
                 return <>

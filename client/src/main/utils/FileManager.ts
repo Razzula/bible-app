@@ -8,6 +8,8 @@ class FileManager {
     private static instance: FileManager;
     protected constructor() {
         fetch(`${this.SEVER_URL}/test`); // ping server to wake it up, in case it is sleeping
+
+        void this.findDownloadedDirectories();
     }
 
     public static getInstance(): FileManager {
@@ -22,8 +24,32 @@ class FileManager {
         return FileManager.instance;
     }
 
-    protected scriptureCache: any = {};
     protected SEVER_URL = (import.meta as any).env.VITE_SERVER_URL;
+    protected fileCache: any = {
+        'resources': {},
+        'Scripture': {},
+    };
+    protected downloadedDirectories: any = {
+        'resources': {},
+        'Scripture': {},
+    };
+
+    private async findDownloadedDirectories() {
+        FileManager.instance.getDirectories('resource').then((dirs) => {
+            dirs.forEach((dir) => {
+                this.downloadedDirectories[dir] = true;
+            });
+        });
+        FileManager.instance.getDirectories('Scripture').then((dirs) => {
+            dirs.forEach((dir) => {
+                this.downloadedDirectories[dir] = true;
+            });
+        });
+    }
+
+    public getDownloadedDirectories() {
+        return this.downloadedDirectories;
+    }
 
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
         console.error('loadScripture not implemented');
@@ -62,8 +88,8 @@ class FileManager {
     }
 
     public async getDirectories(path: string): Promise<string[]> {
-        console.error('getDirectories not implemented');
-        return [];
+        return await fetch(`${this.SEVER_URL}/dir/${path}`)
+            .then(response => response.json());
     }
 
 }
@@ -80,23 +106,23 @@ class ElectronFileManager extends FileManager {
             translation = 'NKJV'; // TODO: (BIBLE-82) make this a setting
         }
 
-        if (this.scriptureCache[book]) {
-            if (this.scriptureCache[book][chapter]) {
-                if (this.scriptureCache[book][chapter][translation]) {
-                    return this.scriptureCache[book][chapter][translation];
+        if (this.fileCache['Scripture'][book]) {
+            if (this.fileCache['Scripture'][book][chapter]) {
+                if (this.fileCache['Scripture'][book][chapter][translation]) {
+                    return this.fileCache['Scripture'][book][chapter][translation];
                 }
             }
             else {
-                this.scriptureCache[book][chapter] = {};
+                this.fileCache['Scripture'][book][chapter] = {};
             }
         }
         else {
-            this.scriptureCache[book] = { [chapter]: {} };
+            this.fileCache['Scripture'][book] = { [chapter]: {} };
         }
 
         // cache result
         const result = await window.electronAPI.loadScripture(`${book}.${chapter}`, translation);
-        this.scriptureCache[book][chapter][translation] = result;
+        this.fileCache['Scripture'][book][chapter][translation] = result;
         return result;
     }
 
@@ -132,7 +158,10 @@ class ElectronFileManager extends FileManager {
     }
 
     public async getDirectories(path: string): Promise<string[]> {
-        return await window.electronAPI.getDirectories(path);
+        debugger;
+        const localDirectories = await window.electronAPI.getDirectories(path);
+        const serverDirectories = await super.getDirectories(path);
+        return [...new Set([...localDirectories, ...serverDirectories])];
     }
 
 }
@@ -212,7 +241,10 @@ class MockFileManager extends FileManager {
         if (Array.isArray(temp)) {
             return temp;
         }
-        return Object.keys(temp);
+        const localDirectories = Object.keys(temp);
+
+        const serverDirectories = await super.getDirectories(path);
+        return [...new Set([...localDirectories, ...serverDirectories])];
     }
 
 }
