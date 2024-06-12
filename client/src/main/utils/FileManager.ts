@@ -52,7 +52,8 @@ class FileManager {
     }
 
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
-        console.error('loadScripture not implemented');
+        return await fetch(`${this.SEVER_URL}/file/Scripture/${translation}/${book}.${chapter}`)
+            .then(response => response.json());
     }
 
     public async loadResource(path: string, fileName: string): Promise<any> {
@@ -89,7 +90,8 @@ class FileManager {
 
     public async getDirectories(path: string): Promise<string[]> {
         return await fetch(`${this.SEVER_URL}/dir/${path}`)
-            .then(response => response.json());
+            .then(response => response.json())
+            .catch(() => []);
     }
 
 }
@@ -120,8 +122,12 @@ class ElectronFileManager extends FileManager {
             this.fileCache['Scripture'][book] = { [chapter]: {} };
         }
 
+        let result = await window.electronAPI.loadScripture(`${book}.${chapter}`, translation);
+        if (!result) {
+            // resort to fetching from the server
+            result = super.loadScripture(book, chapter, translation);
+            }
         // cache result
-        const result = await window.electronAPI.loadScripture(`${book}.${chapter}`, translation);
         this.fileCache['Scripture'][book][chapter][translation] = result;
         return result;
     }
@@ -158,9 +164,8 @@ class ElectronFileManager extends FileManager {
     }
 
     public async getDirectories(path: string): Promise<string[]> {
-        debugger;
         const localDirectories = await window.electronAPI.getDirectories(path);
-        const serverDirectories = await super.getDirectories(path);
+        const serverDirectories = await super.getDirectories(path); // TODO: this should be separated, so as to not block
         return [...new Set([...localDirectories, ...serverDirectories])];
     }
 

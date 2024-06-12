@@ -15,14 +15,13 @@ type SidepanelProps = {
 
 function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | null {
 
-    const [availableResources, setAvailableResources] = React.useState<string[]>([]);
+    const [availableResources, setAvailableResources] = React.useState<any[]>([]);
 
     let contents: JSX.Element | JSX.Element[] | null = null;
 
     useEffect(() => {
         const fileManager = FileManager.getInstance();
         fileManager.getDirectories('resources').then((dirs) => {
-            console.log(dirs);
             setAvailableResources(dirs);
         });
     }, []);
@@ -83,9 +82,9 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                         <div
                             key={index}
                             className='chapter-button'
-                            onMouseDown={(event) => handleCreateNewTab(event, panelType, resource)}
+                            onMouseDown={(event) => handleCreateNewTab(event, panelType, resource.path)}
                         >
-                            {resource}
+                            {resource.title}
                         </div>
                     );
                 });

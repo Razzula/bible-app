@@ -124,12 +124,16 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
         if (item.type !== undefined) {
             classes.push(item.type);
         }
-        if (item.token !== undefined) { // TODO: (BIBLE-101) ensure some tokens are excluded (`it` tags, for example)
+        if (item.token !== undefined && !classes.includes('punctuation')) { // TODO: (BIBLE-101) ensure some tokens are excluded (`it` tags, for example)
             classes.push('text');
         }
 
         if (item.children) { // if node is a parent, recursively generate its contents
             contents = <span className={classes.join(' ')}>{item.children.map(generateContents)}</span>; //TODO: prevent undefined type
+        }
+        else if (classes.includes('punctuation')) {
+            elements.push(<span className={classes.join(' ')}>{item.content}</span>);
+            return elements;
         }
         else {
             const topNoteID = notesForThisToken?.size > 0 ? notesForThisToken.values().next().value : undefined;
@@ -174,6 +178,8 @@ function PassageToken({ section, classes, topNoteID, handleTokenSelected }: Pass
     const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
     const store: Store = useStore();
 
+    const sectionContent = section.content.endsWith(' ') ? section.content : `${section.content} `; // add space to prevent text from running together
+
     const handleTokenClick = (event: React.MouseEvent) => { // TODO: (BIBLE-100) same, but for mouseEnter/Leave, for highlighting
         if (handleTokenSelected) {
             event.stopPropagation();
@@ -204,7 +210,7 @@ function PassageToken({ section, classes, topNoteID, handleTokenSelected }: Pass
             className={classes.join(' ') + selectionCSS}
             onClick={handleTokenClick}
         >
-            {section.content}
+            {sectionContent}
         </span>
     );
 }
