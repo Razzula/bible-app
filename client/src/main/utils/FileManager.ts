@@ -35,16 +35,23 @@ class FileManager {
     };
 
     private async findDownloadedDirectories() {
-        FileManager.instance.getDirectories('resource').then((dirs) => {
-            dirs.forEach((dir) => {
-                this.downloadedDirectories[dir] = true;
+        const waitForNonNullInstance = setInterval(() => {
+            if (FileManager.instance === null) {
+                return;
+            }
+            clearInterval(waitForNonNullInstance);
+
+            FileManager.instance.getDirectories('resource').then((dirs) => {
+                dirs.forEach((dir) => {
+                    this.downloadedDirectories[dir] = true;
+                });
             });
-        });
-        FileManager.instance.getDirectories('Scripture').then((dirs) => {
-            dirs.forEach((dir) => {
-                this.downloadedDirectories[dir] = true;
+            FileManager.instance.getDirectories('Scripture').then((dirs) => {
+                dirs.forEach((dir) => {
+                    this.downloadedDirectories[dir] = true;
+                });
             });
-        });
+        }, 1000)
     }
 
     public getDownloadedDirectories() {
@@ -215,13 +222,16 @@ class MockFileManager extends FileManager {
     }
 
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
-        const data = await this.loadFile(`Scripture/${translation}/${book}.${chapter}`);
-        try {
-            return data ? JSON.parse(data) : null;
-        } catch (e) {
-            console.error('404: ' + `Scripture/${translation}/${book}.${chapter}`);
-            return null;
+        // TODO: caching
+        let data = await this.loadFile(`Scripture/${translation}/${book}.${chapter}`);
+        if (data) {
+            try {
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('404: ' + `Scripture/${translation}/${book}.${chapter}`);
+            }
         }
+        return super.loadScripture(book, chapter, translation);
     }
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
@@ -243,10 +253,10 @@ class MockFileManager extends FileManager {
             temp = temp[dir];
         });
 
-        if (Array.isArray(temp)) {
-            return temp;
+        let localDirectories = [];
+        if (temp) {
+            localDirectories = Array.isArray(temp) ? temp : Object.keys(temp);
         }
-        const localDirectories = Object.keys(temp);
 
         const serverDirectories = await super.getDirectories(path);
         return [...new Set([...localDirectories, ...serverDirectories])];
