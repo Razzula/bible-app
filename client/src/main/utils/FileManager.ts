@@ -41,7 +41,7 @@ class FileManager {
             }
             clearInterval(waitForNonNullInstance);
 
-            FileManager.instance.getDirectories('resource').then((dirs) => {
+            FileManager.instance.getDirectories('resources').then((dirs) => {
                 dirs.forEach((dir) => {
                     this.downloadedDirectories[dir] = true;
                 });
@@ -112,7 +112,7 @@ class ElectronFileManager extends FileManager {
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
 
         if (!translation) {
-            translation = 'NKJV'; // TODO: (BIBLE-82) make this a setting
+            translation = 'WEBBE'; // TODO: (BIBLE-82) make this a setting
         }
 
         if (this.fileCache['Scripture'][book]) {

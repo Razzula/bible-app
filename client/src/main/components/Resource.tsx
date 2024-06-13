@@ -65,7 +65,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
 
                 if (currentManifest.landing) {
                     const htmlContents = await fileManager.loadResource(resourcePath, currentManifest.landing);
-                    setResourceElement(<ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />);
+                    setResourceElement(<ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='WEBBE' loadPassage={loadPassage} />);
                 }
 
                 if (currentManifest.children) {
@@ -122,7 +122,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 if (typeof fileContents === 'string') {
                     // HTML
                     setResourceElement(
-                        <ReadOnlyHTMLRenderer actualHTMLContents={fileContents} currentBook={currentManifest.usfm ?? currentBook ?? ''} translation='NKJV' loadPassage={loadPassage} />
+                        <ReadOnlyHTMLRenderer actualHTMLContents={fileContents} currentBook={currentManifest.usfm ?? currentBook ?? ''} translation='WEBBE' loadPassage={loadPassage} />
                     );
                 }
                 else {
@@ -149,7 +149,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                     <ReadOnlyHTMLRenderer
                                         actualHTMLContents={disclaimer}
                                         currentBook={currentBook ?? currentManifest.usfm}
-                                        translation='NKJV' loadPassage={loadPassage}
+                                        translation='WEBBE' loadPassage={loadPassage}
                                     />
                                 </Alert>
                             );
@@ -160,7 +160,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                 <Passage
                                     contents={[fileContents]}
                                     usfm={{book: currentManifest.usfm, initialChapter: 0}}
-                                    translation='NKJV'
+                                    translation='WEBBE'
                                     ignoreFootnotes={true}
                                 />
                             </div>

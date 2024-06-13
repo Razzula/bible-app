@@ -14,6 +14,7 @@ import { WindowTypes } from '../../utils/enums';
 
 import '../../styles/scripture.scss';
 import { isElectronApp } from '../../../main/utils/general';
+import Select from '../common/Select';
 
 declare global {
     interface Window {
@@ -35,7 +36,7 @@ type ScriptureProps = {
 function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [searchError, setSearchError] = useState(false);
-    const [translationsList, setTranslationsList] = useState<React.JSX.Element[]>([]);
+    const [translationsList, setTranslationsList] = useState<any[]>([]);
     const [selectedTranslation, setSelectedTranslation] = useState('');
     const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
     const [showFootnotes, setShowFootnotes] = useState(true)
@@ -131,8 +132,9 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         setSearchError(false);
     }
 
-    function handleTranslationSelectChange(event: ChangeEvent<any>): void {
-        updateSelectedTranslation(event.currentTarget.value);
+    function handleTranslationSelectChange(translation: string): void {
+        console.log(translation);
+        updateSelectedTranslation(translation);
     }
 
     function updateSelectedTranslation(translation: string): void {
@@ -155,12 +157,17 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             return;
         }
 
-        const translationList = translations.map((translation: string) => {
-            return <option key={translation} value={translation}>{translation}</option>;
+        const translationList: any[] = translations.map((translation: string) => {
+            return {
+                'name': translation,
+                'key': translation,
+                'element': <div>{translation}</div>
+            };
         });
+        // translationList.push({ 'name': 'None', 'key': 'None', 'element': <div>None</div> });
 
         setTranslationsList(translationList);
-        updateSelectedTranslation('NKJV'); //TODO: (BIBLE-82) make this a setting
+        updateSelectedTranslation('WEBBE'); //TODO: (BIBLE-82) make this a setting
     }
 
     async function getNoteGroupsList(): Promise<void> {
@@ -353,9 +360,11 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                         {/* SEARCH BAR */}
                         <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} style={searchStyle} />
                         {/* TRANSLATION SELECT */}
-                        <select value={selectedTranslation} className="select" onChange={handleTranslationSelectChange}>
-                            {translationsList}
-                        </select>
+                        <Select
+                            entries={translationsList}
+                            defaultIndex={0}
+                            setSelected={handleTranslationSelectChange}
+                        />
                         {/* SEARCH BUTTON */}
                         <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>Load</button>
                     </div>
