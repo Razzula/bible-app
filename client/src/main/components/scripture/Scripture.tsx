@@ -139,7 +139,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     function updateSelectedTranslation(translation: string): void {
         setSelectedTranslation(translation);
-        setSelectedTranslationLicense((licenses as any)[translation]);
+        setSelectedTranslationLicense((licenses as any)[translation] ?? licenses.PUBLIC_DOMAIN); // TODO: (BIBLE-157) use manifest (defaulting to public domain is bad)
     }
 
     async function getTranslationList(): Promise<void> {

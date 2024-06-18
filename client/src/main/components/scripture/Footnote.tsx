@@ -7,6 +7,8 @@ import { locateReferences } from '../../utils/bibleReferences';
 import PassageChunk from './PassageChunk';
 import Passage from './Passage';
 
+import licenses from '../../../../public/licenses.json';
+
 type FootnoteProps = {
     contents: string;
     loadPassage: (usfm: object, isFootnote: boolean, openInNewTab?: boolean) => void;
@@ -101,6 +103,8 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
             overlay={
                 <InnerPopover id='popover-basic'>
                     <Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />
+                    <p className="notice">{(licenses as any)[translation] ?? licenses.PUBLIC_DOMAIN}</p>
+                    {/* TODO: (BIBLE-157) use manifest (defaulting to public domain is bad) */}
                 </InnerPopover>
             }
         >
