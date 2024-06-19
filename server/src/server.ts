@@ -82,18 +82,20 @@ app.get('/dir/*', (req, res) => {
                 if (stat.isDirectory()) {
                     const childManifest = readJSONFile(path.join(itemPath, 'manifest.json'));
                     if (childManifest) {
-                        data.push({ title: childManifest.title, path: item });
+                        childManifest.path = item;
+                        childManifest.state = 'cloud';
+                        data.push(childManifest);
                     }
                 }
             }
             else if (mode === null) { // no manifest
                 if (stat.isDirectory()) {
-                    data.push(item);
+                    data.push({ path: item, state: 'cloud' });
                 }
             }
             else if (stat.isFile()) {
                 if (!filesToIgnore.includes(item)) {
-                    data.push({ path: item });
+                    data.push({ path: item, state: 'cloud' });
                 }
             }
         }

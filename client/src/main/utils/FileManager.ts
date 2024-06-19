@@ -255,7 +255,16 @@ class MockFileManager extends FileManager {
 
         let localDirectories = [];
         if (temp) {
-            localDirectories = Array.isArray(temp) ? temp : Object.keys(temp);
+            const tempDirectories = Array.isArray(temp) ? temp : Object.keys(temp);
+            for (const dir of tempDirectories) {
+                if (typeof dir === 'string') {
+                    localDirectories.push({ path: dir, state: 'demo' });
+                }
+                else {
+                    dir.state = 'demo';
+                    localDirectories.push(dir);
+                }
+            }
         }
 
         const serverDirectories = await super.getDirectories(path);

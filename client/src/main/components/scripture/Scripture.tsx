@@ -37,8 +37,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState<any[]>([]);
-    const [selectedTranslation, setSelectedTranslation] = useState('');
-    const [selectedTranslationLicense, setSelectedTranslationLicense] = useState('');
+    const [selectedTranslation, setSelectedTranslation] = useState<any>(null);
     const [showFootnotes, setShowFootnotes] = useState(true)
     const [selectedRenderMode, setSelectedRenderMode] = useState('sidenotes');
     const [showHeaders, setShowHeaders] = useState(true)
@@ -79,11 +78,11 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     useEffect(() => {
         if (searchQuery !== '') {
-            if (selectedTranslation !== '' && selectedNoteGroup !== '') {
+            if (selectedTranslation !== null && selectedNoteGroup !== null) {
                 loadPassageFromString(searchQuery);
             }
         }
-        else if (queryToLoad !== undefined && selectedTranslation !== '' && selectedNoteGroup !== '') {
+        else if (queryToLoad !== undefined && selectedTranslation !== null && selectedNoteGroup !== '') {
             loadPassageFromString(queryToLoad);
         }
     }, [selectedTranslation, selectedNoteGroup, selectedRenderMode]);
@@ -132,14 +131,8 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         setSearchError(false);
     }
 
-    function handleTranslationSelectChange(translation: string): void {
-        console.log(translation);
-        updateSelectedTranslation(translation);
-    }
-
     function updateSelectedTranslation(translation: string): void {
-        setSelectedTranslation(translation);
-        setSelectedTranslationLicense((licenses as any)[translation] ?? licenses.PUBLIC_DOMAIN); // TODO: (BIBLE-157) use manifest (defaulting to public domain is bad)
+        setSelectedTranslation(translationsList.find((t) => t.name === translation) ?? null);
     }
 
     async function getTranslationList(): Promise<void> {
@@ -157,11 +150,25 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             return;
         }
 
-        const translationList: any[] = translations.map((translation: string) => {
+        const translationList: any[] = translations.map((translation: any) => {
+            let colour;
+            switch (translation.state) {
+                case 'cloud':
+                    colour = 'cyan';
+                    break;
+                case 'local':
+                    colour = 'green';
+                    break;
+                default:
+                    colour = 'yellow';
+                    break;
+            }
+
             return {
-                'name': translation,
-                'key': translation,
-                'element': <div>{translation}</div>
+                'name': translation.short,
+                'key': translation.short,
+                'element': <div><span style={{color: colour}}>{translation.state}</span> {translation.short}</div>,
+                'license': translation.license ?? 'PUBLIC_DOMAIN'
             };
         });
         // translationList.push({ 'name': 'None', 'key': 'None', 'element': <div>None</div> });
@@ -173,8 +180,8 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     async function getNoteGroupsList(): Promise<void> {
         const noteGroups = await fileManager.getDirectories('notes');
 
-        const noteGroupsList = noteGroups.map((noteGroupName: string) => {
-            return <option key={noteGroupName} value={noteGroupName}>{noteGroupName}</option>;
+        const noteGroupsList = noteGroups.map((noteGroup: any) => {
+            return <option key={noteGroup.path} value={noteGroup.path}>{noteGroup.path}</option>;
         });
 
         setNoteGroupsList(noteGroupsList);
@@ -186,7 +193,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         if (searchQuery === undefined || searchQuery === null || searchQuery === '') {
             return;
         }
-        if (selectedTranslation === undefined || selectedTranslation === null || selectedTranslation === '') {
+        if (selectedTranslation === undefined || selectedTranslation === null) {
             return;
         }
 
@@ -237,7 +244,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                     // TODO: prevent multiple reads of current file
 
                     // load contents externally from files
-                    const chapterContents = await fileManager.loadScripture(passageUsfm.book, chapter, selectedTranslation);
+                    const chapterContents = await fileManager.loadScripture(passageUsfm.book, chapter, selectedTranslation.name);
                     if (chapterContents) {
                         chaptersContents.push(chapterContents);
                     }
@@ -328,7 +335,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     // CSS
     const searchStyle: any = {
-        'background-color': searchError ? 'var(--error-background-color)' : 'var(--select-background-color-default)'
+        'backgroundColor': searchError ? 'var(--error-background-color)' : 'var(--select-background-color-default)'
     };
 
     const containerStyle: any = {
@@ -362,8 +369,8 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                         {/* TRANSLATION SELECT */}
                         <Select
                             entries={translationsList}
-                            defaultIndex={0}
-                            setSelected={handleTranslationSelectChange}
+                            defaultIndex={translationsList.findIndex((translation) => translation?.short === selectedTranslation?.short)}
+                            setSelected={updateSelectedTranslation}
                         />
                         {/* SEARCH BUTTON */}
                         <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>Load</button>
@@ -407,7 +414,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
                     {/* BIBLE */}
                     {passages}
-                    {(passages.length > 0) ? <p className="notice">{selectedTranslationLicense}</p> : null}
+                    {(passages.length > 0) ? <p className="notice">{selectedTranslation?.license === 'PUBLIC_DOMAIN' ? licenses.PUBLIC_DOMAIN : selectedTranslation?.license}</p> : null}
 
                 </article>
             </div>

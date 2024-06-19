@@ -16,7 +16,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, defaultIndex }) =
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: setIsOpen,
-        placement: 'top',
+        placement: 'bottom',
         middleware: [offset(10), flip(), shift()],
         whileElementsMounted: autoUpdate,
     });
@@ -56,25 +56,13 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, defaultIndex }) =
         setSelected(entries[index].name);
     };
 
-    console.log(entries);
-    entries.map((entry, index) => {console.log(entry, index)});
-
-    console.log(entries.map((entry, index) => (
-        <div
-            key={entry.key}
-            onClick={() => handleSelect(index)}
-        >
-            {entry.element}
-        </div>
-    )));
-
     return (<>
         <div
             ref={refs.setReference}
             className='btn btn-primary'
             {...getReferenceProps()}
         >
-            {selectedIndex !== null ? entries[selectedIndex]?.name : '...'}
+            {selectedIndex !== null && selectedIndex >= 0 ? entries[selectedIndex]?.name : '...'}
         </div>
 
         {isOpen && (

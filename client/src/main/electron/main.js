@@ -120,18 +120,34 @@ async function handleDirectoryScan(localPath) {
     let items = [];
     try {
         items = fs.readdirSync(directoryPath);
-
     }
     catch (err) {
         return directories;
     }
+
+    let manifest = [];
+    try {
+        manifest = await readJSONFile('manifest.json', localPath);
+    }
+    catch (err) { }
+    console.log(manifest);
 
     for (const item of items) {
         const itemPath = path.join(directoryPath, item);
         const stat = fs.statSync(itemPath);
 
         if (stat.isDirectory()) {
-            directories.push(item);
+            if (manifest && manifest.children === 'dir') {
+                const childManifest = await readJSONFile('manifest.json', path.join(localPath, item));
+                if (childManifest) {
+                    childManifest.path = item;
+                    childManifest.state = 'local';
+                    directories.push(childManifest);
+                }
+            }
+            else {
+                directories.push({ title: item, path: item, state: 'local'});
+            }
         }
     }
     return directories;
@@ -256,11 +272,11 @@ async function getResourceChildren(parentDirectory, detectionMode) {
         if (detectionMode === 'dir' && stat.isDirectory()) {
             const childManifest = await readJSONFile('manifest.json', path.join(resourcePath, item));
             if (childManifest) {
-                resources.push({ title: childManifest.title, path: item });
+                resources.push({ title: childManifest.title, path: item, state: 'local' });
             }
         }
         else if (stat.isFile() && !filesToIgnore.includes(item)) {
-            resources.push({ path: item });
+            resources.push({ path: item, state: 'local' });
         }
     }
 
