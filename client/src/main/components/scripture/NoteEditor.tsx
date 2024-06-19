@@ -91,9 +91,19 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
             onClick={handleSelection}
         >
             <div>
-                {isReadOnly ? <button className='btn btn-default' onClick={handleEditClick}>Edit</button> : null}
-                <span>{isSaved ? 'SAVED' : 'UNSAVED'}</span>
-                <button className='btn btn-default' onClick={handleDeleteClick}>Delete</button>
+                {isReadOnly ?
+                    <button className='btn btn-default' onClick={handleEditClick}>
+                        <img src='/bible-app/icons/edit.svg' alt='Edit'/>
+                    </button>
+                : null}
+
+                <span>{isSaved ?
+                    <img src='/bible-app/icons/save.svg' alt='Saved'/> : 'UNSAVED'
+                }</span>
+
+                <button className='btn btn-default' onClick={handleDeleteClick}>
+                    <img src='/bible-app/icons/delete.svg' alt='Delete'/>
+                </button>
             </div>
 
             <div className="tinymce-wrapper" ref={ref} style={{ height: 'auto' }}>

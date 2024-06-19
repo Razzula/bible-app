@@ -151,23 +151,28 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         }
 
         const translationList: any[] = translations.map((translation: any) => {
-            let colour;
+            let state;
             switch (translation.state) {
-                case 'cloud':
-                    colour = 'cyan';
-                    break;
                 case 'local':
-                    colour = 'green';
+                    state = <img src='/bible-app/icons/downloaded.svg' alt='Downloaded'/>;
                     break;
+                case 'demo':
+                    state = <img src='/bible-app/icons/notDownloaded.svg' alt='Demo'/>;
+                    break;
+                case 'cloud':
                 default:
-                    colour = 'yellow';
+                    state = <img src='/bible-app/icons/cloud.svg' alt='Cloud'/>;
                     break;
             }
 
             return {
                 'name': translation.short,
                 'key': translation.short,
-                'element': <div><span style={{color: colour}}>{translation.state}</span> {translation.short}</div>,
+                'element': <div>
+                    {state}
+                    {translation.short}
+                    <img src='/bible-app/icons/info.svg' alt='Info Icon'/>
+                </div>,
                 'license': translation.license ?? 'PUBLIC_DOMAIN'
             };
         });
@@ -352,6 +357,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
+                    <img src='/bible-app/icons/directory.svg' alt='Note Groups'/>
                     <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange} disabled={true}>
                         {noteGroupsList}
                         <option key='None' value={undefined}>None</option>
@@ -402,6 +408,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
+                    <img src='/bible-app/icons/directory.svg' alt='Note Groups'/>
                     <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
                         {noteGroupsList}
                         <option key='None' value={undefined}>None</option>

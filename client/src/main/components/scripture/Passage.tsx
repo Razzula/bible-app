@@ -476,7 +476,9 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                 <FloatingFocusManager context={tokenFloatContext} modal={false}>
                     <div ref={tokenFloatRefs.setFloating} style={tokenFloatStyles}>
                         {/* NEW NOTE BUTTON */}
-                        <button className='btn btn-default' onClick={handleNewNoteClick}>New note</button>
+                        <button className='btn btn-default' onClick={handleNewNoteClick}>
+                        <img src='/bible-app/icons/noteCreate.svg' alt='Create Note'/>
+                        </button>
                     </div>
                 </FloatingFocusManager>
             )}

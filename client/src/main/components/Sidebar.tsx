@@ -32,7 +32,9 @@ function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element 
             </div>
 
             <div className="bottom-container">
-                <button className='sidebar-button' onClick={() => selectTab(WindowTypes.Settings.Type, WindowTypes.Settings.Name)}>Settings</button>
+                <button className='sidebar-button' onClick={() => selectTab(WindowTypes.Settings.Type, WindowTypes.Settings.Name)}>
+                    <img src='/bible-app/icons/settings.svg' alt='Settings'/>
+                </button>
             </div>
         </div>
     );
@@ -43,9 +45,22 @@ function SidebarButton({ buttonType, selectedButton, handleButtonClick }: { butt
 
     const className = (selectedButton === buttonType) ? 'sidebar-button selected' : 'sidebar-button';
 
+    let buttonIcon;
+    switch (buttonType) {
+        case WindowTypes.Scripture:
+            buttonIcon = <img src='/bible-app/icons/Scripture.svg' alt='Scripture'/>
+            break;
+        case WindowTypes.Resource:
+            buttonIcon = <img src='/bible-app/icons/resource.svg' alt='Resources'/>
+            break;
+        case WindowTypes.Document:
+            buttonIcon = <img src='/bible-app/icons/document.svg' alt='Documents'/>
+            break;
+    }
+
     return (
         <button onClick={() => handleButtonClick(buttonType.Type)} className={className}>
-            {buttonType.Name}
+            {buttonIcon ?? buttonType.Name}
         </button>
     );
 
