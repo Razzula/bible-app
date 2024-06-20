@@ -17,19 +17,19 @@ type WindowProps = {
 function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element | null {
 
     switch (windowToLoad) {
-        case WindowTypes.Scripture.Type:
+        case WindowTypes.Scripture.type:
             return (
                 <Scripture queryToLoad={data} createNewTab={createNewTab} />
             );
-        case WindowTypes.Document.Type:
+        case WindowTypes.Document.type:
             return (
                 <Document initialContents={null} />
             );
-        case WindowTypes.Resource.Type:
+        case WindowTypes.Resource.type:
             return (
                 <Resource rootResourcePath={data} resourceFileName='preface.html' createNewTab={createNewTab} />
             );
-        case WindowTypes.Settings.Type:
+        case WindowTypes.Settings.type:
             return (
                 <div className='scroll'>
                     <Alert variant="danger">
@@ -40,7 +40,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                     </Alert>
                 </div>
             );
-        case WindowTypes.Landing.Type:
+        case WindowTypes.Landing.type:
             return (
                 <div className='scroll'>
                     <div className='landing-content'>

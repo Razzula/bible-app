@@ -3,19 +3,17 @@ import React from 'react';
 import '../styles/tabbar.scss'
 
 type TabbarProps = {
-    activeTabs: Map<string, JSX.Element>;
+    tabs: Map<string, any>;
     selectTab: (tabName: string) => void;
     closeTab: (tabName: string) => void;
-    selectedTab?: string;
+    selectedTab?: any;
 }
 
-function Tabbar({ activeTabs, selectedTab, selectTab, closeTab }: TabbarProps): JSX.Element {
+function Tabbar({ tabs, selectedTab, selectTab, closeTab }: TabbarProps): JSX.Element {
 
-    // const [selectedTab, setSelectedTab]: [string | undefined, Function] = useState(undefined);
-
-    const tabs = Array.from(activeTabs.keys()).map((tabName) => {
+    const tabElements = Array.from(tabs).map(([key, value]) => {
         return (
-            <Tab key={tabName} tabName={tabName} selectTab={handleTabClick} closeTab={closeTab} isSelected={tabName === selectedTab} />
+            <Tab key={key} tabName={key} tabType={value} isSelected={selectedTab?.key === value?.key} selectTab={handleTabClick} closeTab={closeTab} />
         );
     })
 
@@ -25,23 +23,25 @@ function Tabbar({ activeTabs, selectedTab, selectTab, closeTab }: TabbarProps): 
 
     return (
         <div className="tabbar">
-            {tabs}
+            {tabElements}
         </div>
     );
 }
 
 type TabProps = {
     tabName: string;
+    tabType: any;
+    isSelected: boolean;
     selectTab: (tabName: string) => void;
     closeTab: (tabName: string) => void;
-    isSelected: boolean;
 }
 
-function Tab({ tabName, selectTab, closeTab, isSelected }: TabProps): JSX.Element {
+function Tab({ tabName, tabType, isSelected, selectTab, closeTab }: TabProps): JSX.Element {
 
     const className = isSelected ? 'tab selected' : 'tab';
 
     const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
         switch (e.button) {
             case 0: // left click
                 selectTab(tabName);
@@ -58,9 +58,10 @@ function Tab({ tabName, selectTab, closeTab, isSelected }: TabProps): JSX.Elemen
 
     return (
         <span onMouseUp={handleClick} key={tabName} className={className}>
-            {/* ICON */}
-            <span>{tabName}</span>
-
+            <span className='flex-left'>
+                {tabType ? <img src={tabType.iconPath} style={{width: 16}} alt={tabType.name}/> : null}
+                <span>{tabName}</span>
+            </span>
             <button onClick={() => closeTab(tabName)} className="tab-close-button">x</button>
         </span>
     );

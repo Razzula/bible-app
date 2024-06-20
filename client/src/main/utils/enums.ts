@@ -1,23 +1,28 @@
 const WindowTypes = Object.freeze({
 	Scripture: {
-		'Name': 'Scripture',
-		'Type': Symbol('Scripture')
+		'name': 'Scripture',
+		'type': Symbol('Scripture'),
+        'iconPath': '/bible-app/icons/Scripture.svg'
 	},
 	Resource: {
-		'Name': 'resource',
-		'Type': Symbol('resource')
+		'name': 'Resources',
+		'type': Symbol('resource'),
+        'iconPath': '/bible-app/icons/resource.svg'
 	},
     Document: {
-		'Name': 'document',
-		'Type': Symbol('document')
+		'name': 'Documents',
+		'type': Symbol('document'),
+        'iconPath': '/bible-app/icons/document.svg'
 	},
 	Settings: {
-		'Name': 'settings',
-		'Type': Symbol('settings')
+		'name': 'Settings',
+		'type': Symbol('settings'),
+        'iconPath': '/bible-app/icons/settings.svg'
 	},
     Landing: {
-        'Name': 'landing',
-        'Type': Symbol('landing')
+        'name': 'landing',
+        'type': Symbol('landing'),
+        'iconPath': '/bible-app/icons/home.svg'
     }
 });
 

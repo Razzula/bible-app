@@ -18,16 +18,17 @@
 }
 
 .sidebar-button {
-    background-color: #555;
-    color: #fff;
+    background-color: #555555;
+    color: #ffffff;
     border: none;
-    padding: 10px;
+    padding: 2px;
     margin: 2px 0;
     /* Adjust the margin as needed */
     cursor: pointer;
     width: 48px;
+    height: 48px;
 }
 
 .sidebar-button.selected {
-    border-left: 2px solid #2d75ca;
+    border-left: 5px solid #e8cf4a;
 }

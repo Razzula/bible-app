@@ -9,10 +9,14 @@
 .tab {
     margin-right: 2px;
 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 5px;
 }
 
 .tab.selected {
-    border-top: 2px solid #2d75ca;
+    border-top: 2px solid #e8cf4a;
 }
 
 .tab-close-button {

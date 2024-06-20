@@ -8,11 +8,13 @@ import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 import FileManager from '../../utils/FileManager';
 import { getBookUSFM, getReferenceText, getUSFM } from '../../utils/bibleReferences';
 import Passage from './Passage';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../common/Tooltip';
 
 import licenses from '../../../../public/licenses.json';
 import { WindowTypes } from '../../utils/enums';
 
 import '../../styles/scripture.scss';
+import '../../styles/common.scss'
 import { isElectronApp } from '../../../main/utils/general';
 import Select from '../common/Select';
 
@@ -26,7 +28,7 @@ const docID = 'Scripture';
 
 type ScriptureProps = {
     queryToLoad?: string;
-    createNewTab: (panelType: symbol, data: string) => void;
+    createNewTab: (panelType: any, data: string) => void;
 }
 
 /**
@@ -151,27 +153,43 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         }
 
         const translationList: any[] = translations.map((translation: any) => {
-            let state;
+            let statePath, stateText;
             switch (translation.state) {
                 case 'local':
-                    state = <img src='/bible-app/icons/downloaded.svg' alt='Downloaded'/>;
+                    statePath = '/bible-app/icons/downloaded.svg';
+                    stateText='Downloaded';
                     break;
                 case 'demo':
-                    state = <img src='/bible-app/icons/notDownloaded.svg' alt='Demo'/>;
+                    statePath = '/bible-app/icons/notDownloaded.svg';
+                    stateText='Partially Available (Demo)';
                     break;
                 case 'cloud':
                 default:
-                    state = <img src='/bible-app/icons/cloud.svg' alt='Cloud'/>;
+                    statePath = '/bible-app/icons/cloud.svg';
+                    stateText='Available Online';
                     break;
             }
 
             return {
                 'name': translation.short,
                 'key': translation.short,
-                'element': <div>
-                    {state}
-                    {translation.short}
-                    <img src='/bible-app/icons/info.svg' alt='Info Icon'/>
+                'element': <div className='select-option'>
+                    <span className='flex-left'>
+                        <Tooltip placement='left'>
+                            <TooltipTrigger><img src={statePath} alt={stateText}/></TooltipTrigger>
+                            <TooltipContent>{stateText}</TooltipContent>
+                        </Tooltip>
+                        {translation.short}
+                    </span>
+                    <span className='flex-right'>
+                        <Tooltip placement='right-start'>
+                                <TooltipTrigger><img src='/bible-app/icons/info.svg' alt='Info Icon' className='flex-right'/></TooltipTrigger>
+                                <TooltipContent>
+                                    <div><b>{translation?.title}</b></div>
+                                    <div>{translation?.description}</div>
+                                </TooltipContent>
+                        </Tooltip>
+                    </span>
                 </div>,
                 'license': translation.license ?? 'PUBLIC_DOMAIN'
             };
@@ -222,7 +240,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false, openInNewTab = false): Promise<void> {
 
         if (openInNewTab) {
-            createNewTab(WindowTypes.Scripture.Type, getReferenceText(usfm));
+            createNewTab(WindowTypes.Scripture.type, getReferenceText(usfm));
             return;
         }
 
@@ -379,7 +397,9 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                             setSelected={updateSelectedTranslation}
                         />
                         {/* SEARCH BUTTON */}
-                        <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>Load</button>
+                        <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>
+                            <img src='/bible-app/icons/search.svg' alt='Search'/>
+                        </button>
                     </div>
 
                     {/* SUB CONTROLS */}

@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 
 import { WindowTypes } from '../utils/enums';
+import { Tooltip, TooltipTrigger, TooltipContent } from './common/Tooltip';
 
 import '../styles/sidebar.scss';
 
 type SidebarProps = {
     updateSelectedPanel: (panelType: symbol | undefined) => void;
-    selectTab: (type: symbol, name: string) => void;
+    selectTab: (type: any, name: string) => void;
 }
 
 function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element {
 
     const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = useState(undefined);
 
-    function handleButtonClick(button: symbol): void {
-        setSelectedButton((currentSelection: symbol | undefined) => {
+    function handleButtonClick(button: any): void {
+        setSelectedButton((currentSelection: any | undefined) => {
             const selection = (button === currentSelection) ? undefined : button;
 
             updateSelectedPanel(selection);
@@ -32,9 +33,7 @@ function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element 
             </div>
 
             <div className="bottom-container">
-                <button className='sidebar-button' onClick={() => selectTab(WindowTypes.Settings.Type, WindowTypes.Settings.Name)}>
-                    <img src='/bible-app/icons/settings.svg' alt='Settings'/>
-                </button>
+                <SidebarButton buttonType={WindowTypes.Settings} selectedButton={selectedButton} handleButtonClick={() => selectTab(WindowTypes.Settings, WindowTypes.Settings.name)} />
             </div>
         </div>
     );
@@ -43,25 +42,17 @@ function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element 
 
 function SidebarButton({ buttonType, selectedButton, handleButtonClick }: { buttonType: any, selectedButton: any, handleButtonClick: Function }) {
 
-    const className = (selectedButton === buttonType) ? 'sidebar-button selected' : 'sidebar-button';
-
-    let buttonIcon;
-    switch (buttonType) {
-        case WindowTypes.Scripture:
-            buttonIcon = <img src='/bible-app/icons/Scripture.svg' alt='Scripture'/>
-            break;
-        case WindowTypes.Resource:
-            buttonIcon = <img src='/bible-app/icons/resource.svg' alt='Resources'/>
-            break;
-        case WindowTypes.Document:
-            buttonIcon = <img src='/bible-app/icons/document.svg' alt='Documents'/>
-            break;
-    }
+    const className = (selectedButton?.type === buttonType.type) ? 'sidebar-button selected' : 'sidebar-button';
 
     return (
-        <button onClick={() => handleButtonClick(buttonType.Type)} className={className}>
-            {buttonIcon ?? buttonType.Name}
-        </button>
+        <Tooltip placement='right'>
+            <TooltipTrigger>
+                <button onClick={() => handleButtonClick(buttonType)} className={className}>
+                    <img src={buttonType.iconPath} style={{width: 24}} alt={buttonType.name}/>
+                </button>
+            </TooltipTrigger>
+            <TooltipContent>{buttonType?.name}</TooltipContent>
+        </Tooltip>
     );
 
 }

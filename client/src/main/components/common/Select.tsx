@@ -69,6 +69,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, defaultIndex }) =
             <FloatingPortal>
                 <FloatingFocusManager context={context} modal={false}>
                     <div
+                        className='select-options'
                         ref={refs.setFloating}
                         style={{
                             ...floatingStyles,

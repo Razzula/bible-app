@@ -107,7 +107,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
     }, [currentManifest]);
 
     function loadPassage(usfm: any, isFootnote: boolean, openInNewTab: boolean) {
-        createNewTab(WindowTypes.Scripture.Type, getReferenceText(usfm));
+        createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
     }
 
     async function travelDownNavTree(child: any) {
