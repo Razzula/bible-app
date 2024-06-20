@@ -197,7 +197,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         // translationList.push({ 'name': 'None', 'key': 'None', 'element': <div>None</div> });
 
         setTranslationsList(translationList);
-        updateSelectedTranslation('WEBBE'); //TODO: (BIBLE-82) make this a setting
+        setSelectedTranslation(translationList.find((t) => t.name === 'WEBBE') ?? null); //TODO: (BIBLE-82) make this a setting
     }
 
     async function getNoteGroupsList(): Promise<void> {
@@ -393,7 +393,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
                         {/* TRANSLATION SELECT */}
                         <Select
                             entries={translationsList}
-                            defaultIndex={translationsList.findIndex((translation) => translation?.short === selectedTranslation?.short)}
+                            forcedIndex={translationsList.findIndex((translation) => selectedTranslation && translation?.key === selectedTranslation?.key)}
                             setSelected={updateSelectedTranslation}
                         />
                         {/* SEARCH BUTTON */}

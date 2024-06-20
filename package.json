@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "dev:server": "cd ./server && bun run dev",
+        "dev:server": "cd ./server && bun run local",
         "dev:client": "cd ./client && bun run electron:dev",
         "dev": "concurrently -k \"bun run dev:server\" \"bun run dev:client\""
     },

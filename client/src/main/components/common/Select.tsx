@@ -4,14 +4,20 @@ import React, { useEffect } from 'react';
 interface SelectProps {
     entries: { name: string; key: string; element: React.ReactNode; }[],
     setSelected: (name: string) => void;
-    defaultIndex?: number;
+    forcedIndex?: number;
 }
 
-const Select: React.FC<SelectProps> = ({ entries, setSelected, defaultIndex }) => {
+const Select: React.FC<SelectProps> = ({ entries, setSelected, forcedIndex }) => {
 
     const [isOpen, setIsOpen] = React.useState(false);
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
-    const [selectedIndex, setSelectedIndex] = React.useState<number | null>(defaultIndex ?? null);
+    const [selectedIndex, setSelectedIndex] = React.useState<number | null>(forcedIndex ?? null);
+
+    useEffect(() => {
+        if (forcedIndex !== undefined && forcedIndex !== null) {
+            setSelectedIndex(forcedIndex);
+        }
+    }, [forcedIndex]);
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -62,7 +68,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, defaultIndex }) =
             className='btn btn-primary'
             {...getReferenceProps()}
         >
-            {selectedIndex !== null && selectedIndex >= 0 ? entries[selectedIndex]?.name : '...'}
+            {(selectedIndex !== null && selectedIndex >= 0) ? entries[selectedIndex]?.name : '...'}
         </div>
 
         {isOpen && (
