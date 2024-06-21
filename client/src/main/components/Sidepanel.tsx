@@ -82,7 +82,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                     switch (resource.state) {
                         case 'local':
                             statePath = '/bible-app/icons/downloaded.svg';
-                            stateText='Downloaded';
+                            stateText='Available Offline';
                             break;
                         case 'demo':
                             statePath = '/bible-app/icons/notDownloaded.svg';
@@ -99,6 +99,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                         <div
                             className='select-option'
                             onMouseDown={(event) => handleCreateNewTab(event, panelType, resource.path)}
+                            key={resource?.path}
                         >
                             <span className='flex-left'>
                                 <Tooltip placement='bottom'>

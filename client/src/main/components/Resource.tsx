@@ -32,12 +32,12 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
 
     const navTreeElement = navTreeArray.map((element, index) => {
         if (index < navTreeArray.length - 1) {
-            return (<>
+            return (<span key={index}>
                 <span className='chapter-button' onClick={() => travelToNavTreeNode(index)}>{element.title}</span>
                 <span> {'>'} </span>
-            </>);
+            </span>);
         }
-        return (<span>{element.title}</span>);
+        return (<span key={index}>{element.title}</span>);
     });
 
     const rootManifest = navTreeArray[0];

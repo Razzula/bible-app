@@ -42,7 +42,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
             );
         case WindowTypes.Landing.type:
             return (
-                <div className='scroll'>
+                <div className='scroll' style={{maxHeight: 'calc(100vh - 32px)'}}>
                     <div className='landing-content'>
                         <p>Hello,</p><p>Welcome to <b>razzula/bible-app</b>!</p>
                             {

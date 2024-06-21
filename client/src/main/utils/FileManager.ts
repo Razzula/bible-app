@@ -171,9 +171,23 @@ class ElectronFileManager extends FileManager {
     }
 
     public async getDirectories(path: string): Promise<string[]> {
+        const directories: any = {};
+
         const localDirectories = await window.electronAPI.getDirectories(path);
         const serverDirectories = await super.getDirectories(path); // TODO: this should be separated, so as to not block
-        return [...new Set([...localDirectories, ...serverDirectories])];
+
+        localDirectories.forEach((dir: any) => {
+            if (!directories[dir.path]) {
+                directories[dir.path] = dir;
+            }
+        });
+        serverDirectories.forEach((dir: any) => {
+            if (!directories[dir.path]) {
+                directories[dir.path] = dir;
+            }
+        });
+
+        return Object.values(directories);
     }
 
 }

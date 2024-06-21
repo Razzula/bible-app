@@ -42,7 +42,8 @@ function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element 
 
 function SidebarButton({ buttonType, selectedButton, handleButtonClick }: { buttonType: any, selectedButton: any, handleButtonClick: Function }) {
 
-    const className = (selectedButton?.type === buttonType.type) ? 'sidebar-button selected' : 'sidebar-button';
+    const isSelected = selectedButton?.type === buttonType.type;
+    const className = isSelected ? 'sidebar-button selected' : 'sidebar-button';
 
     return (
         <Tooltip placement='right'>
@@ -51,7 +52,7 @@ function SidebarButton({ buttonType, selectedButton, handleButtonClick }: { butt
                     <img src={buttonType.iconPath} style={{width: 24}} alt={buttonType.name}/>
                 </button>
             </TooltipTrigger>
-            <TooltipContent>{buttonType?.name}</TooltipContent>
+            {!isSelected ? <TooltipContent>{buttonType?.name}</TooltipContent> : null}
         </Tooltip>
     );
 

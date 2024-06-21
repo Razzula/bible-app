@@ -157,7 +157,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             switch (translation.state) {
                 case 'local':
                     statePath = '/bible-app/icons/downloaded.svg';
-                    stateText='Downloaded';
+                    stateText='Available Offline';
                     break;
                 case 'demo':
                     statePath = '/bible-app/icons/notDownloaded.svg';
@@ -287,7 +287,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
                 const usfmString = getReferenceText(passageUsfm);
                 return <Passage
-                    key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
+                    key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation?.name} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
                 />;
             })
             .filter((passage: JSX.Element | undefined) => passage !== undefined)

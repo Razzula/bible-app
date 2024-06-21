@@ -97,13 +97,16 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
         loadPassage(usfm, isFootnote, openInNewTab);
     }
 
+    // license
+    const license = (licenses as any)[translation] ?? `${translation} • ${licenses.PUBLIC_DOMAIN}`;
+
     // contents of footnote popover
-    const temp = (
+    return (
         <OverlayTrigger key={text} trigger={['hover', 'focus']} placement="auto-start"
             overlay={
                 <InnerPopover id='popover-basic'>
                     <Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />
-                    <p className="notice">{(licenses as any)[translation] ?? licenses.PUBLIC_DOMAIN}</p>
+                    <p className="notice">{license}</p>
                     {/* TODO: (BIBLE-157) use manifest (defaulting to public domain is bad) */}
                 </InnerPopover>
             }
@@ -118,7 +121,6 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
             </span>
         </OverlayTrigger>
     );
-    return temp;
 
     async function updatePopoverContents(): Promise<any> {
 

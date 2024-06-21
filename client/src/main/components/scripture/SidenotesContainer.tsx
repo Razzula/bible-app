@@ -38,7 +38,7 @@ function SidenotesContainer({ position, passage, notesContents, docID, currentBo
         const sidenotesElements = notesContents.map((noteContents: { id: string, tokens: string[], contents: string }) => {
 
             return (
-                <SidenoteContainer // TODO: switch these ???
+                <SidenoteContainer key={noteContents.id} // TODO: switch these ???
                     sidenoteID={noteContents.id} tokens={noteContents.tokens} docID={docID} initialNoteContents={noteContents.contents} base={passage}
                     currentBook={currentBook} translation={translation}
                     loadPassage={loadPassage} updateNotesContents={updateNotesContents} deleteNote={deleteNote}

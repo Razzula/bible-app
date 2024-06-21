@@ -57,7 +57,7 @@ function Tab({ tabName, tabType, isSelected, selectTab, closeTab }: TabProps): J
     };
 
     return (
-        <span onMouseUp={handleClick} key={tabName} className={className}>
+        <span onMouseDown={handleClick} key={tabName} className={className}>
             <span className='flex-left'>
                 {tabType ? <img src={tabType.iconPath} style={{width: 16}} alt={tabType.name}/> : null}
                 <span>{tabName}</span>
