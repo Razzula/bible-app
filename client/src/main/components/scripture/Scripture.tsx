@@ -6,6 +6,7 @@ import { deselectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 
 import { setNoActiveEditor, setNoActiveToken } from '../../redux/actions';
 import FileManager from '../../utils/FileManager';
+import SettingsManager from '../../utils/SettingsManager';
 import { getBookUSFM, getReferenceText, getUSFM } from '../../utils/bibleReferences';
 import Passage from './Passage';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../common/Tooltip';
@@ -17,6 +18,7 @@ import '../../styles/scripture.scss';
 import '../../styles/common.scss'
 import { isElectronApp } from '../../../main/utils/general';
 import Select from '../common/Select';
+import { loadTranslationList } from '../../../main/utils/ScriptureHelper';
 
 declare global {
     interface Window {
@@ -52,6 +54,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [selectedNoteGroup, setSelectedNoteGroup] = useState<string | undefined>(undefined);
 
     const fileManager = FileManager.getInstance();
+    const settings = SettingsManager.getInstance();
 
     const store: Store = useStore();
     const deselect = () => {
@@ -152,52 +155,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             return;
         }
 
-        const translationList: any[] = translations.map((translation: any) => {
-            let statePath, stateText;
-            switch (translation.state) {
-                case 'local':
-                    statePath = '/bible-app/icons/downloaded.svg';
-                    stateText='Available Offline';
-                    break;
-                case 'demo':
-                    statePath = '/bible-app/icons/notDownloaded.svg';
-                    stateText='Partially Available (Demo)';
-                    break;
-                case 'cloud':
-                default:
-                    statePath = '/bible-app/icons/cloud.svg';
-                    stateText='Available Online';
-                    break;
-            }
-
-            return {
-                'name': translation.short,
-                'key': translation.short,
-                'element': <div className='select-option'>
-                    <span className='flex-left'>
-                        <Tooltip placement='left'>
-                            <TooltipTrigger><img src={statePath} alt={stateText}/></TooltipTrigger>
-                            <TooltipContent>{stateText}</TooltipContent>
-                        </Tooltip>
-                        {translation.short}
-                    </span>
-                    <span className='flex-right'>
-                        <Tooltip placement='right-start'>
-                                <TooltipTrigger><img src='/bible-app/icons/info.svg' alt='Info Icon' className='flex-right'/></TooltipTrigger>
-                                <TooltipContent>
-                                    <div><b>{translation?.title}</b></div>
-                                    <div>{translation?.description}</div>
-                                </TooltipContent>
-                        </Tooltip>
-                    </span>
-                </div>,
-                'license': translation.license ?? 'PUBLIC_DOMAIN'
-            };
-        });
-        // translationList.push({ 'name': 'None', 'key': 'None', 'element': <div>None</div> });
-
-        setTranslationsList(translationList);
-        setSelectedTranslation(translationList.find((t) => t.name === 'WEBBE') ?? null); //TODO: (BIBLE-82) make this a setting
+        loadTranslationList(setTranslationsList, setSelectedTranslation);
     }
 
     async function getNoteGroupsList(): Promise<void> {
@@ -208,7 +166,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
         });
 
         setNoteGroupsList(noteGroupsList);
-        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key ?? undefined : undefined); // TODO: (BIBLE-82) make this a setting
+        setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key ?? undefined : undefined);
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {

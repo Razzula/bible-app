@@ -152,7 +152,6 @@ function getBookName(bookName: string, includeApocrypha = false): string | undef
         booksArray.apocrypha.forEach((bookList: book) => {
             if (bookList.includes(bookName)) {
                 bookUSFM = bookList[0];
-                console.log(bookUSFM);
                 return;
             }
         });

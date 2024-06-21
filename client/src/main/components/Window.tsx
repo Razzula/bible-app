@@ -7,6 +7,7 @@ import Scripture from './scripture/Scripture';
 import { WindowTypes } from '../utils/enums';
 import Resource from './Resource';
 import { isElectronApp } from '../utils/general';
+import Settings from './Settings';
 
 type WindowProps = {
     windowToLoad: symbol;
@@ -31,14 +32,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
             );
         case WindowTypes.Settings.type:
             return (
-                <div className='scroll'>
-                    <Alert variant="danger">
-                        <Alert.Heading>404</Alert.Heading>
-                        <p>
-                            Error: Settings are not yet implemented.
-                        </p>
-                    </Alert>
-                </div>
+                <Settings />
             );
         case WindowTypes.Landing.type:
             return (

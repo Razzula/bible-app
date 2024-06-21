@@ -9,5 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     deleteNote: (fileName, group, book, chapter) => ipcRenderer.invoke('deleteNote', fileName, group, book, chapter),
     loadDocument: (documentName) => ipcRenderer.invoke('loadDocument', documentName),
     getResourceChildren: (parentDirectory, detectionMode) => ipcRenderer.invoke('getResourceChildren', parentDirectory, detectionMode),
+    loadSettings: () => ipcRenderer.invoke('loadSettings'),
+    saveSettings: (settingsJSON) => ipcRenderer.invoke('saveSettings', settingsJSON),
     setupApp: () => ipcRenderer.invoke('setupApp')
 });

@@ -63,13 +63,16 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, forcedIndex }) =>
     };
 
     return (<>
-        <div
+        <span
+            className='select-container'
             ref={refs.setReference}
-            className='btn btn-primary'
             {...getReferenceProps()}
         >
-            {(selectedIndex !== null && selectedIndex >= 0) ? entries[selectedIndex]?.name : '...'}
-        </div>
+            <span className='select-option'>
+                {(selectedIndex !== null && selectedIndex >= 0) ? entries[selectedIndex]?.name : '...'}
+                <img src='/bible-app/icons/drop.svg' alt='Arrow Down'/>
+            </span>
+        </span>
 
         {isOpen && (
             <FloatingPortal>

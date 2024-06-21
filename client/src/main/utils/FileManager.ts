@@ -1,4 +1,5 @@
 import { isElectronApp } from "./general";
+import SettingsManager from "./SettingsManager";
 
 /**
  * A file manager that provides methods to load and save files from the file system.
@@ -33,6 +34,7 @@ class FileManager {
         'resources': {},
         'Scripture': {},
     };
+    protected settings = SettingsManager.getInstance();
 
     private async findDownloadedDirectories() {
         const waitForNonNullInstance = setInterval(() => {
@@ -112,7 +114,7 @@ class ElectronFileManager extends FileManager {
     public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
 
         if (!translation) {
-            translation = 'WEBBE'; // TODO: (BIBLE-82) make this a setting
+            translation = this.settings.getSetting('defaultTranslation');
         }
 
         if (this.fileCache['Scripture'][book]) {

@@ -6,9 +6,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 7px;
-    margin: 5px;
     padding: 2px;
+    border: 1px solid #75747a;
+
+    background-color: #161819;
+    border-color: #464c4e;
+    color: #ffffff;
+    border-radius: 4px;
+
+    padding: 0.375rem 0.75rem;
+}
+
+.select-container {
+    display: flex;
+    justify-content: space-between;
 }
 
 .select-option:hover {

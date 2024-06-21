@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import FileManager from '../utils/FileManager';
+import SettingsManager from '../utils/SettingsManager';
 import ReadOnlyHTMLRenderer from './common/ReadOnlyHTMLRenderer';
 import licenses from '../../../public/licenses.json';
 import { WindowTypes } from '../utils/enums';
@@ -29,6 +30,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
     const [childrenDocuments, setChildrenDocuments] = useState<JSX.Element[] | null>(null);
 
     const fileManager = FileManager.getInstance();
+    const settings = SettingsManager.getInstance();
 
     const navTreeElement = navTreeArray.map((element, index) => {
         if (index < navTreeArray.length - 1) {
@@ -65,7 +67,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
 
                 if (currentManifest.landing) {
                     const htmlContents = await fileManager.loadResource(resourcePath, currentManifest.landing);
-                    setResourceElement(<ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation='WEBBE' loadPassage={loadPassage} />);
+                    setResourceElement(<ReadOnlyHTMLRenderer actualHTMLContents={htmlContents} currentBook={currentBook ?? ''} translation={settings.getSetting('defaultTranslation')} loadPassage={loadPassage} />);
                 }
 
                 if (currentManifest.children) {
@@ -122,7 +124,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 if (typeof fileContents === 'string') {
                     // HTML
                     setResourceElement(
-                        <ReadOnlyHTMLRenderer actualHTMLContents={fileContents} currentBook={currentManifest.usfm ?? currentBook ?? ''} translation='WEBBE' loadPassage={loadPassage} />
+                        <ReadOnlyHTMLRenderer actualHTMLContents={fileContents} currentBook={currentManifest.usfm ?? currentBook ?? ''} translation={settings.getSetting('defaultTranslation')} loadPassage={loadPassage} />
                     );
                 }
                 else {
@@ -149,7 +151,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                     <ReadOnlyHTMLRenderer
                                         actualHTMLContents={disclaimer}
                                         currentBook={currentBook ?? currentManifest.usfm}
-                                        translation='WEBBE' loadPassage={loadPassage}
+                                        translation={settings.getSetting('defaultTranslation')} loadPassage={loadPassage}
                                     />
                                 </Alert>
                             );
@@ -160,7 +162,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                 <Passage
                                     contents={[fileContents]}
                                     usfm={{book: currentManifest.usfm, initialChapter: 0}}
-                                    translation='WEBBE'
+                                    translation={settings.getSetting('defaultTranslation')}
                                     ignoreFootnotes={true}
                                 />
                             </div>
