@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Page from './Page';
+import Page from './browser/Page';
 
 import '../styles/dark.scss';
 import '../styles/App.scss';

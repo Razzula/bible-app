@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { WindowTypes } from '../utils/enums';
-import { Tooltip, TooltipTrigger, TooltipContent } from './common/Tooltip';
+import { WindowTypes } from '../../utils/enums';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../common/Tooltip';
 
-import '../styles/sidebar.scss';
+import '../../styles/sidebar.scss';
 
 type SidebarProps = {
     updateSelectedPanel: (panelType: symbol | undefined) => void;

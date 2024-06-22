@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '../styles/tabbar.scss'
+import '../../styles/tabbar.scss'
 
 type TabbarProps = {
     tabs: Map<string, any>;

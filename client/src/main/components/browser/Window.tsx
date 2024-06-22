@@ -1,13 +1,13 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
 
-import Document from './Document';
-import Scripture from './scripture/Scripture';
+import Document from '../Document';
+import Scripture from '../scripture/Scripture';
 
-import { WindowTypes } from '../utils/enums';
-import Resource from './Resource';
-import { isElectronApp } from '../utils/general';
-import Settings from './Settings';
+import { WindowTypes } from '../../utils/enums';
+import Resource from '../Resource';
+import { isElectronApp } from '../../utils/general';
+import Settings from '../Settings';
 
 type WindowProps = {
     windowToLoad: symbol;

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 
-import manifest from '../../../public/manifest.json';
-import { WindowTypes } from '../utils/enums';
+import manifest from '../../../../public/manifest.json';
+import { WindowTypes } from '../../utils/enums';
 
-import '../styles/sidepanel.scss';
-import FileManager from '../utils/FileManager';
-import { Tooltip, TooltipContent, TooltipTrigger } from './common/Tooltip';
+import '../../styles/sidepanel.scss';
+import FileManager from '../../utils/FileManager';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 
 type SidepanelProps = {
     panelType?: any;
