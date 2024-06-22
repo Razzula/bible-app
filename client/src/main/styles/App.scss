@@ -54,3 +54,8 @@ Window {
 .alert {
     font-family: ArialMT, Helvetica Neue, Arial, Liberation Sans, FreeSans, sans-serif !important;
 }
+
+.container {
+    display: flex;
+    justify-content: center;
+}

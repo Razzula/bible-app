@@ -60,8 +60,9 @@ class FileManager {
         return this.downloadedDirectories;
     }
 
-    public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
-        return await fetch(`${this.SEVER_URL}/file/Scripture/${translation}/${book}.${chapter}`)
+    public async loadScripture(book: string, chapter: string, translation?: string, interlinear=false): Promise<any> {
+        const mode = interlinear ? 'interlinear' : 'Scripture';
+        return await fetch(`${this.SEVER_URL}/file/${mode}/${translation}/${book}.${chapter}`)
             .then(response => response.json());
     }
 
@@ -111,7 +112,7 @@ class FileManager {
  */
 class ElectronFileManager extends FileManager {
 
-    public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
+    public async loadScripture(book: string, chapter: string, translation?: string, interlinear=false): Promise<any> {
 
         if (!translation) {
             translation = this.settings.getSetting('defaultTranslation');
@@ -131,11 +132,12 @@ class ElectronFileManager extends FileManager {
             this.fileCache['Scripture'][book] = { [chapter]: {} };
         }
 
-        let result = await window.electronAPI.loadScripture(`${book}.${chapter}`, translation);
+        const mode = interlinear ? 'interlinear' : 'Scripture';
+        let result = await window.electronAPI.loadScripture(`${book}.${chapter}`, translation, mode);
         if (!result) {
             // resort to fetching from the server
-            result = super.loadScripture(book, chapter, translation);
-            }
+            result = super.loadScripture(book, chapter, translation, interlinear);
+        }
         // cache result
         this.fileCache['Scripture'][book][chapter][translation] = result;
         return result;

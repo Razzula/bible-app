@@ -84,7 +84,6 @@ function Page(): JSX.Element {
             return newTabsList;
         });
     }
-    console.warn(activeWindow);
 
     return (
         <div className='page' style={{ display: 'flex' }}>

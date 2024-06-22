@@ -4,6 +4,11 @@ const WindowTypes = Object.freeze({
 		'type': Symbol('Scripture'),
         'iconPath': '/bible-app/icons/Scripture.svg'
 	},
+    Interlinear: {
+		'name': 'Interlinear',
+		'type': Symbol('interlinear'),
+        'iconPath': '/bible-app/icons/interlinear.svg'
+	},
 	Resource: {
 		'name': 'Resources',
 		'type': Symbol('resource'),

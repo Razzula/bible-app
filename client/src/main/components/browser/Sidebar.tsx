@@ -28,6 +28,7 @@ function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element 
         <div className="sidebar">
             <div className="top-container">
                 <SidebarButton buttonType={WindowTypes.Scripture} selectedButton={selectedButton} handleButtonClick={handleButtonClick} />
+                <SidebarButton buttonType={WindowTypes.Interlinear} selectedButton={selectedButton} handleButtonClick={handleButtonClick} />
                 <SidebarButton buttonType={WindowTypes.Resource} selectedButton={selectedButton} handleButtonClick={handleButtonClick} />
                 <SidebarButton buttonType={WindowTypes.Document} selectedButton={selectedButton} handleButtonClick={handleButtonClick} />
             </div>

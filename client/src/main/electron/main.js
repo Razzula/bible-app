@@ -35,7 +35,7 @@ app.whenReady().then(() => {
     ipcMain.handle('loadNotes', (event, group, book, chapter) => handleLoadNotes(group, book, chapter))
     ipcMain.handle('saveNote', (event, fileName, group, book, chapter, data) => handleSaveNote(fileName, group, book, chapter, data))
     ipcMain.handle('deleteNote', (event, fileName, group, book, chapter) => handleDeleteNote(fileName, group, book, chapter))
-    ipcMain.handle('loadScripture', (event, fileName, localPath) => handleLoadScripture(fileName, localPath))
+    ipcMain.handle('loadScripture', (event, fileName, localPath, mode) => handleLoadScripture(fileName, localPath, mode))
     ipcMain.handle('loadDocument', (event, fileName) => handleLoadDocument(fileName))
     ipcMain.handle('loadResource', (event, filePath, fileName) => handleLoadResource(filePath, fileName))
     ipcMain.handle('getResourceChildren', (event, parentDirectory, detectionMode) => getResourceChildren(parentDirectory, detectionMode))
@@ -197,11 +197,10 @@ async function handleDeleteNote(fileName, group, book, chapter) {
     );
 }
 
-async function handleLoadScripture(fileName, localPath, data) {
+async function handleLoadScripture(fileName, localPath, mode) {
     return await readJSONFile(
         fileName,
-        path.join('Scripture', localPath),
-        data
+        path.join(mode, localPath)
     );
 }
 

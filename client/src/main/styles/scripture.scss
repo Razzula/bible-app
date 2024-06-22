@@ -10,3 +10,74 @@
             // }
     }
 }
+.scripture-interlinear {
+    .scroll {
+        max-height: calc(100vh - 32px - 32px - 16px - 38px - 8px - 10px) !important; // allow room for tabbar and input-group
+            // tabbar (32px),
+            // banner {
+            //      input-group { padding-top (32px), content (38px), padding-bottom (16px) },
+            //      margin-bottom (8px)
+            //      ??? (10px)
+            // }
+    }
+}
+
+.interlinear-contents {
+    margin: auto;
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 10px;
+
+    .interlinear {
+        display: flex;
+        flex-wrap: wrap;
+
+        div {
+            margin: 4px;
+            padding: 16px;
+
+            // .native {
+
+            // }
+
+            .translit {
+                margin-right: 5px;
+                font-size: 12px;
+                user-select: none;
+                color: #9c9386;
+                vertical-align: sub;
+                font-weight: 500;
+            }
+
+            // .english {
+
+            // }
+        }
+    }
+
+    .interlinear.hebrew {
+        direction: rtl;
+    }
+
+    .stack {
+        border-bottom: 1px dotted #ffffff22;
+    }
+
+    .stack:hover {
+        outline: 1px dotted #ffffff55;
+        cursor: pointer;
+    }
+
+    .label {
+        font-size: 0.8em;
+        font-weight: bold;
+    }
+}
+
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

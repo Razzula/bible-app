@@ -19,7 +19,7 @@ import '../../styles/sidenotes.scss';
 
 const baseAnchor = 'anchor';
 
-type PassageProps = {
+export type PassageProps = {
     contents: any;
     usfm: any;
     ignoreFootnotes?: boolean;

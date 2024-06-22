@@ -45,26 +45,33 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
         }
     }
 
-    const navStructure = manifest.map((bookData, count) => {
+    function navStructure(windowType: any): JSX.Element[] {
+        return manifest.map((bookData, count) => {
 
-        const title = bookData['full-title'] ? bookData['full-title'] : bookData['title'];
-        const key = String(count);
+            const title = bookData['full-title'] ? bookData['full-title'] : bookData['title'];
+            const key = String(count);
 
-        return (
-            <Accordion.Item key={key} eventKey={key}>
-                <Accordion.Header>{title}</Accordion.Header>
-                <Accordion.Body>
-                    <div className='chapters-grid'>
-                        {bookData.chapters.map((verseCount, index) => {
-                            return (
-                                <span className='chapter-button' key={index} onMouseDown={(event) => handleCreateNewTab(event, WindowTypes.Scripture, `${bookData['usfm']}.${index + 1}`)}>{index + 1}</span>
-                            );
-                        })}
-                    </div>
-                </Accordion.Body>
-            </Accordion.Item>
-        );
-    });
+            return (
+                <Accordion.Item key={key} eventKey={key}>
+                    <Accordion.Header>{title}</Accordion.Header>
+                    <Accordion.Body>
+                        <div className='chapters-grid'>
+                            {bookData.chapters.map((verseCount, index) => {
+                                return (
+                                    <span
+                                        className='chapter-button' key={index}
+                                        onMouseDown={(event) => handleCreateNewTab(event, windowType, `${bookData['usfm']}.${index + 1}`)}
+                                    >
+                                        {index + 1}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    </Accordion.Body>
+                </Accordion.Item>
+            );
+        });
+    }
 
     contents = (() => { //TODO: (BIBLE-64) this is horrible, fix it
         switch (panelType?.type) {
@@ -72,7 +79,15 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
                 return <>
                     <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Scripture.name)}>new</button>
                     <Accordion>
-                        {navStructure}
+                        {navStructure(WindowTypes.Scripture)}
+                    </Accordion>
+                </>;
+
+            case WindowTypes.Interlinear.type:
+                return <>
+                    <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Interlinear.name)}>new</button>
+                    <Accordion>
+                        {navStructure(WindowTypes.Interlinear)}
                     </Accordion>
                 </>;
 

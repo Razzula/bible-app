@@ -8,6 +8,7 @@ import { WindowTypes } from '../../utils/enums';
 import Resource from '../Resource';
 import { isElectronApp } from '../../utils/general';
 import Settings from '../Settings';
+import Interlinear from '../Interlinear';
 
 type WindowProps = {
     windowToLoad: symbol;
@@ -21,6 +22,10 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
         case WindowTypes.Scripture.type:
             return (
                 <Scripture queryToLoad={data} createNewTab={createNewTab} />
+            );
+        case WindowTypes.Interlinear.type:
+            return (
+                <Interlinear queryToLoad={data} createNewTab={createNewTab} />
             );
         case WindowTypes.Document.type:
             return (
