@@ -11,9 +11,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 type SidepanelProps = {
     panelType?: any;
     createNewTab: (panelType: any, data: string, hidePanel?: boolean) => void;
+    deselectButton: Function;
 }
 
-function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | null {
+function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps): JSX.Element | null {
 
     const [availableResources, setAvailableResources] = React.useState<any[]>([]);
 
@@ -35,6 +36,7 @@ function Sidepanel({ panelType, createNewTab }: SidepanelProps): JSX.Element | n
         switch (event.button) {
             case 0:
                 createNewTab(panelType, data, true);
+                deselectButton();
                 break
             case 1:
                 event.preventDefault();

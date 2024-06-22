@@ -15,6 +15,7 @@ function Page(): JSX.Element {
 
     const [selectedPanel, setSelectedPanel]: [symbol | undefined, Function] = useState(undefined);
     const [selectedTab, setSelectedTab]: [any | undefined, Function] = useState(undefined);
+    const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = useState(undefined);
 
     useEffect(() => {
         createNewTab(WindowTypes.Landing, 'Welcome!');
@@ -87,8 +88,8 @@ function Page(): JSX.Element {
 
     return (
         <div className='page' style={{ display: 'flex' }}>
-            <Sidebar updateSelectedPanel={updateSelectedPanel} selectTab={createNewTab} />
-            <Sidepanel panelType={selectedPanel} createNewTab={createNewTab} />
+            <Sidebar selectedButton={selectedButton} setSelectedButton={setSelectedButton} updateSelectedPanel={updateSelectedPanel} selectTab={createNewTab} />
+            <Sidepanel panelType={selectedPanel} createNewTab={createNewTab} deselectButton={() => setSelectedButton(undefined)} />
 
             <div style={{ flex: 1 }}>
                 <Tabbar tabs={tabsList} selectedTab={selectedTab} selectTab={selectTab} closeTab={closeTab} />

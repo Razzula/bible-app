@@ -6,13 +6,13 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../common/Tooltip';
 import '../../styles/sidebar.scss';
 
 type SidebarProps = {
+    selectedButton: symbol | undefined;
+    setSelectedButton: Function;
     updateSelectedPanel: (panelType: symbol | undefined) => void;
     selectTab: (type: any, name: string) => void;
 }
 
-function Sidebar({ updateSelectedPanel, selectTab }: SidebarProps): JSX.Element {
-
-    const [selectedButton, setSelectedButton]: [symbol | undefined, Function] = useState(undefined);
+function Sidebar({ selectedButton, setSelectedButton, updateSelectedPanel, selectTab }: SidebarProps): JSX.Element {
 
     function handleButtonClick(button: any): void {
         setSelectedButton((currentSelection: any | undefined) => {
