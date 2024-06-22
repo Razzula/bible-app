@@ -119,20 +119,20 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
                             key={resource?.path}
                         >
                             <span className='flex-left'>
-                                <Tooltip placement='bottom'>
-                                    <TooltipTrigger><img src={statePath} alt={stateText}/></TooltipTrigger>
-                                    <TooltipContent>{stateText}</TooltipContent>
-                                </Tooltip>
                                 {resource.title}
                             </span>
-                            <span className='flex-right'>
+                            <span className='anchor-right'>
                                 <Tooltip placement='right-start'>
-                                        <TooltipTrigger><img src='/bible-app/icons/info.svg' alt='Info Icon' className='flex-right'/></TooltipTrigger>
+                                        <TooltipTrigger><img src='/bible-app/icons/info.svg' alt='Info Icon'/></TooltipTrigger>
                                         <TooltipContent>
                                             <div><b>{resource?.title}</b></div>
                                             <div>{resource?.author}</div>
                                             <div>{resource?.year}</div>
                                         </TooltipContent>
+                                </Tooltip>
+                                <Tooltip placement='right-start'>
+                                    <TooltipTrigger><img src={statePath} alt={stateText}/></TooltipTrigger>
+                                    <TooltipContent>{stateText}</TooltipContent>
                                 </Tooltip>
                             </span>
                         </div>
