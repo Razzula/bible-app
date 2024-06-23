@@ -19,6 +19,7 @@ import '../../styles/common.scss'
 import { isElectronApp } from '../../../main/utils/general';
 import Select from '../common/Select';
 import { loadPassageUsingString, loadPassageUsingUSFM, loadTranslationList } from '../../../main/utils/ScriptureHelper';
+import IconButton from '../common/IconButton';
 
 declare global {
     interface Window {
@@ -287,11 +288,11 @@ export function ScriptureSearchHeader({handleBackClick, handleForwardClick, hist
 
     return (
         <div className="input-group main">
-            <button className='btn btn-default' onClick={handleBackClick} disabled={historyStacks[0].length <= 1}>←</button>
-            <button className='btn btn-default' onClick={handleForwardClick} disabled={historyStacks[1].length < 1}>→</button>
+            <IconButton iconName='back' text='Backwards' handleClick={handleBackClick} disabled={historyStacks[0].length <= 1} />
+            <IconButton iconName='forward' text='Forwards' handleClick={handleForwardClick} disabled={historyStacks[1].length < 1} />
 
             {/* SEARCH BAR */}
-            <input type="text" value={searchQuery} className="form-control" onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} style={searchStyle} />
+            <input type="text" value={searchQuery} className='form-control' onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} style={searchStyle} />
             {/* TRANSLATION SELECT */}
             <Select
                 entries={translationsList}
@@ -299,9 +300,7 @@ export function ScriptureSearchHeader({handleBackClick, handleForwardClick, hist
                 setSelected={updateSelectedTranslation}
             />
             {/* SEARCH BUTTON */}
-            <button className='btn btn-default' onClick={handleSearch} disabled={searchQuery?.length === 0}>
-                <img src='/bible-app/icons/search.svg' alt='Search'/>
-            </button>
+            <IconButton iconName='search' text='Search' handleClick={handleSearch} />
         </div>
     );
 

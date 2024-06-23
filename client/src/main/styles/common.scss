@@ -68,3 +68,9 @@ button {
 button:hover {
     background-color: #52525e;
 }
+
+.input-group {
+    * {
+        max-height: 38px;
+    }
+}

@@ -111,9 +111,36 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     }
 
     function handleBackClick(): void {
+        if (historyStacks[0].length >= 2) {
+            const currentSearchQuery = historyStacks[0].pop();
+            const pastSearchQuery = historyStacks[0].pop();
+
+            // load past page
+            if (pastSearchQuery) {
+                void loadPassageFromString(pastSearchQuery);
+            }
+
+            // allow returning to current page
+            if (currentSearchQuery) {
+                historyStacks[1].push(currentSearchQuery);
+            }
+            if (historyStacks) {
+                setHistoryStacks(historyStacks);
+            }
+        }
     }
 
     function handleForwardClick(): void {
+        if (historyStacks[1].length >= 1) {
+            const pastSearchQuery = historyStacks[1].pop();
+
+            if (pastSearchQuery) {
+                void loadPassageFromString(pastSearchQuery);
+            }
+            if (historyStacks) {
+                setHistoryStacks(historyStacks);
+            }
+        }
     }
 
     return (
@@ -199,13 +226,11 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
             formattedContent.push(<div className='label chapter'>{usfm.initialChapter}</div>);
             Object.entries(content).forEach(([verseNumber, verse]: any) => {
 
-                formattedContent.push(<div className='label' id={`v${verseNumber}`}>{verseNumber}</div>);
-
                 Object.entries(verse).forEach(([wordNumber, word]: any) => {
                     const data = word;
                     const isSelected = activeToken && activeToken === data.strongs?.data;
 
-                    formattedContent.push(
+                    let item = (
                         <Tooltip>
                             <TooltipTrigger>
                                 <div
@@ -217,15 +242,37 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
                                     </span>
                                     <span className='translit'>{data.translit}</span>
                                     <span className='english'>{data.eng}</span>
+                                    <span className='translit'>
+                                        {
+                                            data.grammar ? data.grammar.map((g: any) => g.pos).join(' | ') : null
+                                        }
+                                    </span>
                                 </div>
                             </TooltipTrigger>
-                            {data.strongs.data ? <TooltipContent>{data.strongs.data}</TooltipContent> : null}
+                            <TooltipContent>{data.strongs.data ? data.strongs.data : 'Data not found'}</TooltipContent>
                         </Tooltip>
                     );
 
-                    if (word.punct) {
-                        formattedContent.push(<div className='punct'>{word.punct}</div>);
+                    const startOfVerse = wordNumber === '1';
+                    const endOfSentence = word.punct;
+
+                    if (startOfVerse || endOfSentence) {
+                        let pre = null;
+                        let post = null;
+
+                        // pre
+                        if (startOfVerse) {
+                            pre = <div className='label' id={`v${verseNumber}`}>{verseNumber}</div>;
+                        }
+                        // post
+                        if (endOfSentence) {
+                            post = <div className='punct'>{word.punct}</div>;
+                        }
+
+                        item = <span className='interlinear' style={{whiteSpace: 'nowrap'}}>{pre}{item}{post}</span>
                     }
+
+                    formattedContent.push(item);
                 });
             });
         }
@@ -236,7 +283,7 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
 
     return (
         <div className='base'>
-            <div className='interlinear hebrew'>
+            <div className={`interlinear ${usfm.testament === 'old' ? 'hebrew' : 'greek'}`}>
                 {formattedContent}
             </div>
         </div>

@@ -2,7 +2,16 @@ import books from '../../../public/books.json';
 import manifest from '../../../public/manifest.json';
 import { autoUpdate } from '@floating-ui/react';
 
-type usfm = { book: string, initialChapter?: number, finalChapter?: number, initialVerse?: number, finalVerse?: number };
+type usfm = {
+    book: string,
+    initialChapter?: number,
+    finalChapter?: number,
+    initialVerse?: number,
+    finalVerse?: number,
+
+    testament?: string,
+    apocryphal?: boolean,
+};
 type book = string | string[];
 type manifest = { usfm: string, 'full-title'?: string, title: string };
 
@@ -95,11 +104,17 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
                     }
                 }
 
-                const bookName = getBookName(match[1] + match[2], includeApocrypha);
-                if (bookName === undefined) { // invalid book name
+                const bookMeta = getBookName(match[1] + match[2], includeApocrypha);
+                if (!bookMeta || !bookMeta.book) { // invalid book name
                     return [];
                 }
-                usfm.book = bookName;
+                usfm.book = bookMeta.book;
+                if (bookMeta.testament) {
+                    usfm.testament = bookMeta.testament;
+                }
+                if (bookMeta.apocryphal) {
+                    usfm.apocryphal = bookMeta.apocryphal;
+                }
             }
 
             // chapters, verses
@@ -137,21 +152,23 @@ export function getUSFM(reference: string, currentBook: string | null = null, cu
     }
 }
 
-function getBookName(bookName: string, includeApocrypha = false): string | undefined {
+function getBookName(bookName: string, includeApocrypha = false): any {
 
     bookName = bookName.toUpperCase();
 
-    let bookUSFM: string | undefined = undefined;
-    booksArray.canon.forEach((bookList: book) => {
+    let bookUSFM: any = {};
+    booksArray.canon.forEach((bookList: book, index: number) => {
         if (bookList.includes(bookName)) {
-            bookUSFM = bookList[0];
+            bookUSFM['book'] = bookList[0];
+            bookUSFM['testament'] = index < 39  ? 'old' : 'new';
             return;
         }
     });
     if (includeApocrypha) {
         booksArray.apocrypha.forEach((bookList: book) => {
             if (bookList.includes(bookName)) {
-                bookUSFM = bookList[0];
+                bookUSFM['book'] = bookList[0];
+                bookUSFM['apocryphal'] = true;
                 return;
             }
         });
@@ -349,7 +366,8 @@ export function getReferenceText(referenceData: Array<any>): string {
         // book
         if (reference.book && reference.book !== currentBook) {
             currentBook = reference.book;
-            let bookName = getBookName(reference.book) || reference.book;
+            const bookUSFM = getBookName(reference.book);
+            let bookName = bookUSFM?.book || reference.book;
 
             manifestArray.forEach((book: manifest) => { // get human-readable book name
                 if (book.usfm === bookName) {

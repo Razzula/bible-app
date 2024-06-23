@@ -8,14 +8,15 @@ type IconButtonProps = {
     iconName: string;
     text?: string;
     handleClick: (event: React.MouseEvent) => void;
+    disabled?: boolean;
 }
 
-function IconButton({ iconName, text, handleClick }: IconButtonProps): JSX.Element {
+function IconButton({ iconName, text, handleClick, disabled=false }: IconButtonProps): JSX.Element {
 
     return (
         <Tooltip>
             <TooltipTrigger>
-                <button onClick={handleClick}>
+                <button onClick={handleClick} disabled={disabled}>
                     <img src={`/bible-app/icons/${iconName}.svg`} alt={text ?? iconName} />
                 </button>
             </TooltipTrigger>

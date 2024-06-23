@@ -180,7 +180,6 @@ export async function loadPassageUsingUSFM(
                     // jump to passage
                     const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
                     if (element) {
-                        console.log('scrolling to verse', element);
                         element.scrollIntoView();
                     }
                     else {
