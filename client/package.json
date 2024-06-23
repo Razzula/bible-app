@@ -27,9 +27,10 @@
     },
     "scripts": {
         "setup": "bunx --bun setup.ts",
-        "local": "bunx --bun vite --mode local",
+        "local": "bunx --bun vite",
         "dev": "bunx --bun vite --mode development",
         "electron:dev": "concurrently -k \"cross-env BROWSER=none bun run dev\" \"wait-on tcp:3180 && electron .\"",
+        "electron:local": "concurrently -k \"cross-env BROWSER=none bun run local\" \"wait-on tcp:3180 && electron .\"",
         "build": "vite build --mode production && bunx --bun postbuild.ts",
         "serve": "vite preview",
         "predeploy": "vite build --mode production && bunx --bun predeploy.ts",

@@ -74,6 +74,8 @@ app.get('/dir/*', (req, res) => {
         // children
         const data: any[] = [];
         const items = fs.readdirSync(filePath);
+        items.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
         for (const item of items) {
             const itemPath = path.join(filePath, item);
             const stat = fs.statSync(itemPath);
