@@ -7,6 +7,7 @@ import { WindowTypes } from '../../utils/enums';
 import '../../styles/sidepanel.scss';
 import FileManager from '../../utils/FileManager';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
+import { getReferenceText, getUSFM } from '../../utils/bibleReferences';
 
 type SidepanelProps = {
     panelType?: any;
@@ -62,7 +63,7 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
                                 return (
                                     <span
                                         className='chapter-button' key={index}
-                                        onMouseDown={(event) => handleCreateNewTab(event, windowType, `${bookData['usfm']}.${index + 1}`)}
+                                        onMouseDown={(event) => handleCreateNewTab(event, windowType, getReferenceText(getUSFM(`${bookData['usfm']}.${index + 1}`)))}
                                     >
                                         {index + 1}
                                     </span>

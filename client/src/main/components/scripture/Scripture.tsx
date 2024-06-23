@@ -26,9 +26,8 @@ declare global {
     }
 }
 
-const docID = 'Scripture';
-
 type ScriptureProps = {
+    id: string,
     queryToLoad?: string;
     createNewTab: (panelType: any, data: string) => void;
 };
@@ -37,7 +36,7 @@ type ScriptureProps = {
  * A React component to display the main application.
  * @returns {JSX.Element} A JSX Element of a `div` containing the main application.
  */
-function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
+function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState<any[]>([]);
@@ -58,7 +57,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
     const store: Store = useStore();
     const deselect = () => {
-        store.dispatch(deselectSidenote(docID));
+        store.dispatch(deselectSidenote(id));
         if (document.activeElement?.className !== 'editor-input') { // allow clicking on inline notes
             store.dispatch(setNoActiveEditor());
         }
@@ -177,7 +176,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
 
         loadPassageUsingUSFM(
             usfm, selectedTranslation, clearForwardCache, openInNewTab, Passage, false,
-            createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, selectedNoteGroup, selectedRenderMode
+            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, selectedNoteGroup, selectedRenderMode
         );
 
         deselect();
@@ -253,7 +252,7 @@ function Scripture({ queryToLoad, createNewTab }: ScriptureProps): JSX.Element {
             </div>
 
             <div className='scroll' style={containerStyle as any}>
-                <article id={docID} onClick={deselect}>
+                <article id={id} onClick={deselect}>
 
                     {/* BIBLE */}
                     {passages}

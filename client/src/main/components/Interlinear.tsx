@@ -79,7 +79,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false, openInNewTab = false): Promise<void> {
         loadPassageUsingUSFM(
             usfm, selectedTranslation, clearForwardCache, openInNewTab, InterlinearPassage, true,
-            createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear'
+            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear'
         );
     }
 

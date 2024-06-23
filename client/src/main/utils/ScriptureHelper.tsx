@@ -94,12 +94,12 @@ export function loadPassageUsingString(searchQuery: string, selectedTranslation:
 
 export async function loadPassageUsingUSFM(
     usfm: any, selectedTranslation: any, clearForwardCache = false, openInNewTab = false, PassageType: typeof Passage | typeof InterlinearPassage, interlinear: boolean,
-    createNewTab: Function, setPassages: Function, setSearchError: Function, setSearchQuery: Function, searchQuery: string,
+    loadPassageFromUSFM: Function, createNewTab: Function, setPassages: Function, setSearchError: Function, setSearchQuery: Function, searchQuery: string,
     historyStacks: string[][], setHistoryStacks: Function, selectedNoteGroup: string | undefined, selectedRenderMode: string
 ): Promise<void> {
 
     if (openInNewTab) {
-        createNewTab(WindowTypes.Scripture.type, getReferenceText(usfm));
+        createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
         return;
     }
 
@@ -148,7 +148,7 @@ export async function loadPassageUsingUSFM(
 
             const usfmString = getReferenceText(passageUsfm);
             return <PassageType
-                key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation?.name} loadPassage={loadPassageUsingUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
+                key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation?.name} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
             />;
         }).filter((passage: JSX.Element | undefined) => passage !== undefined)
     );

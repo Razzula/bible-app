@@ -27,29 +27,42 @@ function Page(): JSX.Element {
 
     function createNewTab(type: any, name: string, hidePanel = false): void {
         //TODO: (BIBLE-64) replace with uuid
-        setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
-            const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
 
-            const newWindow = <Window windowToLoad={type.type} data={name} createNewTab={createNewTab} />;
-            newWindowsList.set(name, newWindow);
+        const key = `${name}-${type.name}`;
+        const tab = tabsList.get(key);
 
-            setTabsList((currentTabsList: Map<string, any>) => {
-                const newTabsList = new Map<string, any>(currentTabsList);
+        if (windowsList.get(key) === undefined && tab === undefined) {
+            setWindowsList((currentWindowsList: Map<string, JSX.Element>) => {
+                const newWindowsList = new Map<string, JSX.Element>(currentWindowsList);
 
-                const currentTab: any = { ...type };
-                currentTab.key = name;
-                newTabsList.set(name, currentTab);
+                const newWindow = <Window windowToLoad={type.type} data={name} createNewTab={createNewTab} />;
+                newWindowsList.set(key, newWindow);
 
-                selectTabDirectly(currentTab);
-                if (hidePanel) {
-                    setSelectedPanel(undefined);
-                }
-                setActiveWindow(name);
+                setTabsList((currentTabsList: Map<string, any>) => {
+                    const newTabsList = new Map<string, any>(currentTabsList);
 
-                return newTabsList;
+                    const currentTab: any = { ...type };
+                    currentTab.key = key;
+                    currentTab.name = name;
+                    currentTab.type = type.type;
+                    newTabsList.set(key, currentTab);
+
+                    selectTabDirectly(currentTab);
+
+                    return newTabsList;
+                });
+
+                return newWindowsList;
             });
-            return newWindowsList;
-        });
+        }
+        else {
+            selectTab(key);
+        }
+
+        setActiveWindow(key);
+        if (hidePanel) {
+            setSelectedPanel(undefined);
+        }
     }
 
     function selectTab(tabWindow: string | null): void {

@@ -133,7 +133,6 @@ async function handleDirectoryScan(localPath) {
         manifest = await readJSONFile('manifest.json', localPath);
     }
     catch (err) { }
-    console.log(manifest);
 
     for (const item of items) {
         const itemPath = path.join(directoryPath, item);

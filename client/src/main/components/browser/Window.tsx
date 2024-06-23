@@ -21,7 +21,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
     switch (windowToLoad) {
         case WindowTypes.Scripture.type:
             return (
-                <Scripture queryToLoad={data} createNewTab={createNewTab} />
+                <Scripture id={data} queryToLoad={data} createNewTab={createNewTab} />
             );
         case WindowTypes.Interlinear.type:
             return (
@@ -50,14 +50,14 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                     <Alert.Heading>⚠</Alert.Heading>
                                     <p>You are using a <u><b>demo</b></u> version of the application!</p>
                                     <p>1. Any changes made (creating or updating notes) are <b>not</b> saved.</p>
-                                    <p>2. Due to copyright restrictions, most Bible translations available only include  a <i>very</i> small number of chapters. (More information <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture'>here</a>). However, the entirety of the Bible is available using the <a>WEBBE</a> translation.</p>
+                                    <p>2. Due to copyright restrictions, most Bible translations available only include  a <i>very</i> small number of chapters. (More information <a href='https://github.com/Razzula/bible-app/tree/main/example/Scripture' target='_blank'>here</a>). However, the entirety of the Bible is available using the <a>WEBBE</a> translation.</p>
                                     <hr />
                                     <p>
-                                        If you would like to use the full version of the application, you can clone the <a href='https://github.com/Razzula/bible-app'>repository</a> and run it locally.
+                                        If you would like to use the full version of the application, you can clone the <a href='https://github.com/Razzula/bible-app' target='_blank'>repository</a> and run it locally.
                                     </p>
                                 </Alert>
                             }
-                        <p>You can report any issues encountered, <a href='https://github.com/Razzula/bible-app/issues'>here</a>.</p>
+                        <p>You can report any issues encountered, <a href='https://github.com/Razzula/bible-app/issues' target='_blank'>here</a>.</p>
                         <p>:D</p>
                     </div>
                 </div>

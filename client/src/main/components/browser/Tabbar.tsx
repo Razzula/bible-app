@@ -13,7 +13,7 @@ function Tabbar({ tabs, selectedTab, selectTab, closeTab }: TabbarProps): JSX.El
 
     const tabElements = Array.from(tabs).map(([key, value]) => {
         return (
-            <Tab key={key} tabName={key} tabType={value} isSelected={selectedTab?.key === value?.key} selectTab={handleTabClick} closeTab={closeTab} />
+            <Tab key={key} tabKey={key} tabName={value.name} tabType={value} isSelected={selectedTab?.key === value?.key} selectTab={handleTabClick} closeTab={closeTab} />
         );
     })
 
@@ -29,6 +29,7 @@ function Tabbar({ tabs, selectedTab, selectTab, closeTab }: TabbarProps): JSX.El
 }
 
 type TabProps = {
+    tabKey: string;
     tabName: string;
     tabType: any;
     isSelected: boolean;
@@ -36,7 +37,7 @@ type TabProps = {
     closeTab: (tabName: string) => void;
 }
 
-function Tab({ tabName, tabType, isSelected, selectTab, closeTab }: TabProps): JSX.Element {
+function Tab({ tabKey, tabName, tabType, isSelected, selectTab, closeTab }: TabProps): JSX.Element {
 
     const className = isSelected ? 'tab selected' : 'tab';
 
@@ -44,10 +45,10 @@ function Tab({ tabName, tabType, isSelected, selectTab, closeTab }: TabProps): J
         e.stopPropagation();
         switch (e.button) {
             case 0: // left click
-                selectTab(tabName);
+                selectTab(tabKey);
                 break;
             case 1: // middle click
-                closeTab(tabName)
+                closeTab(tabKey)
                 break;
             case 2: // right click
                 break;
@@ -57,7 +58,7 @@ function Tab({ tabName, tabType, isSelected, selectTab, closeTab }: TabProps): J
     };
 
     return (
-        <span onMouseDown={handleClick} key={tabName} className={className}>
+        <span onMouseDown={handleClick} key={tabKey} className={className}>
             <span className='flex-left'>
                 {tabType ? <img src={tabType.iconPath} style={{width: 16}} alt={tabType.name}/> : null}
                 <span>{tabName}</span>

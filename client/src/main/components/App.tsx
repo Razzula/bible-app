@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Page from './browser/Page';
 
@@ -13,12 +13,15 @@ import FileManager from '../utils/FileManager';
  */
 function App(): JSX.Element {
 
-    FileManager.getInstance();
+    useEffect(() => {
+        FileManager.getInstance(); // initialise the file manager
+        // this will ping the backend to ensure it is running, in case of sleeping
 
-    if (isElectronApp()) {
-        console.log('Electron app detected');
-        window.electronAPI.setupApp();
-    }
+        if (isElectronApp()) {
+            console.log('Electron app detected');
+            window.electronAPI.setupApp();
+        }
+    }, []);
 
     // GENERATE JSX
     return (
