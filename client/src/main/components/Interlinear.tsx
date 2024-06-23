@@ -91,6 +91,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
         loadPassageUsingUSFM(
             usfm, selectedTranslation, clearForwardCache, openInNewTab, InterlinearPassage, true,
             loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear',
+            'base'
         );
     }
 
@@ -198,7 +199,7 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
             formattedContent.push(<div className='label chapter'>{usfm.initialChapter}</div>);
             Object.entries(content).forEach(([verseNumber, verse]: any) => {
 
-                formattedContent.push(<div className='label'>{verseNumber}</div>);
+                formattedContent.push(<div className='label' id={`v${verseNumber}`}>{verseNumber}</div>);
 
                 Object.entries(verse).forEach(([wordNumber, word]: any) => {
                     const data = word;
@@ -211,7 +212,7 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
                                     className={ isSelected ? 'stack selected' : 'stack'}
                                     onClick={() => setSelectedToken(data.strongs?.data ?? null)}
                                 >
-                                    <span>
+                                    <span className={`${usfm.book}.${usfm.initialChapter}.${verseNumber} native`}>
                                         {data.native}
                                     </span>
                                     <span className='translit'>{data.translit}</span>
@@ -235,11 +236,9 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
 
     return (
         <div className='base'>
-            {contents.map((content: any, index: number) => (
-                <div key={index} className='interlinear hebrew'>
-                    {formattedContent}
-                </div>
-            ))}
+            <div className='interlinear hebrew'>
+                {formattedContent}
+            </div>
         </div>
     );
 }

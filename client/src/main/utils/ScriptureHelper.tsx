@@ -92,7 +92,7 @@ export function loadPassageUsingString(searchQuery: string, selectedTranslation:
 
 export async function loadPassageUsingUSFM(
     usfm: any, selectedTranslation: any, clearForwardCache = false, openInNewTab = false, PassageType: typeof Passage | typeof InterlinearPassage, interlinear: boolean,
-    loadPassageFromUSFM: Function, createNewTab: Function, setPassages: Function, setSearchError: Function, setSearchQuery: Function, searchQuery: string,
+    loadPassageFromUSFM: Function, createNewTab: (panelType: any, data: string) => void, setPassages: Function, setSearchError: Function, setSearchQuery: Function, searchQuery: string,
     historyStacks: string[][], setHistoryStacks: Function, selectedNoteGroup: string | undefined, selectedRenderMode: string,
     docID?: string
 ): Promise<void> {
@@ -147,7 +147,7 @@ export async function loadPassageUsingUSFM(
 
             const usfmString = getReferenceText(passageUsfm);
             return <PassageType
-                key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation?.name} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode}
+                key={usfmString} contents={chaptersContents} usfm={passageUsfm} translation={selectedTranslation?.name} loadPassage={loadPassageFromUSFM} docID={docID} selectedNoteGroup={selectedNoteGroup} renderMode={selectedRenderMode} createNewTab={createNewTab}
             />;
         }).filter((passage: JSX.Element | undefined) => passage !== undefined)
     );
@@ -180,6 +180,7 @@ export async function loadPassageUsingUSFM(
                     // jump to passage
                     const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
                     if (element) {
+                        console.log('scrolling to verse', element);
                         element.scrollIntoView();
                     }
                     else {
@@ -202,7 +203,7 @@ export async function loadPassageUsingUSFM(
                 else {
                     document.getElementById(docID)?.scrollIntoView(); // goto top
                 }
-            }, 100);
+            }, 50);
         }
     }
     else {

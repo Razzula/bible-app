@@ -9,7 +9,7 @@ type manifest = { usfm: string, 'full-title'?: string, title: string };
 const booksArray: { canon: book[], apocrypha: book[] } = books;
 const manifestArray: manifest[] = manifest;
 
-export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?::\s*(\d+)(?:\s*(?:-|–|—)\s*(\d+))?|(?:-|–|—)(\d+))?(?:.*?([;,].*))?/);
+export const REFERENCE_REGEX =  RegExp(/(I+ |[123]+)? ?([A-Za-z]+)\.? *(\d+)(?:[:\.]\s*(\d+)(?:\s*(?:-|–|—)\s*(\d+))?|(?:-|–|—)(\d+))?(?:.*?([;,].*))?/);
 
 /**
  * Parse the given reference and return relevant USFM (Unified Standard Format Marker).

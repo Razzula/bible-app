@@ -10,12 +10,16 @@ import { isOfParagraphType } from '../../utils/general';
 import NoteEditor from './NoteEditor';
 import PassageChunk from './PassageChunk';
 import SidenotesContainer from './SidenotesContainer';
+import IconButton from '../common/IconButton';
+import { WindowTypes } from '../../utils/enums';
 
 import defaultNoteContents from '../../../../public/defaultNote.json';
 
 import 'sidenotes/dist/sidenotes.css';
 import '../../styles/Bible.scss';
 import '../../styles/sidenotes.scss';
+import { get } from 'http';
+import { getReferenceText, getUSFM } from '../../utils/bibleReferences';
 
 const baseAnchor = 'anchor';
 
@@ -25,6 +29,7 @@ export type PassageProps = {
     ignoreFootnotes?: boolean;
     renderMode?: string;
     loadPassage?: any;
+    createNewTab?: (panelType: any, data: string) => void;
     // passageBook?: string;
     // passageChapter?: number;
     translation: string;
@@ -46,7 +51,7 @@ type Note = {
  *
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, translation, docID, selectedNoteGroup }: PassageProps): JSX.Element {
+function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, translation, docID, selectedNoteGroup, createNewTab }: PassageProps): JSX.Element {
     // TODO: (BIBLE-98) create a lightwight version of the Passage component, which only renders the passage, without any notes or interactions (this will be used by the references)
     // furthermore, redux should not be used in this component, as these will be mounted in the references, which are not connected to the store
 
@@ -447,6 +452,12 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         }
     }
 
+    function handleInterlinearClick(): void {
+        if (selectedToken && createNewTab) {
+            createNewTab(WindowTypes.Interlinear, getReferenceText(getUSFM(selectedToken)));
+        }
+    }
+
     return (
         <>
             <AnchorBase anchor={baseAnchor} className="base">
@@ -475,10 +486,8 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             {tokenPopoverIsOpen && (
                 <FloatingFocusManager context={tokenFloatContext} modal={false}>
                     <div ref={tokenFloatRefs.setFloating} style={tokenFloatStyles}>
-                        {/* NEW NOTE BUTTON */}
-                        <button className='btn btn-default' onClick={handleNewNoteClick}>
-                        <img src='/bible-app/icons/noteCreate.svg' alt='Create Note'/>
-                        </button>
+                        <IconButton iconName='noteCreate' text='Create Note' handleClick={handleNewNoteClick} />
+                        <IconButton iconName='interlinear' text='View Interlinear Text' handleClick={handleInterlinearClick} />
                     </div>
                 </FloatingFocusManager>
             )}

@@ -15,6 +15,7 @@ import parse, { DOMNode, domToReact } from 'html-react-parser';
 import { locateReferences } from '../../utils/bibleReferences';
 import { BibleReference } from './Footnote';
 import ReadOnlyHTMLRenderer from '../common/ReadOnlyHTMLRenderer';
+import IconButton from '../common/IconButton';
 
 type NoteEditorProps = {
     sidenoteID: string;
@@ -92,18 +93,14 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
         >
             <div>
                 {isReadOnly ?
-                    <button className='btn btn-default' onClick={handleEditClick}>
-                        <img src='/bible-app/icons/edit.svg' alt='Edit'/>
-                    </button>
+                    <IconButton iconName='edit' text='Edit' handleClick={handleEditClick} />
                 : null}
 
                 <span>{isSaved ?
                     <img src='/bible-app/icons/save.svg' alt='Saved'/> : 'UNSAVED'
                 }</span>
 
-                <button className='btn btn-default' onClick={handleDeleteClick}>
-                    <img src='/bible-app/icons/delete.svg' alt='Delete'/>
-                </button>
+                <IconButton iconName='delete' text='Delete' handleClick={handleDeleteClick} />
             </div>
 
             <div className="tinymce-wrapper" ref={ref} style={{ height: 'auto' }}>
