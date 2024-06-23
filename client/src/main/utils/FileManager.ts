@@ -98,7 +98,7 @@ class FileManager {
             .then(response => response.json());
     }
 
-    public async getDirectories(path: string): Promise<string[]> {
+    public async getDirectories(path: string): Promise<any[]> {
         return await fetch(`${this.SEVER_URL}/dir/${path}`)
             .then(response => response.json())
             .catch(() => []);
@@ -179,7 +179,7 @@ class ElectronFileManager extends FileManager {
         return super.getResourceChildren(path, mode);
     }
 
-    public async getDirectories(path: string): Promise<string[]> {
+    public async getDirectories(path: string): Promise<any[]> {
         const directories: any = {};
 
         const localDirectories = await window.electronAPI.getDirectories(path);
@@ -278,7 +278,7 @@ class MockFileManager extends FileManager {
         );
     }
 
-    public async getDirectories(path: string): Promise<string[]> {
+    public async getDirectories(path: string): Promise<any[]> {
         const pathList = path.split('/');
         let temp: any = this.manifest;
         pathList.forEach((dir) => {

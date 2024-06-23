@@ -61,7 +61,7 @@ function Tab({ tabKey, tabName, tabType, isSelected, selectTab, closeTab }: TabP
         <span onMouseDown={handleClick} key={tabKey} className={className}>
             <span className='flex-left'>
                 {tabType ? <img src={tabType.iconPath} style={{width: 16}} alt={tabType.name}/> : null}
-                <span>{tabName}</span>
+                <span className='tab-text'>{tabName}</span>
             </span>
             <button onClick={() => closeTab(tabName)} className="tab-close-button">x</button>
         </span>

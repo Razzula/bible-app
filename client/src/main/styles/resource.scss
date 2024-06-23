@@ -4,6 +4,13 @@
             // tabbar (32px)
             // navbar (48px)
     }
+
+    .anchor-right {
+        flex: 1;
+        text-align: right;
+        padding: 10px;
+        padding-right: 20px;
+    }
 }
 
 .resource-content {
@@ -38,10 +45,4 @@
     padding-left: 20px;
 }
 
-.anchor-right {
-    flex: 1;
-    text-align: right;
-    padding: 10px;
-    padding-right: 20px;
-}
 

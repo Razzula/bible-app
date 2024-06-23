@@ -43,12 +43,15 @@ function Settings() {
                     </Alert>
                 }
 
-                <span>Default Translation:</span>
-                <Select
-                    entries={translationsList}
-                    forcedIndex={translationsList.findIndex((translation) => translation?.key === defaultTranslation)}
-                    setSelected={updateSelectedTranslation}
-                />
+                <div>Default Translation:</div>
+                <div style={{display: 'inline-block'}}>
+                    <Select
+                        entries={translationsList}
+                        forcedIndex={translationsList.findIndex((translation) => translation?.key === defaultTranslation)}
+                        setSelected={updateSelectedTranslation}
+                        icon='translation'
+                    />
+                </div>
             </div>
         </div>
     );

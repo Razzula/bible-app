@@ -16,6 +16,7 @@ import { locateReferences } from '../../utils/bibleReferences';
 import { BibleReference } from './Footnote';
 import ReadOnlyHTMLRenderer from '../common/ReadOnlyHTMLRenderer';
 import IconButton from '../common/IconButton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 
 type NoteEditorProps = {
     sidenoteID: string;
@@ -39,7 +40,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
 
     const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
     const isSaved = (currentNoteContents === committedNoteContents);
-    const backgroundColour = (isSaved ? '#00FF00' : '#FF0000');
+    const backgroundColour = (isSaved ? '#0f8710' : '#861010');
 
     const store: Store = useStore();
 
@@ -91,16 +92,22 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
             style={{ height: 'auto', backgroundColor: backgroundColour }}
             onClick={handleSelection}
         >
-            <div>
+            <div className='flex-left'>
                 {isReadOnly ?
-                    <IconButton iconName='edit' text='Edit' handleClick={handleEditClick} />
+                    <span className='flex-left'><IconButton iconName='edit' text='Edit' handleClick={handleEditClick} /></span>
                 : null}
 
-                <span>{isSaved ?
-                    <img src='/bible-app/icons/save.svg' alt='Saved'/> : 'UNSAVED'
-                }</span>
+                <span className='anchor-right'>
+                    {isSaved ?
+                        <Tooltip>
+                            <TooltipTrigger><img src='/bible-app/icons/save.svg' alt='Saved'/></TooltipTrigger>
+                            <TooltipContent>Saved :)</TooltipContent>
+                        </Tooltip>
+                        : null
+                    }
+                    <IconButton iconName='delete' text='Delete' handleClick={handleDeleteClick} />
+                </span>
 
-                <IconButton iconName='delete' text='Delete' handleClick={handleDeleteClick} />
             </div>
 
             <div className="tinymce-wrapper" ref={ref} style={{ height: 'auto' }}>

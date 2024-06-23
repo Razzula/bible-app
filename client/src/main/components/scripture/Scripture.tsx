@@ -20,6 +20,8 @@ import { isElectronApp } from '../../../main/utils/general';
 import Select from '../common/Select';
 import { loadPassageUsingString, loadPassageUsingUSFM, loadTranslationList } from '../../../main/utils/ScriptureHelper';
 import IconButton from '../common/IconButton';
+import CheckIcon from '../common/CheckIcon';
+import RadioIcons from '../common/RadioIcons';
 
 declare global {
     interface Window {
@@ -42,15 +44,18 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
     const [searchError, setSearchError] = useState(false);
     const [translationsList, setTranslationsList] = useState<any[]>([]);
     const [selectedTranslation, setSelectedTranslation] = useState<any>(null);
-    const [showFootnotes, setShowFootnotes] = useState(true)
+
     const [selectedRenderMode, setSelectedRenderMode] = useState('sidenotes');
+    const [showFootnotes, setShowFootnotes] = useState(true)
     const [showHeaders, setShowHeaders] = useState(true)
+    const [showNumbers, setShowNumbers] = useState(true)
+    const [showHighlights, setShowHighlights] = useState(true)
 
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[], []]);
 
     const [passages, setPassages]: [JSX.Element[], Function] = useState([]);
 
-    const [noteGroupsList, setNoteGroupsList] = useState<React.JSX.Element[]>([]);
+    const [noteGroupsList, setNoteGroupsList] = useState<any[]>([]);
     const [selectedNoteGroup, setSelectedNoteGroup] = useState<string | undefined>(undefined);
 
     const fileManager = FileManager.getInstance();
@@ -160,9 +165,14 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
 
     async function getNoteGroupsList(): Promise<void> {
         const noteGroups = await fileManager.getDirectories('notes');
+        noteGroups.push({ path: 'None' });
 
         const noteGroupsList = noteGroups.map((noteGroup: any) => {
-            return <option key={noteGroup.path} value={noteGroup.path}>{noteGroup.path}</option>;
+            return {
+                key: noteGroup.path,
+                name: noteGroup.path,
+                element: <div className='select-option'>{noteGroup.path}</div>
+            };
         });
 
         setNoteGroupsList(noteGroupsList);
@@ -192,6 +202,8 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
     const containerStyle: any = {
         '--note-display': showFootnotes ? 'inline' : 'none',
         '--header-display': showHeaders ? 'inline-block' : 'none',
+        '--label-display': showNumbers ? 'inline-block' : 'none',
+        '--highlight-display': showHighlights ? null : 'transparent',
     };
 
     // GENERATE JSX
@@ -203,11 +215,17 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
 
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
-                    <img src='/bible-app/icons/directory.svg' alt='Note Groups'/>
-                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange} disabled={true}>
-                        {noteGroupsList}
-                        <option key='None' value={undefined}>None</option>
-                    </select>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Select
+                                entries={noteGroupsList}
+                                forcedIndex={noteGroupsList.findIndex((noteGroup) => noteGroup?.key === selectedNoteGroup)}
+                                setSelected={setSelectedNoteGroup}
+                                icon='directory'
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>Note Group</TooltipContent>
+                    </Tooltip>
                 </div>
 
                 <div>
@@ -221,35 +239,34 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
 
                     {/* SUB CONTROLS */}
                     <div>
-                        <label>
-                            <input type='checkbox' className='' onChange={(e) => setShowFootnotes(e.currentTarget.checked)} defaultChecked={showFootnotes} />
-                            Show Footnotes
-                        </label>
+                        <CheckIcon iconName='footnote' text={`${showFootnotes ? 'Hide' : 'Show'} Footnotes`} handleClick={() => setShowFootnotes(!showFootnotes)} stateDriver={showFootnotes} />
+                        <CheckIcon iconName='header' text={`${showHeaders ? 'Hide' : 'Show'} Headings`} handleClick={() => setShowHeaders(!showHeaders)} stateDriver={showHeaders} />
+                        <CheckIcon iconName='numbers' text={`${showNumbers ? 'Hide' : 'Show'} Verse Numbers`} handleClick={() => setShowNumbers(!showNumbers)} stateDriver={showNumbers} />
+                        <CheckIcon iconName='highlighter' text={`${showHighlights ? 'Hide' : 'Show'} Note Highlights`} handleClick={() => setShowHighlights(!showHighlights)} stateDriver={selectedRenderMode == 'sidenotes' && showHighlights} />
 
-                        <div className='btn-group' data-toggle='buttons'>
-                            <label className='btn btn-primary'>
-                                <input type='radio' name='options' id='sidenotes' value='sidenotes' checked={selectedRenderMode === 'sidenotes'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Annotations
-                            </label>
-                            <label className='btn btn-primary'>
-                                <input type='radio' name='options' id='interlinear' value='interlinear' checked={selectedRenderMode === 'interlinear'} onChange={(e) => setSelectedRenderMode(e.target.value)} /> Interlinear
-                            </label>
-                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <label>
-                            <input type='checkbox' className='' onChange={(e) => setShowHeaders(e.currentTarget.checked)} defaultChecked={showFootnotes} />
-                            Show Headers
-                        </label>
+                        <RadioIcons selected={selectedRenderMode} handleClick={setSelectedRenderMode} states={[
+                            {id: 'sidenotes', iconName: 'note', text: 'Sidenotes' },
+                            {id: 'interlinear', iconName: 'inline', text: 'Inline Notes' },
+                        ]} />
 
                     </div>
                 </div>
 
                 <div className="input-group side">
                     {/* NOTE GROUP SELECT */}
-                    <img src='/bible-app/icons/directory.svg' alt='Note Groups'/>
-                    <select value={selectedNoteGroup} className="select" onChange={handleNoteGroupSelectChange}>
-                        {noteGroupsList}
-                        <option key='None' value={undefined}>None</option>
-                    </select>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Select
+                                entries={noteGroupsList}
+                                forcedIndex={noteGroupsList.findIndex((noteGroup) => noteGroup?.key === selectedNoteGroup)}
+                                setSelected={setSelectedNoteGroup}
+                                icon='directory'
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>Note Group</TooltipContent>
+                    </Tooltip>
                 </div>
             </div>
 
@@ -294,11 +311,17 @@ export function ScriptureSearchHeader({handleBackClick, handleForwardClick, hist
             {/* SEARCH BAR */}
             <input type="text" value={searchQuery} className='form-control' onChange={handleSearchBarChange} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} style={searchStyle} />
             {/* TRANSLATION SELECT */}
-            <Select
-                entries={translationsList}
-                forcedIndex={translationsList.findIndex((translation) => selectedTranslation && translation?.key === selectedTranslation?.key)}
-                setSelected={updateSelectedTranslation}
-            />
+            <Tooltip>
+                <TooltipTrigger>
+                    <Select
+                        entries={translationsList}
+                        forcedIndex={translationsList.findIndex((translation) => selectedTranslation && translation?.key === selectedTranslation?.key)}
+                        setSelected={updateSelectedTranslation}
+                        icon='translation'
+                    />
+                </TooltipTrigger>
+                <TooltipContent>Translation</TooltipContent>
+            </Tooltip>
             {/* SEARCH BUTTON */}
             <IconButton iconName='search' text='Search' handleClick={handleSearch} />
         </div>

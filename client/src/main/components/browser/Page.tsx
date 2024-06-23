@@ -107,7 +107,7 @@ function Page(): JSX.Element {
             <div style={{ flex: 1 }}>
                 <Tabbar tabs={tabsList} selectedTab={selectedTab} selectTab={selectTab} closeTab={closeTab} />
                 {[...windowsList.entries()].map(([name, window]) => (
-                    <div key={name} style={{ display: name === activeWindow ? 'block' : 'none' }}>
+                    <div key={name} style={{ display: name === activeWindow ? 'block' : 'none', overflow: 'clip' }}>
                         {window}
                     </div>
                 ))}

@@ -5,9 +5,10 @@ interface SelectProps {
     entries: { name: string; key: string; element: React.ReactNode; }[],
     setSelected: (name: string) => void;
     forcedIndex?: number;
+    icon?: string;
 }
 
-const Select: React.FC<SelectProps> = ({ entries, setSelected, forcedIndex }) => {
+const Select: React.FC<SelectProps> = ({ entries, setSelected, icon, forcedIndex }) => {
 
     const [isOpen, setIsOpen] = React.useState(false);
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
@@ -69,6 +70,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, forcedIndex }) =>
             {...getReferenceProps()}
         >
             <span className='select-option'>
+                {icon ? <img style={{paddingRight: 10}} src={`/bible-app/icons/${icon}.svg`} alt='Icon'/> : null}
                 {(selectedIndex !== null && selectedIndex >= 0) ? entries[selectedIndex]?.name : '...'}
                 <img src='/bible-app/icons/drop.svg' alt='Arrow Down'/>
             </span>

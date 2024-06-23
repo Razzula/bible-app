@@ -4,11 +4,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './Tooltip';
 
 import '../../styles/common.scss';
 
-type IconButtonProps = {
+export type IconButtonProps = {
     iconName: string;
     text?: string;
-    handleClick: (event: React.MouseEvent) => void;
+    handleClick?: (event: React.MouseEvent) => void;
     disabled?: boolean;
+    id?: string;
 }
 
 function IconButton({ iconName, text, handleClick, disabled=false }: IconButtonProps): JSX.Element {
@@ -16,9 +17,11 @@ function IconButton({ iconName, text, handleClick, disabled=false }: IconButtonP
     return (
         <Tooltip>
             <TooltipTrigger>
-                <button onClick={handleClick} disabled={disabled}>
-                    <img src={`/bible-app/icons/${iconName}.svg`} alt={text ?? iconName} />
-                </button>
+                <span className='butn'>
+                    <button onClick={handleClick} disabled={disabled}>
+                        <img src={`/bible-app/icons/${iconName}.svg`} alt={text ?? iconName} />
+                    </button>
+                </span>
             </TooltipTrigger>
             <TooltipContent>{text ?? null}</TooltipContent>
         </Tooltip>

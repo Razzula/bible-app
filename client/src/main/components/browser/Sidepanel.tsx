@@ -80,7 +80,6 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
         switch (panelType?.type) {
             case WindowTypes.Scripture.type:
                 return <>
-                    <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Scripture.name)}>new</button>
                     <Accordion>
                         {navStructure(WindowTypes.Scripture)}
                     </Accordion>
@@ -88,7 +87,6 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
 
             case WindowTypes.Interlinear.type:
                 return <>
-                    <button onClick={(event) => handleCreateNewTab(event, panelType, WindowTypes.Interlinear.name)}>new</button>
                     <Accordion>
                         {navStructure(WindowTypes.Interlinear)}
                     </Accordion>
