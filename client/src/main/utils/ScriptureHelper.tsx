@@ -9,8 +9,6 @@ import Passage from '../components/scripture/Passage';
 import { isElectronApp } from './general';
 import { InterlinearPassage } from '../components/Interlinear';
 
-const docID = 'Scripture';
-
 export async function loadTranslationList(setTranslationsList: Function, setSelectedTranslation: Function, directory: string = 'Scripture'): Promise<void> {
     const translations = await FileManager.getInstance().getDirectories(directory);
 
@@ -95,7 +93,8 @@ export function loadPassageUsingString(searchQuery: string, selectedTranslation:
 export async function loadPassageUsingUSFM(
     usfm: any, selectedTranslation: any, clearForwardCache = false, openInNewTab = false, PassageType: typeof Passage | typeof InterlinearPassage, interlinear: boolean,
     loadPassageFromUSFM: Function, createNewTab: Function, setPassages: Function, setSearchError: Function, setSearchQuery: Function, searchQuery: string,
-    historyStacks: string[][], setHistoryStacks: Function, selectedNoteGroup: string | undefined, selectedRenderMode: string
+    historyStacks: string[][], setHistoryStacks: Function, selectedNoteGroup: string | undefined, selectedRenderMode: string,
+    docID?: string
 ): Promise<void> {
 
     if (openInNewTab) {
@@ -167,42 +166,44 @@ export async function loadPassageUsingUSFM(
         }
         setHistoryStacks(historyStacks);
 
-        setTimeout(() => { // TODO: make this in response
+        if (docID) {
+            setTimeout(() => { // TODO: make this in response
 
-            // scroll to verse if specified
-            if (Array.isArray(usfm)) { // only scroll to first passage
-                usfm = usfm[0];
-            }
-            if (usfm.initialVerse) { // might need to move into state
+                // scroll to verse if specified
+                if (Array.isArray(usfm)) { // only scroll to first passage
+                    usfm = usfm[0];
+                }
+                if (usfm.initialVerse) { // might need to move into state
 
-                const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
+                    const range = usfm.finalVerse ? usfm.finalVerse : usfm.initialVerse;
 
-                // jump to passage
-                const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
-                if (element) {
-                    element.scrollIntoView();
+                    // jump to passage
+                    const element = document.getElementById(`v${usfm.initialVerse - 1}`); // TEMP; -1 prevents verse going all the way to top
+                    if (element) {
+                        element.scrollIntoView();
+                    }
+                    else {
+                        document.getElementById(docID)?.scrollIntoView(); // goto top
+                    }
+
+                    // highlight passage
+                    for (let verse = usfm.initialVerse; verse <= range; verse++) {
+
+                        const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
+                        for (const e of elements) {
+                            const element = e as HTMLElement;
+                            element.classList.remove('blink');
+                            element.offsetWidth; // allow repetition
+                            element.classList.add('blink');
+                        }
+                    }
+
                 }
                 else {
                     document.getElementById(docID)?.scrollIntoView(); // goto top
                 }
-
-                // highlight passage
-                for (let verse = usfm.initialVerse; verse <= range; verse++) {
-
-                    const elements = document.getElementsByClassName(`${usfm.book}.${usfm.initialChapter}.${verse}`);
-                    for (const e of elements) {
-                        const element = e as HTMLElement;
-                        element.classList.remove('blink');
-                        element.offsetWidth; // allow repetition
-                        element.classList.add('blink');
-                    }
-                }
-
-            }
-            else {
-                document.getElementById(docID)?.scrollIntoView(); // goto top
-            }
-        }, 100);
+            }, 100);
+        }
     }
     else {
         setSearchError(true);

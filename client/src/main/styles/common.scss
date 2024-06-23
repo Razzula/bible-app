@@ -25,6 +25,11 @@
     background-color: #52525e;
 }
 
+.flex {
+    display: flex;
+    justify-content: center;
+}
+
 .flex-left {
     display: flex;
     gap: 8px;

@@ -259,7 +259,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
         if (ignoreFootnotes || renderMode === 'sidenotes') {
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
+                    contents={formattedContent} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode} docID={docID}
                     handleTokenSelected={handleTokenSelected}
                 />
             );
@@ -334,7 +334,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
                     // add currently collected annotated chunk
                     passageElements.push(
                         <PassageChunk
-                        contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
+                        contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode} docID={docID}
                         handleTokenSelected={handleTokenSelected}
                         />
                     );
@@ -359,7 +359,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
             }
             passageElements.push(
                 <PassageChunk
-                    contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode}
+                    contents={formattedContentChunk} ignoreFootnotes={ignoreFootnotes} loadPassage={loadPassage} passageBook={usfm.book} passageChapter={usfm.chapter} translation={translation} passageNotes={notesContents} renderMode={renderMode} docID={docID}
                     handleTokenSelected={handleTokenSelected}
                 />
             );

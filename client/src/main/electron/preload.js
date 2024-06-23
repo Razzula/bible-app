@@ -11,5 +11,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getResourceChildren: (parentDirectory, detectionMode) => ipcRenderer.invoke('getResourceChildren', parentDirectory, detectionMode),
     loadSettings: () => ipcRenderer.invoke('loadSettings'),
     saveSettings: (settingsJSON) => ipcRenderer.invoke('saveSettings', settingsJSON),
+    loadConcordance: (concordanceName) => ipcRenderer.invoke('loadConcordance', concordanceName),
     setupApp: () => ipcRenderer.invoke('setupApp')
 });

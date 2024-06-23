@@ -41,6 +41,7 @@ app.whenReady().then(() => {
     ipcMain.handle('getResourceChildren', (event, parentDirectory, detectionMode) => getResourceChildren(parentDirectory, detectionMode))
     ipcMain.handle('loadSettings', (event) => loadSettings())
     ipcMain.handle('saveSettings', (event, settingsJSON) => saveSettings(settingsJSON))
+    ipcMain.handle('loadConcordance', (event, concordanceName) => handleLoadConcordance(concordanceName))
 
     createWindow()
 
@@ -291,4 +292,11 @@ async function loadSettings() {
 
 async function saveSettings(settings) {
     return await writeFile('settings.json', '', settings);
+}
+
+async function handleLoadConcordance(concordanceName) {
+    return await readJSONFile(
+        `${concordanceName}.json`,
+        'concordances'
+    );
 }

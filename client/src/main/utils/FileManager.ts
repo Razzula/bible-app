@@ -104,6 +104,11 @@ class FileManager {
             .catch(() => []);
     }
 
+    public async loadConcordance(concordanceName: string): Promise<any> {
+        return await fetch(`${this.SEVER_URL}/file/concordances/${concordanceName}.json`)
+            .then(response => response.json());
+    }
+
 }
 
 /**
@@ -192,6 +197,15 @@ class ElectronFileManager extends FileManager {
         });
 
         return Object.values(directories);
+    }
+
+    public async loadConcordance(concordanceName: string): Promise<any> {
+        const res = await window.electronAPI.loadConcordance(concordanceName);
+        if (res) {
+            return res;
+        }
+        // if the concordance is not found, attempt to fetch it from the server
+        return super.loadConcordance(concordanceName);
     }
 
 }

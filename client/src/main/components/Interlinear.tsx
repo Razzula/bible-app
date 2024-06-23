@@ -12,6 +12,11 @@ import { PassageProps } from './scripture/Passage';
 
 import licenses from '../../../public/licenses.json';
 import { Tooltip, TooltipContent, TooltipTrigger } from './common/Tooltip';
+import { useSelector, useStore } from 'react-redux';
+import { RootState } from '../redux/rootReducer';
+import { Store } from 'redux';
+import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
+import { setActiveToken, setNoActiveToken } from '../redux/actions';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -31,11 +36,17 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     const [historyStacks, setHistoryStacks]: [Array<Array<string>>, Function] = useState([[], []]);
 
     const [passages, setPassages]: [JSX.Element[], Function] = useState([]);
+    const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
+
+    const [currentConcordance, setCurrentConcordance] = useState<any>(null);
 
     const fileManager = FileManager.getInstance();
 
     useEffect(() => {
         getTranslationList();
+        fileManager.loadConcordance('strongs').then((concordance) => {
+            setCurrentConcordance(concordance);
+        });
     }, []);
 
     useEffect(() => {
@@ -79,7 +90,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     async function loadPassageFromUSFM(usfm: any, clearForwardCache = false, openInNewTab = false): Promise<void> {
         loadPassageUsingUSFM(
             usfm, selectedTranslation, clearForwardCache, openInNewTab, InterlinearPassage, true,
-            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear'
+            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear',
         );
     }
 
@@ -122,12 +133,34 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
 
             </div>
 
-            <div className='scroll'>
-                <div className='interlinear-contents'>
-                    {/* BIBLE */}
-                    {passages}
-                    {(passages.length > 0) ? <p className="notice">{selectedTranslation?.license === 'PUBLIC_DOMAIN' ? licenses.PUBLIC_DOMAIN : selectedTranslation?.license}</p> : null}
+            <div className='flex'>
+                <div className='scroll'>
+                    <div className='interlinear-contents'>
+                        {/* BIBLE */}
+                        {passages}
+                        {(passages.length > 0) ? <p className="notice">{selectedTranslation?.license === 'PUBLIC_DOMAIN' ? licenses.PUBLIC_DOMAIN : selectedTranslation?.license}</p> : null}
+                    </div>
                 </div>
+
+                { selectedToken ?
+                    <div className='infoPanel'>
+                        {
+                            currentConcordance ?
+                                <div>
+                                    <h4>{currentConcordance[selectedToken]?.native} <span className='label'>({selectedToken})</span></h4>
+                                    <div className='translit'>
+                                        <span>{currentConcordance[selectedToken]?.translit}</span>
+                                        <span> ({currentConcordance[selectedToken]?.pronunc})</span>
+                                    </div>
+                                    <div className='description'>
+                                        {currentConcordance[selectedToken]?.definition}
+                                    </div>
+                                </div>
+                            : selectedToken
+                        }
+                    </div>
+                    : null
+                }
             </div>
 
         </div>
@@ -140,35 +173,64 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
 
     const [formattedContent, setFormattedContent] = useState<JSX.Element[]>([]);
 
+    const store: Store = useStore();
+    const activeToken = useSelector((state: RootState) => state.passage.activeToken);
+
+    function setSelectedToken(data: any): void {
+        const currentActiveToken = store.getState().passage.activeToken;
+        if (currentActiveToken === data) {
+            store.dispatch(setNoActiveToken());
+        }
+        else {
+            if (data) {
+                store.dispatch(setActiveToken(data));
+            }
+            else {
+                store.dispatch(setNoActiveToken());
+            }
+        }
+    }
+
     useEffect(() => {
         const formattedContent: JSX.Element[] = [];
 
         for (const content of contents) {
             formattedContent.push(<div className='label chapter'>{usfm.initialChapter}</div>);
             Object.entries(content).forEach(([verseNumber, verse]: any) => {
+
                 formattedContent.push(<div className='label'>{verseNumber}</div>);
 
                 Object.entries(verse).forEach(([wordNumber, word]: any) => {
+                    const data = word;
+                    const isSelected = activeToken && activeToken === data.strongs?.data;
+
                     formattedContent.push(
                         <Tooltip>
                             <TooltipTrigger>
-                                <div className='stack'>
-                                            <span>
-                                                {(word as any).native}
-                                            </span>
-                                    <span className='translit'>{(word as any).transliteration}</span>
-                                    <span className='english'>{(word as any).eng}</span>
+                                <div
+                                    className={ isSelected ? 'stack selected' : 'stack'}
+                                    onClick={() => setSelectedToken(data.strongs?.data ?? null)}
+                                >
+                                    <span>
+                                        {data.native}
+                                    </span>
+                                    <span className='translit'>{data.translit}</span>
+                                    <span className='english'>{data.eng}</span>
                                 </div>
                             </TooltipTrigger>
-                            <TooltipContent>{(word as any).strongs?.data}</TooltipContent>
+                            {data.strongs.data ? <TooltipContent>{data.strongs.data}</TooltipContent> : null}
                         </Tooltip>
                     );
+
+                    if (word.punct) {
+                        formattedContent.push(<div className='punct'>{word.punct}</div>);
+                    }
                 });
             });
         }
 
         setFormattedContent(formattedContent);
-    }, [contents]);
+    }, [contents, activeToken]);
 
 
     return (

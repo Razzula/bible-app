@@ -25,7 +25,7 @@
 .interlinear-contents {
     margin: auto;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1300px;
     padding: 0 10px;
 
     .interlinear {
@@ -35,23 +35,17 @@
         div {
             margin: 4px;
             padding: 16px;
+        }
 
-            // .native {
+        .punct {
+            font-family: serif;
+            font-size: 28px;
+            user-select: none;
+            color: #9c9386;
+            padding: 0px !important;
 
-            // }
-
-            .translit {
-                margin-right: 5px;
-                font-size: 12px;
-                user-select: none;
-                color: #9c9386;
-                vertical-align: sub;
-                font-weight: 500;
-            }
-
-            // .english {
-
-            // }
+            justify-content: center;
+            align-items: center;
         }
     }
 
@@ -59,8 +53,13 @@
         direction: rtl;
     }
 
+
     .stack {
         border-bottom: 1px dotted #ffffff22;
+    }
+
+    .stack.selected {
+        color: #ffff00 !important;
     }
 
     .stack:hover {
@@ -74,10 +73,40 @@
     }
 }
 
+// .native {
+
+// }
+
+.translit {
+    margin-right: 5px;
+    font-size: 12px;
+    user-select: none;
+    color: #9c9386;
+    vertical-align: sub;
+    font-weight: 500;
+}
+
+// .english {
+
+// }
 
 .stack {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.infoPanel {
+    background-color: #181a1b;
+    margin: 8px;
+    margin-right: 18px;
+    padding: 20px;
+    box-sizing: border-box;
+    width: max-content;
+    width: 450px;
+
+    .description {
+        margin-top: 10px;
+    }
 }

@@ -176,7 +176,8 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
 
         loadPassageUsingUSFM(
             usfm, selectedTranslation, clearForwardCache, openInNewTab, Passage, false,
-            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, selectedNoteGroup, selectedRenderMode
+            loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, selectedNoteGroup, selectedRenderMode,
+            id
         );
 
         deselect();

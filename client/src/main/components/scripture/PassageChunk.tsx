@@ -20,6 +20,7 @@ type PassageChunkProps = {
     passageNotes?: any;
     renderMode?: string;
     handleTokenSelected?: Function;
+    docID?: string;
 }
 
 type PassageTokenProps = {
@@ -27,6 +28,7 @@ type PassageTokenProps = {
     classes: string[];
     topNoteID?: string;
     handleTokenSelected?: Function;
+    docID?: string;
 }
 
 type Section = {
@@ -40,7 +42,7 @@ type Section = {
 /**
  * TODO
  */
-function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, handleTokenSelected, renderMode }: PassageChunkProps): JSX.Element {
+function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, passageChapter, translation, passageNotes, handleTokenSelected, renderMode, docID }: PassageChunkProps): JSX.Element {
 
     const [notedTokens, setNotedTokens]: [any, Function] = React.useState();
 
@@ -142,6 +144,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
                 section={item} classes={classes}
                 topNoteID={topNoteID}
                 handleTokenSelected={handleTokenSelected}
+                docID={docID}
             />;
         }
 
@@ -171,7 +174,7 @@ function PassageChunk({ contents, ignoreFootnotes, loadPassage, passageBook, pas
 
 }
 
-function PassageToken({ section, classes, topNoteID, handleTokenSelected }: PassageTokenProps): JSX.Element {
+function PassageToken({ section, classes, topNoteID, handleTokenSelected, docID }: PassageTokenProps): JSX.Element {
 
     const tokenRef = useRef(null);
 
@@ -196,10 +199,10 @@ function PassageToken({ section, classes, topNoteID, handleTokenSelected }: Pass
         }
 
         if (selectedToken === section.id) {
-            store.dispatch(selectSidenote('Scripture', undefined));
+            store.dispatch(selectSidenote(docID, undefined));
         }
         else {
-            store.dispatch(selectSidenote('Scripture', topNoteID));
+            store.dispatch(selectSidenote(docID, topNoteID));
         }
     };
 
