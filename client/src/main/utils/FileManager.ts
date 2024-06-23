@@ -239,7 +239,7 @@ class MockFileManager extends FileManager {
         return null;
     }
 
-    public async loadScripture(book: string, chapter: string, translation?: string): Promise<any> {
+    public async loadScripture(book: string, chapter: string, translation?: string, interlinear=false): Promise<any> {
         // TODO: caching
         let data = await this.loadFile(`Scripture/${translation}/${book}.${chapter}`);
         if (data) {
@@ -249,7 +249,7 @@ class MockFileManager extends FileManager {
                 console.error('404: ' + `Scripture/${translation}/${book}.${chapter}`);
             }
         }
-        return super.loadScripture(book, chapter, translation);
+        return super.loadScripture(book, chapter, translation, interlinear);
     }
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {

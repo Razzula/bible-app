@@ -69,7 +69,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
         }
 
         loadTranslationList(setTranslationsList, setSelectedTranslation, 'interlinear');
-        setSelectedTranslation(translationsList.find((t) => t.name === 'Interlinear' ?? null));
+        setSelectedTranslation(translationsList.find((t) => t.name === 'Interlinear'));
     }
 
     function loadPassageFromString(searchQuery: string, clearForwardCache = false): void {
