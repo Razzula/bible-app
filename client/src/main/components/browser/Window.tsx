@@ -9,14 +9,18 @@ import Resource from '../Resource';
 import { isElectronApp } from '../../utils/general';
 import Settings from '../Settings';
 import Interlinear from '../Interlinear';
+import { BibleReference } from '../scripture/Footnote';
+import SettingsManager from '../../utils/SettingsManager';
 
 type WindowProps = {
     windowToLoad: symbol;
     data: string;
-    createNewTab: (panelType: symbol, data: string) => void;
+    createNewTab: (panelType: any, data: string) => void;
 }
 
 function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element | null {
+
+    const settings = SettingsManager.getInstance();
 
     switch (windowToLoad) {
         case WindowTypes.Scripture.type:
@@ -57,6 +61,12 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                     </p>
                                 </Alert>
                             }
+                        <p>
+                            <span>Not sure where to start? How about in the begining, with </span>
+                            <BibleReference text='Genesis 1:1' usfm={{ book: 'GEN', initialChapter: 1, initialVerse: 1 }} loadPassage={() => createNewTab(WindowTypes.Scripture, 'GEN1.1')} currentBook='GEN' translation={settings.getSetting('defaultTranslation')} />
+                            <span>?</span>
+                        </p>
+                        <hr />
                         <p>You can report any issues encountered, <a href='https://github.com/Razzula/bible-app/issues' target='_blank'>here</a>.</p>
                         <p>:D</p>
                     </div>

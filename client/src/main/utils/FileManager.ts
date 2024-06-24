@@ -267,15 +267,18 @@ class MockFileManager extends FileManager {
     }
 
     public async loadNotes(group: string, book: string, chapter: string): Promise<any> {
-        const notes: string[] = this.manifest.notes[group][book][chapter];
+        const notes: any = this.manifest.notes[group];
 
-        return await Promise.all(
-            notes.map(async (note) => {
-                const data = JSON.parse(await this.loadFile(`notes/${group}/${book}/${chapter}/${note}`));
-                data.id = note;
-                return data;
-            })
-        );
+        if (notes) {
+            return await Promise.all(
+                notes[book][chapter].map(async (note: string) => {
+                    const data = JSON.parse(await this.loadFile(`notes/${group}/${book}/${chapter}/${note}`));
+                    data.id = note;
+                    return data;
+                })
+            );
+        }
+        return [];
     }
 
     public async getDirectories(path: string): Promise<any[]> {

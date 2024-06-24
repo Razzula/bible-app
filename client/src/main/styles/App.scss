@@ -59,3 +59,24 @@ Window {
     display: flex;
     justify-content: center;
 }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6e6f71;
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #5b5c5e;
+}
+
+::-webkit-scrollbar-button {
+    display: none; /* hide scrollbar buttons if you don't want them */
+}

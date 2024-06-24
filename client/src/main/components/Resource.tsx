@@ -10,6 +10,7 @@ import '../styles/resource.scss'
 import { getReferenceText, getUSFM } from '../utils/bibleReferences';
 import Passage from './scripture/Passage';
 import { Alert } from 'react-bootstrap';
+import ButtonGrid from './common/ButtonGrid';
 
 type ResourceProps = {
     rootResourcePath: string;
@@ -27,7 +28,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
 
     const [currentBook, setCurrentBook] = useState<string | undefined>(undefined);
     const [resourceElement, setResourceElement] = useState<JSX.Element | JSX.Element[] | null>(null);
-    const [childrenDocuments, setChildrenDocuments] = useState<JSX.Element[] | null>(null);
+    const [childrenDocuments, setChildrenDocuments] = useState<JSX.Element | null>(null);
 
     const fileManager = FileManager.getInstance();
     const settings = SettingsManager.getInstance();
@@ -82,20 +83,14 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                 }
                             }
                         }
-
-                        return (
-                            <div key={child.title ?? child.path}>
-                                <span className='chapter-button' onClick={() => travelDownNavTree(child)}>{child.title}</span>
-                            </div>
-                        );
+                        return (child);
                     });
-
                     if (currentManifest.children === 'usfm-chapter') {
                         // children are ordered alphabetically by default, so we need to sort them numerically
-                        childrenDocuments = childrenDocuments.sort((a: any, b: any) => Number(a.key) - Number(b.key));
+                        childrenDocuments = childrenDocuments.sort((a: any, b: any) => Number(a.title ?? a.path) - Number(b.title ?? b.path));
                     }
 
-                    setChildrenDocuments(childrenDocuments);
+                    setChildrenDocuments(<ButtonGrid gridData={childrenDocuments} handleClick={(event, data) => travelDownNavTree(data)} />);
                 }
             }
 
@@ -210,10 +205,12 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                 {childrenDocuments ?
                     <div className='resource-content'>
                         {/* NAVIGATION PANE */}
-                        <div style={{ textAlign: 'center' }}>
+                        <div style={{ textAlign: 'center'}}>
                             <h3>TABLE OF CONTENTS</h3>
                         </div>
-                        {childrenDocuments}
+                        <div style={{ marginLeft: 200, marginRight: 200 }}>
+                            {childrenDocuments}
+                        </div>
                     </div>
                 : null}
                 <div className='resource-content' style={ navTreeArray[navTreeArray.length - 2]?.format === 'passage' ? { maxWidth: '900px' } : {}}>

@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
+// import Accordion from 'react-bootstrap/Accordion';
 
 import manifest from '../../../../public/manifest.json';
 import { WindowTypes } from '../../utils/enums';
 
 import '../../styles/sidepanel.scss';
 import FileManager from '../../utils/FileManager';
+import { Accordion, AccordionHeader, AccordionContent } from '../common/Accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 import { getReferenceText, getUSFM } from '../../utils/bibleReferences';
+import ButtonGrid from '../common/ButtonGrid';
 
 type SidepanelProps = {
     panelType?: any;
@@ -33,6 +35,7 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
     }
 
     function handleCreateNewTab(event: React.MouseEvent, panelType: any, data: string): void {
+        console.warn(data);
 
         switch (event.button) {
             case 0:
@@ -54,25 +57,15 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
             const title = bookData['full-title'] ? bookData['full-title'] : bookData['title'];
             const key = String(count);
 
-            return (
-                <Accordion.Item key={key} eventKey={key}>
-                    <Accordion.Header>{title}</Accordion.Header>
-                    <Accordion.Body>
-                        <div className='chapters-grid'>
-                            {bookData.chapters.map((verseCount, index) => {
-                                return (
-                                    <span
-                                        className='chapter-button' key={index}
-                                        onMouseDown={(event) => handleCreateNewTab(event, windowType, getReferenceText(getUSFM(`${bookData['usfm']}.${index + 1}`)))}
-                                    >
-                                        {index + 1}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    </Accordion.Body>
-                </Accordion.Item>
-            );
+            return (<>
+                <AccordionHeader index={count}>{title}</AccordionHeader>
+                <AccordionContent index={count}>
+                    <ButtonGrid
+                        gridData={bookData.chapters.map((chapter: any, index: number) => index + 1)}
+                        handleClick={(event, data) => handleCreateNewTab(event, windowType, getReferenceText(getUSFM(`${bookData['usfm']}.${data}`)))}
+                    />
+                </AccordionContent>
+            </>);
         });
     }
 

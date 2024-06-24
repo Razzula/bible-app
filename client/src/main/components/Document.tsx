@@ -3,6 +3,8 @@ import { Editor } from '@tinymce/tinymce-react';
 
 import '../styles/document.scss'
 import '../styles/editor.scss';
+import { isElectronApp } from '../utils/general';
+import { Alert } from 'react-bootstrap';
 
 type DocumentProps = {
     initialContents: string | null;
@@ -22,6 +24,14 @@ function Document({ initialContents }: DocumentProps): JSX.Element {
     return (
         <>
             <div className='document'>
+                {
+                    isElectronApp() ? null :
+                    <Alert variant="warning">
+                        <Alert.Heading>⚠</Alert.Heading>
+                        <p>This feature is currently not implemented. Any changes made are not stored, and features are very limited.</p>
+                    </Alert>
+                }
+
                 {/* @ts-ignore */}
                 <Editor
                     initialValue={initialContents || ''}
