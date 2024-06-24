@@ -20,6 +20,7 @@ import { setActiveToken, setNoActiveToken } from '../redux/actions';
 import { BibleReference } from './scripture/Footnote';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import SettingsManager from '../utils/SettingsManager';
+import { locateStrongsReferences } from '../utils/strongsReferences';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -329,6 +330,13 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
         occurences.push('...');
     }
 
+    const derive = locateStrongsReferences(concordanceData?.derive).map((d: any, i: number) => {
+        if (d.match) {
+            return <StrongsReference key={i} strongsNumber={d.match} currentBook={currentBook} translation={translation} />;
+        }
+        return <span>{d.text}</span>
+    });
+
     return (
         <div className='infoPanel'>
             <div>
@@ -346,9 +354,11 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
                 <div className='description'>
                     {concordanceData?.define}
                 </div>
-                <div className='translit'>
-                    {concordanceData?.derive}
-                </div>
+                { derive ?
+                    <div className='translit'>
+                        {derive}
+                    </div> : null
+                }
             </div>
 
             { occurences ?
@@ -422,7 +432,7 @@ export function StrongsReference({ strongsNumber, forceText, currentBook, transl
                 className='strongs'
                 onMouseEnter={updatePopoverContents}
             >
-                {forceText ?? concordanceData[strongsNumber]?.native}
+                {forceText ?? concordanceData.native}
             </span>
         </OverlayTrigger>
     );

@@ -66,7 +66,7 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                             <span>Not sure where to start? How about </span>
                             <StrongsReference
                                 strongsNumber='H7225'
-                                forceText='bereshit'
+                                forceText='רֵאשִׁית'
                                 currentBook='GEN'
                                 translation={translation}
                             />

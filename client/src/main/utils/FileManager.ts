@@ -239,7 +239,6 @@ class ElectronFileManager extends FileManager {
             .then((concordance: any) => {
                     if (concordance) {
                         this.concordanceData = concordance;
-                        console.log('Concordance loaded', concordance);
                     }
             });
     }
