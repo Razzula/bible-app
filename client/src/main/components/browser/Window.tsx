@@ -8,7 +8,7 @@ import { WindowTypes } from '../../utils/enums';
 import Resource from '../Resource';
 import { isElectronApp } from '../../utils/general';
 import Settings from '../Settings';
-import Interlinear from '../Interlinear';
+import Interlinear, { StrongsReference } from '../Interlinear';
 import { BibleReference } from '../scripture/Footnote';
 import SettingsManager from '../../utils/SettingsManager';
 
@@ -21,6 +21,7 @@ type WindowProps = {
 function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element | null {
 
     const settings = SettingsManager.getInstance();
+    const translation = settings.getSetting('defaultTranslation');
 
     switch (windowToLoad) {
         case WindowTypes.Scripture.type:
@@ -62,8 +63,21 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                                 </Alert>
                             }
                         <p>
-                            <span>Not sure where to start? How about in the begining, with </span>
-                            <BibleReference text='Genesis 1:1' usfm={{ book: 'GEN', initialChapter: 1, initialVerse: 1 }} loadPassage={() => createNewTab(WindowTypes.Scripture, 'GEN1.1')} currentBook='GEN' translation={settings.getSetting('defaultTranslation')} />
+                            <span>Not sure where to start? How about </span>
+                            <StrongsReference
+                                strongsNumber='H7225'
+                                forceText='bereshit'
+                                currentBook='GEN'
+                                translation={translation}
+                            />
+                            <span>, with </span>
+                            <BibleReference
+                                text='Genesis 1:1'
+                                usfm={{ book: 'GEN', initialChapter: 1, initialVerse: 1 }}
+                                loadPassage={() => createNewTab(WindowTypes.Scripture, 'GEN1.1')}
+                                currentBook='GEN'
+                                translation={translation}
+                            />
                             <span>?</span>
                         </p>
                         <hr />

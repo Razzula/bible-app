@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, forwardRef, useEffect, useState } from 'react';
 
 import { ScriptureSearchHeader } from './scripture/Scripture';
 import FileManager from '../utils/FileManager';
@@ -18,6 +18,8 @@ import { Store } from 'redux';
 import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { setActiveToken, setNoActiveToken } from '../redux/actions';
 import { BibleReference } from './scripture/Footnote';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
+import SettingsManager from '../utils/SettingsManager';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -42,7 +44,10 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     const [currentConcordance, setCurrentConcordance] = useState<any>(null);
     const [infoPanel, setInfoPanel] = useState<JSX.Element | null>(null);
 
+    const [currentBook, setCurrentBook] = useState<string>('');
+
     const fileManager = FileManager.getInstance();
+    const settings = SettingsManager.getInstance();
 
     useEffect(() => {
         getTranslationList();
@@ -68,7 +73,15 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
 
     useEffect(() => {
         if (selectedToken) {
-            setInfoPanel(<ConcordancePanel strongsNumber={selectedToken} currentConcordance={currentConcordance} createNewTab={createNewTab} />);
+            setInfoPanel(
+                <ConcordancePanel
+                    strongsNumber={selectedToken}
+                    currentConcordance={currentConcordance}
+                    createNewTab={createNewTab}
+                    currentBook={currentBook}
+                    translation={settings.getSetting('defaultTranslation')}
+                />
+            );
         }
     }, [selectedToken, currentConcordance]);
 
@@ -101,6 +114,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
             loadPassageFromUSFM, createNewTab, setPassages, setSearchError, setSearchQuery, searchQuery, historyStacks, setHistoryStacks, undefined, 'interlinear',
             'base'
         );
+        setCurrentBook(usfm[0].book);
     }
 
     function updateSelectedTranslation(translation: string): void {
@@ -290,10 +304,12 @@ type ConcordancePanelProps = {
     strongsNumber: string;
     currentConcordance: any;
     createNewTab: (panelType: any, data: string) => void;
+    currentBook?: string;
+    translation: string;
     liteMode?: boolean;
 };
 
-export function ConcordancePanel({ strongsNumber, currentConcordance, createNewTab, liteMode=false }: ConcordancePanelProps): JSX.Element {
+export function ConcordancePanel({ strongsNumber, currentConcordance, createNewTab, currentBook, translation, liteMode=false }: ConcordancePanelProps): JSX.Element {
 
     if (!currentConcordance || !currentConcordance[strongsNumber]) {
         return (
@@ -302,6 +318,11 @@ export function ConcordancePanel({ strongsNumber, currentConcordance, createNewT
                 Loading...
             </div>
         );
+    }
+
+    const occurences = liteMode ? currentConcordance[strongsNumber]?.occurences?.slice(0, 9) : currentConcordance[strongsNumber]?.occurences;
+    if (liteMode && occurences?.length < currentConcordance[strongsNumber]?.occurences?.length) {
+        occurences.push('...');
     }
 
     return (
@@ -326,20 +347,23 @@ export function ConcordancePanel({ strongsNumber, currentConcordance, createNewT
                 </div>
             </div>
 
-            { currentConcordance[strongsNumber]?.occurences ?
+            { occurences ?
                 <div className='infoPanel-section'>
                     <h4>Occurrences <span className='label'>({currentConcordance[strongsNumber]?.occurences?.length})</span></h4>
                     <ul>
-                        {currentConcordance[strongsNumber]?.occurences.map((occurence: any, index: number) => {
+                        {occurences.map((occurence: any, index: number) => {
                             const reference = getUSFM(occurence);
                             if (!reference || !reference[0]) {
-                                return null;
+                                return <li key={index}>{occurence}</li>;
                             }
                             return (
                                 <li key={index}>
-                                    <BibleReference text={getReferenceText(reference[0])} usfm={reference[0]} loadPassage={function (usfm: any, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
-                                        createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
-                                    }} currentBook={'GEN'} translation={'NKJV'} />
+                                    <BibleReference
+                                        text={getReferenceText(reference[0])} usfm={reference[0]}
+                                        loadPassage={function (usfm: any, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
+                                            createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
+                                        }}
+                                        currentBook={currentBook ?? ''} translation={translation} />
                                 </li>
                             );
                         })}
@@ -351,6 +375,69 @@ export function ConcordancePanel({ strongsNumber, currentConcordance, createNewT
     );
 }
 
-export function StrongsReference(): JSX.Element | null {
-    return null;
+type StrongsReferenceProps = {
+    strongsNumber: string;
+    forceText?: string;
+    currentBook?: string;
+    translation: string;
 }
+
+export function StrongsReference({ strongsNumber, forceText, currentBook, translation }: StrongsReferenceProps): JSX.Element | null {
+
+    const fileManager = FileManager.getInstance();
+    const [concordance, setConcordance]: [any, Function] = useState();
+
+    useEffect(() => {
+        fileManager.loadConcordance('strongs').then((concordance) => {
+            setConcordance(concordance);
+        });
+    }, []);
+
+    if (!concordance) {
+        return <span>{forceText ?? strongsNumber}</span>;
+    }
+
+    // contents of footnote popover
+    return (
+        <OverlayTrigger trigger={['hover', 'focus']} placement="auto-start"
+            overlay={
+                <InnerPopover id='popover-basic'>
+                    <div className='popver-mini'>
+                        <ConcordancePanel
+                            strongsNumber={strongsNumber}
+                            currentConcordance={concordance}
+                            createNewTab={() => {}}
+                            currentBook={currentBook}
+                            translation={translation}
+                            liteMode={true}
+                        />
+                    </div>
+                </InnerPopover>
+            }
+        >
+            <span
+                className='strongs'
+                onMouseEnter={updatePopoverContents}
+            >
+                {forceText ?? concordance[strongsNumber]?.native}
+            </span>
+        </OverlayTrigger>
+    );
+
+    async function updatePopoverContents(): Promise<any> {
+    }
+}
+
+const InnerPopover = forwardRef(
+    ({ popper, children, show: _, ...props }: any, ref: any) => {
+        useEffect(() => {
+            popper.scheduleUpdate(); // update positioning
+        }, [children, popper]);
+
+        return (
+            <Popover ref={ref} body {...props}>
+                {children}
+            </Popover>
+        );
+    },
+);
