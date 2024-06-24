@@ -41,7 +41,6 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     const [passages, setPassages]: [JSX.Element[], Function] = useState([]);
     const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
 
-    const [currentConcordance, setCurrentConcordance] = useState<any>(null);
     const [infoPanel, setInfoPanel] = useState<JSX.Element | null>(null);
 
     const [currentBook, setCurrentBook] = useState<string>('');
@@ -51,9 +50,6 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
 
     useEffect(() => {
         getTranslationList();
-        fileManager.loadConcordance('strongs').then((concordance) => {
-            setCurrentConcordance(concordance);
-        });
     }, []);
 
     useEffect(() => {
@@ -76,14 +72,13 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
             setInfoPanel(
                 <ConcordancePanel
                     strongsNumber={selectedToken}
-                    currentConcordance={currentConcordance}
                     createNewTab={createNewTab}
                     currentBook={currentBook}
                     translation={settings.getSetting('defaultTranslation')}
                 />
             );
         }
-    }, [selectedToken, currentConcordance]);
+    }, [selectedToken]);
 
     async function getTranslationList(): Promise<void> {
         const translations = await fileManager.getDirectories('Scripture');
@@ -302,16 +297,25 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
 
 type ConcordancePanelProps = {
     strongsNumber: string;
-    currentConcordance: any;
     createNewTab: (panelType: any, data: string) => void;
     currentBook?: string;
     translation: string;
     liteMode?: boolean;
 };
 
-export function ConcordancePanel({ strongsNumber, currentConcordance, createNewTab, currentBook, translation, liteMode=false }: ConcordancePanelProps): JSX.Element {
+export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, translation, liteMode=false }: ConcordancePanelProps): JSX.Element {
 
-    if (!currentConcordance || !currentConcordance[strongsNumber]) {
+    const fileManager = FileManager.getInstance();
+    const [concordanceData, setConcordanceData]: [any, Function] = useState();
+
+    useEffect(() => {
+        setConcordanceData(undefined);
+        fileManager.loadFromConcordance(strongsNumber).then((concordance) => {
+            setConcordanceData(concordance);
+        });
+    }, [strongsNumber]);
+
+    if (!concordanceData) {
         return (
             <div className='infoPanel'>
                 <h4><span className='label'>({strongsNumber})</span></h4>
@@ -320,36 +324,36 @@ export function ConcordancePanel({ strongsNumber, currentConcordance, createNewT
         );
     }
 
-    const occurences = liteMode ? currentConcordance[strongsNumber]?.occurences?.slice(0, 9) : currentConcordance[strongsNumber]?.occurences;
-    if (liteMode && occurences?.length < currentConcordance[strongsNumber]?.occurences?.length) {
+    const occurences = liteMode ? concordanceData?.occurences?.slice(0, 9) : concordanceData?.occurences;
+    if (liteMode && occurences?.length < concordanceData?.occurences?.length) {
         occurences.push('...');
     }
 
     return (
         <div className='infoPanel'>
             <div>
-                <h4>{currentConcordance[strongsNumber]?.native} <span className='label'>({strongsNumber})</span></h4>
+                <h4>{concordanceData?.native} <span className='label'>({strongsNumber})</span></h4>
                 <div className='translit'>
-                    <span>{currentConcordance[strongsNumber]?.translit.org}</span>
-                    <span> ({currentConcordance[strongsNumber]?.pronunce})</span>
+                    <span>{concordanceData?.translit.org}</span>
+                    <span> ({concordanceData?.pronunce})</span>
                 </div>
                 <div className='translit'>
-                    <span>{currentConcordance[strongsNumber]?.pos}</span>
+                    <span>{concordanceData?.pos}</span>
                 </div>
             </div>
             <div className='infoPanel-section'>
                 <h4>Strong's Defintion</h4>
                 <div className='description'>
-                    {currentConcordance[strongsNumber]?.define}
+                    {concordanceData?.define}
                 </div>
                 <div className='translit'>
-                    {currentConcordance[strongsNumber]?.derive}
+                    {concordanceData?.derive}
                 </div>
             </div>
 
             { occurences ?
                 <div className='infoPanel-section'>
-                    <h4>Occurrences <span className='label'>({currentConcordance[strongsNumber]?.occurences?.length})</span></h4>
+                    <h4>Occurrences <span className='label'>({concordanceData?.occurences?.length})</span></h4>
                     <ul>
                         {occurences.map((occurence: any, index: number) => {
                             const reference = getUSFM(occurence);
@@ -384,16 +388,16 @@ type StrongsReferenceProps = {
 
 export function StrongsReference({ strongsNumber, forceText, currentBook, translation }: StrongsReferenceProps): JSX.Element | null {
 
-    const fileManager = FileManager.getInstance();
-    const [concordance, setConcordance]: [any, Function] = useState();
+    const [concordanceData, setConcordanceData]: [any, Function] = useState();
 
     useEffect(() => {
-        fileManager.loadConcordance('strongs').then((concordance) => {
-            setConcordance(concordance);
+        const fileManager = FileManager.getInstance();
+        fileManager.loadFromConcordance(strongsNumber).then((concordance) => {
+            setConcordanceData(concordance);
         });
-    }, []);
+    }, [strongsNumber]);
 
-    if (!concordance) {
+    if (!concordanceData) {
         return <span>{forceText ?? strongsNumber}</span>;
     }
 
@@ -405,7 +409,6 @@ export function StrongsReference({ strongsNumber, forceText, currentBook, transl
                     <div className='popver-mini'>
                         <ConcordancePanel
                             strongsNumber={strongsNumber}
-                            currentConcordance={concordance}
                             createNewTab={() => {}}
                             currentBook={currentBook}
                             translation={translation}
@@ -419,7 +422,7 @@ export function StrongsReference({ strongsNumber, forceText, currentBook, transl
                 className='strongs'
                 onMouseEnter={updatePopoverContents}
             >
-                {forceText ?? concordance[strongsNumber]?.native}
+                {forceText ?? concordanceData[strongsNumber]?.native}
             </span>
         </OverlayTrigger>
     );

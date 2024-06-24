@@ -9,6 +9,8 @@ console.log('NODE_ENV:', process.env.NODE_ENV);
 const isDevelopment = process.env.NODE_ENV === 'dev';
 const dataDir = isDevelopment ? path.join(__dirname, '..', '..', 'example') : path.join(__dirname, '..', 'public');
 
+const concordanceData = readJSONFile(path.join(dataDir, 'concordances', 'strongs.json'));
+
 // Ensure the uploads directory exists
 if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
@@ -104,6 +106,17 @@ app.get('/dir/*', (req, res) => {
         res.send(data);
     } else {
         res.status(404).send('Directory not found');
+    }
+});
+
+// Endpoint to download a specific file
+app.get('/data/strongs/:strongsNumber', (req, res) => {
+    const data = concordanceData[req.params.strongsNumber];
+    if (data) {
+        res.send(data);
+    }
+    else {
+        res.status(404).send('Strong\'s number not found');
     }
 });
 

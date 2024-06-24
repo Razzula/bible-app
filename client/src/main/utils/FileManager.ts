@@ -9,14 +9,15 @@ class FileManager {
     private static instance: FileManager;
     protected constructor() {
         fetch(`${this.SEVER_URL}/test`); // ping server to wake it up, in case it is sleeping
-
         void this.findDownloadedDirectories();
     }
 
     public static getInstance(): FileManager {
         if (!FileManager.instance) {
             if (isElectronApp()) {
-                FileManager.instance = new ElectronFileManager();
+                const electronFileManager = new ElectronFileManager();
+                electronFileManager.loadLocalConcordance('strongs');
+                FileManager.instance = electronFileManager;
             }
             else {
                 FileManager.instance = new MockFileManager();
@@ -29,11 +30,13 @@ class FileManager {
     protected fileCache: any = {
         'resources': {},
         'Scripture': {},
+        'concordance': {},
     };
     protected downloadedDirectories: any = {
         'resources': {},
         'Scripture': {},
     };
+    protected concordanceData: any = null;
     protected settings = SettingsManager.getInstance();
 
     private async findDownloadedDirectories() {
@@ -104,9 +107,13 @@ class FileManager {
             .catch(() => []);
     }
 
-    public async loadConcordance(concordanceName: string): Promise<any> {
-        return await fetch(`${this.SEVER_URL}/file/concordances/${concordanceName}.json`)
-            .then(response => response.json());
+    public async loadFromConcordance(strongsNumber: string): Promise<any> {
+        return await fetch(`${this.SEVER_URL}/data/strongs/${strongsNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                this.fileCache['concordance'][strongsNumber] = data; // cache result
+                return data;
+            });
     }
 
 }
@@ -199,13 +206,42 @@ class ElectronFileManager extends FileManager {
         return Object.values(directories);
     }
 
-    public async loadConcordance(concordanceName: string): Promise<any> {
-        const res = await window.electronAPI.loadConcordance(concordanceName);
-        if (res) {
-            return res;
+    /**
+     * If possible, fetch entry from the cached concordance. Otherwise, resort to fetching from the server.
+     * @param strongsNumber
+     * @returns
+     */
+    public async loadFromConcordance(strongsNumber: string): Promise<any> {
+
+        if (this.concordanceData === null) {
+            await new Promise<void>((resolve) => {
+                const interval = setInterval(() => {
+                    if (this.concordanceData !== null) {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 10);
+            });
+        }
+        if (this.concordanceData[strongsNumber]) {
+            return this.concordanceData[strongsNumber];
         }
         // if the concordance is not found, attempt to fetch it from the server
-        return super.loadConcordance(concordanceName);
+        return super.loadFromConcordance(strongsNumber);
+    }
+
+    /**
+     * Attempt to load a whole concordance from the local file system.
+     * @param concordanceName
+     */
+    public loadLocalConcordance(concordanceName: string): void {
+        window.electronAPI.loadConcordance(concordanceName)
+            .then((concordance: any) => {
+                    if (concordance) {
+                        this.concordanceData = concordance;
+                        console.log('Concordance loaded', concordance);
+                    }
+            });
     }
 
 }
