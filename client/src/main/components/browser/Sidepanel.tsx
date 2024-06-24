@@ -35,7 +35,6 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
     }
 
     function handleCreateNewTab(event: React.MouseEvent, panelType: any, data: string): void {
-        console.warn(data);
 
         switch (event.button) {
             case 0:

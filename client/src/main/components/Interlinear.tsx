@@ -7,7 +7,7 @@ import { loadPassageUsingString, loadPassageUsingUSFM, loadTranslationList } fro
 import '../styles/scripture.scss';
 import '../styles/common.scss'
 import { WindowTypes } from '../utils/enums';
-import { getReferenceText } from '../utils/bibleReferences';
+import { getReferenceText, getUSFM } from '../utils/bibleReferences';
 import { PassageProps } from './scripture/Passage';
 
 import licenses from '../../../public/licenses.json';
@@ -17,6 +17,7 @@ import { RootState } from '../redux/rootReducer';
 import { Store } from 'redux';
 import { selectSidenote } from 'sidenotes/dist/src/store/ui/actions';
 import { setActiveToken, setNoActiveToken } from '../redux/actions';
+import { BibleReference } from './scripture/Footnote';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -39,6 +40,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     const selectedToken = useSelector((state: RootState) => state.passage.activeToken);
 
     const [currentConcordance, setCurrentConcordance] = useState<any>(null);
+    const [infoPanel, setInfoPanel] = useState<JSX.Element | null>(null);
 
     const fileManager = FileManager.getInstance();
 
@@ -63,6 +65,12 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
             }
         }
     }, [selectedTranslation]);
+
+    useEffect(() => {
+        if (selectedToken) {
+            setInfoPanel(<ConcordancePanel strongsNumber={selectedToken} currentConcordance={currentConcordance} createNewTab={createNewTab} />);
+        }
+    }, [selectedToken, currentConcordance]);
 
     async function getTranslationList(): Promise<void> {
         const translations = await fileManager.getDirectories('Scripture');
@@ -171,23 +179,11 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
                 </div>
 
                 { selectedToken ?
-                    <div className='infoPanel'>
-                        {
-                            currentConcordance ?
-                                <div>
-                                    <h4>{currentConcordance[selectedToken]?.native} <span className='label'>({selectedToken})</span></h4>
-                                    <div className='translit'>
-                                        <span>{currentConcordance[selectedToken]?.translit}</span>
-                                        <span> ({currentConcordance[selectedToken]?.pronunc})</span>
-                                    </div>
-                                    <div className='description'>
-                                        {currentConcordance[selectedToken]?.definition}
-                                    </div>
-                                </div>
-                            : selectedToken
-                        }
-                    </div>
-                    : null
+                    <div className='scroll'>
+                        {/* <div className='infoPanel'> */}
+                            {infoPanel}
+                        {/* </div> */}
+                    </div> : null
                 }
             </div>
 
@@ -288,4 +284,73 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
             </div>
         </div>
     );
+}
+
+type ConcordancePanelProps = {
+    strongsNumber: string;
+    currentConcordance: any;
+    createNewTab: (panelType: any, data: string) => void;
+    liteMode?: boolean;
+};
+
+export function ConcordancePanel({ strongsNumber, currentConcordance, createNewTab, liteMode=false }: ConcordancePanelProps): JSX.Element {
+
+    if (!currentConcordance || !currentConcordance[strongsNumber]) {
+        return (
+            <div className='infoPanel'>
+                <h4><span className='label'>({strongsNumber})</span></h4>
+                Loading...
+            </div>
+        );
+    }
+
+    return (
+        <div className='infoPanel'>
+            <div>
+                <h4>{currentConcordance[strongsNumber]?.native} <span className='label'>({strongsNumber})</span></h4>
+                <div className='translit'>
+                    <span>{currentConcordance[strongsNumber]?.translit.org}</span>
+                    <span> ({currentConcordance[strongsNumber]?.pronunce})</span>
+                </div>
+                <div className='translit'>
+                    <span>{currentConcordance[strongsNumber]?.pos}</span>
+                </div>
+            </div>
+            <div className='infoPanel-section'>
+                <h4>Strong's Defintion</h4>
+                <div className='description'>
+                    {currentConcordance[strongsNumber]?.define}
+                </div>
+                <div className='translit'>
+                    {currentConcordance[strongsNumber]?.derive}
+                </div>
+            </div>
+
+            { currentConcordance[strongsNumber]?.occurences ?
+                <div className='infoPanel-section'>
+                    <h4>Occurrences <span className='label'>({currentConcordance[strongsNumber]?.occurences?.length})</span></h4>
+                    <ul>
+                        {currentConcordance[strongsNumber]?.occurences.map((occurence: any, index: number) => {
+                            const reference = getUSFM(occurence);
+                            if (!reference || !reference[0]) {
+                                return null;
+                            }
+                            return (
+                                <li key={index}>
+                                    <BibleReference text={getReferenceText(reference[0])} usfm={reference[0]} loadPassage={function (usfm: any, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
+                                        createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
+                                    }} currentBook={'GEN'} translation={'NKJV'} />
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+                : null
+            }
+        </div>
+    );
+}
+
+export function StrongsReference(): JSX.Element | null {
+    return null;
 }
