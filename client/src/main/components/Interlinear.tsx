@@ -48,6 +48,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
 
     const fileManager = FileManager.getInstance();
     const settings = SettingsManager.getInstance();
+    const store: Store = useStore();
 
     useEffect(() => {
         getTranslationList();
@@ -76,6 +77,7 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
                     createNewTab={createNewTab}
                     currentBook={currentBook}
                     translation={settings.getSetting('defaultTranslation')}
+                    selectToken={(data: string) => store.dispatch(setActiveToken(data))}
                 />
             );
         }
@@ -229,17 +231,19 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
         const formattedContent: JSX.Element[] = [];
 
         for (const content of contents) {
-            formattedContent.push(<div className='label chapter'>{usfm.initialChapter}</div>);
+            formattedContent.push(<div key={`chapter-${usfm.initialChapter}`} className='label chapter'>{usfm.initialChapter}</div>);
             Object.entries(content).forEach(([verseNumber, verse]: any) => {
 
                 Object.entries(verse).forEach(([wordNumber, word]: any) => {
                     const data = word;
                     const isSelected = activeToken && activeToken === data.strongs?.data;
+                    const key = `${usfm.book}.${usfm.initialChapter}.${verseNumber}.${wordNumber}`;
 
                     let item = (
                         <Tooltip>
                             <TooltipTrigger>
                                 <div
+                                    key={key}
                                     className={ isSelected ? 'stack selected' : 'stack'}
                                     onClick={() => setSelectedToken(data.strongs?.data ?? null)}
                                 >
@@ -275,7 +279,7 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
                             post = <div className='punct'>{word.punct}</div>;
                         }
 
-                        item = <span className='interlinear' style={{whiteSpace: 'nowrap'}}>{pre}{item}{post}</span>
+                        item = <span key={key} className='interlinear' style={{whiteSpace: 'nowrap'}}>{pre}{item}{post}</span>
                     }
 
                     formattedContent.push(item);
@@ -302,9 +306,10 @@ type ConcordancePanelProps = {
     currentBook?: string;
     translation: string;
     liteMode?: boolean;
+    selectToken?: Function;
 };
 
-export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, translation, liteMode=false }: ConcordancePanelProps): JSX.Element {
+export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, translation, selectToken, liteMode=false }: ConcordancePanelProps): JSX.Element {
 
     const fileManager = FileManager.getInstance();
     const [concordanceData, setConcordanceData]: [any, Function] = useState();
@@ -332,9 +337,9 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
 
     const derive = locateStrongsReferences(concordanceData?.derive).map((d: any, i: number) => {
         if (d.match) {
-            return <StrongsReference key={i} strongsNumber={d.match} currentBook={currentBook} translation={translation} />;
+            return <StrongsReference key={i} strongsNumber={d.match} currentBook={currentBook} translation={translation} selectToken={selectToken} />;
         }
-        return <span>{d.text}</span>
+        return <span key={i}>{d.text}</span>
     });
 
     return (
@@ -394,9 +399,10 @@ type StrongsReferenceProps = {
     forceText?: string;
     currentBook?: string;
     translation: string;
+    selectToken?: Function;
 }
 
-export function StrongsReference({ strongsNumber, forceText, currentBook, translation }: StrongsReferenceProps): JSX.Element | null {
+export function StrongsReference({ strongsNumber, forceText, currentBook, translation, selectToken }: StrongsReferenceProps): JSX.Element | null {
 
     const [concordanceData, setConcordanceData]: [any, Function] = useState();
 
@@ -406,6 +412,12 @@ export function StrongsReference({ strongsNumber, forceText, currentBook, transl
             setConcordanceData(concordance);
         });
     }, [strongsNumber]);
+
+    function handleSelectToken(): void {
+        if (selectToken) {
+            selectToken(strongsNumber);
+        }
+    }
 
     if (!concordanceData) {
         return <span>{forceText ?? strongsNumber}</span>;
@@ -430,6 +442,7 @@ export function StrongsReference({ strongsNumber, forceText, currentBook, transl
         >
             <span
                 className='strongs'
+                onClick={handleSelectToken}
                 onMouseEnter={updatePopoverContents}
             >
                 {forceText ?? concordanceData.native}

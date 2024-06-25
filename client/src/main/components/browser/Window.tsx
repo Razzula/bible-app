@@ -11,6 +11,7 @@ import Settings from '../Settings';
 import Interlinear, { StrongsReference } from '../Interlinear';
 import { BibleReference } from '../scripture/Footnote';
 import SettingsManager from '../../utils/SettingsManager';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 
 type WindowProps = {
     windowToLoad: symbol;
@@ -64,12 +65,17 @@ function Window({ windowToLoad, data, createNewTab }: WindowProps): JSX.Element 
                             }
                         <p>
                             <span>Not sure where to start? How about </span>
-                            <StrongsReference
-                                strongsNumber='H7225'
-                                forceText='רֵאשִׁית'
-                                currentBook='GEN'
-                                translation={translation}
-                            />
+                            <Tooltip placement='top'>
+                                <TooltipTrigger>
+                                    <StrongsReference
+                                        strongsNumber='H7225'
+                                        forceText='בְּרֵאשִׁ֖ית'
+                                        currentBook='GEN'
+                                        translation={translation}
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent>In the beginning</TooltipContent>
+                            </Tooltip>
                             <span>, with </span>
                             <BibleReference
                                 text='Genesis 1:1'

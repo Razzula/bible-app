@@ -54,12 +54,12 @@ function Sidepanel({ panelType, createNewTab, deselectButton }: SidepanelProps):
         return manifest.map((bookData, count) => {
 
             const title = bookData['full-title'] ? bookData['full-title'] : bookData['title'];
-            const key = String(count);
 
             return (<>
-                <AccordionHeader index={count}>{title}</AccordionHeader>
-                <AccordionContent index={count}>
+                <AccordionHeader key={`${count}-header`} index={count}>{title}</AccordionHeader>
+                <AccordionContent key={`${count}-body`} index={count}>
                     <ButtonGrid
+                        key={`${count}-grid`}
                         gridData={bookData.chapters.map((chapter: any, index: number) => index + 1)}
                         handleClick={(event, data) => handleCreateNewTab(event, windowType, getReferenceText(getUSFM(`${bookData['usfm']}.${data}`)))}
                     />
