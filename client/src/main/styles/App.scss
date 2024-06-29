@@ -60,7 +60,7 @@ body.primary-light { // LIGHT
 
 :root { // LIGHT
     --colour-editor-surface-primary-prefer-light: #ffffff;
-    --colour-editor-surface-secondary-prefer-light: #f8f8f8;
+    --colour-editor-surface-secondary-prefer-light: #ffefb5;
     --colour-editor-text-prefer-light: #000000;
 }
 
@@ -69,6 +69,22 @@ body.secondary-dark { // DARK
     --colour-editor-surface-secondary-prefer-light: #1e2122;
     --colour-editor-text-prefer-light: #e8e6e3;
 }
+
+// :root { // TEMP
+//     // --colour-editor-surface-primary-prefer-light: #1e2122;
+//     // --colour-editor-surface-secondary-prefer-light: #1e2122;
+//     // --colour-editor-text-prefer-light: #e8e6e3;
+
+//     --colour-primary-surface: #ffffff;
+
+//     --colour-highlight: #f8e4b1;
+//     --colour-highlight-hover: #f7cf69b6;
+//     --colour-highlight-select: #f5c955;
+// }
+
+// .base {
+//     color: #000000 !important;
+// }
 
 
 .scroll {

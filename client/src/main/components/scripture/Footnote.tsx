@@ -23,10 +23,12 @@ type ReferenceProps = {
     loadPassage: (usfm: object, isFootnote: boolean, openInNewTab?: boolean) => void;
     currentBook: string;
     translation: string;
+    children?: React.ReactNode;
+    allowClickPropagation?: boolean;
 }
 
 // popover with passage
-const InnerPopover = forwardRef(
+export const InnerPopover = forwardRef(
     ({ popper, children, show: _, ...props }: any, ref: any) => {
         useEffect(() => {
             popper.scheduleUpdate(); // update positioning
@@ -85,7 +87,7 @@ function Footnote({ contents, loadPassage, currentBook, currentChapter, translat
 
 }
 
-export function BibleReference({ text, usfm, currentBook, translation, loadPassage }: ReferenceProps) {
+export function BibleReference({ text, usfm, currentBook, translation, loadPassage, children, allowClickPropagation=true }: ReferenceProps) {
 
     const [noteContents, setNoteContents]: [string | undefined, Function] = useState();
     const fileManager = FileManager.getInstance();
@@ -93,7 +95,9 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
     const refType = (usfm.book === currentBook) ? 'ref internal' : 'ref external';
 
     function handleClick(event: React.MouseEvent, usfm: any, isFootnote: boolean, openInNewTab?: boolean) {
-        event.stopPropagation();
+        if (allowClickPropagation === undefined || allowClickPropagation === true) {
+            event.stopPropagation();
+        }
         loadPassage(usfm, isFootnote, openInNewTab);
     }
 
@@ -105,6 +109,7 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
         <OverlayTrigger key={text} trigger={['hover', 'focus']} placement="auto-start"
             overlay={
                 <InnerPopover id='popover-basic'>
+                    {children ? <b>{text}</b> : null }
                     <Passage contents={noteContents} usfm={usfm} ignoreFootnotes translation={translation} />
                     <p className="notice">{license}</p>
                     {/* TODO: (BIBLE-157) use manifest (defaulting to public domain is bad) */}
@@ -112,12 +117,12 @@ export function BibleReference({ text, usfm, currentBook, translation, loadPassa
             }
         >
             <span
-                className={refType}
+                className={children ? '' : refType}
                 onMouseEnter={updatePopoverContents}
                 onClick={(e) => handleClick(e, usfm, true)}
                 onAuxClick={(e) => handleClick(e, usfm, true, true)}
             >
-                {text}
+                {children ?? text}
             </span>
         </OverlayTrigger>
     );

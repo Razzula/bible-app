@@ -74,7 +74,7 @@ function Select({ entries, setSelected, icon, forcedIndex }: SelectProps): JSX.E
     const handleSelect = (index: number) => {
         setSelectedIndex(index);
         setIsOpen(false);
-        setSelected(entries[index].name);
+        setSelected(entries[index].key);
     };
 
     return (<>
