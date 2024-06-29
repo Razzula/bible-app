@@ -1,24 +1,38 @@
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal, FloatingFocusManager, useInteractions, useClick, useDismiss, useRole, useListNavigation, useTypeahead } from '@floating-ui/react';
+import { use } from 'chai';
 import React, { useEffect } from 'react';
 
 interface SelectProps {
-    entries: { name: string; key: string; element: React.ReactNode; }[],
+    entries: { name: string; key: string; element: React.ReactNode; icon?: string }[],
     setSelected: (name: string) => void;
     forcedIndex?: number;
     icon?: string;
 }
 
-const Select: React.FC<SelectProps> = ({ entries, setSelected, icon, forcedIndex }) => {
+function Select({ entries, setSelected, icon, forcedIndex }: SelectProps): JSX.Element {
 
     const [isOpen, setIsOpen] = React.useState(false);
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = React.useState<number | null>(forcedIndex ?? null);
+    const [selectedIcon, setSelectedIcon] = React.useState<JSX.Element | null>(null);
 
     useEffect(() => {
         if (forcedIndex !== undefined && forcedIndex !== null) {
             setSelectedIndex(forcedIndex);
         }
     }, [forcedIndex]);
+
+    useEffect(() => {
+        if (selectedIndex !== null && entries[selectedIndex]?.icon) {
+            setSelectedIcon(<img style={{paddingRight: 10}} src={`/bible-app/icons/${entries[selectedIndex].icon}.svg`} alt={entries[selectedIndex].name}/>);
+        }
+        else if (icon) {
+            setSelectedIcon(<img style={{paddingRight: 10}} src={`/bible-app/icons/${icon}.svg`} alt='Icon'/>);
+        }
+        else {
+            setSelectedIcon(null);
+        }
+    }, [selectedIndex, icon]);
 
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
@@ -70,7 +84,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, icon, forcedIndex
             {...getReferenceProps()}
         >
             <span className='select-option'>
-                {icon ? <img style={{paddingRight: 10}} src={`/bible-app/icons/${icon}.svg`} alt='Icon'/> : null}
+                {selectedIcon}
                 {(selectedIndex !== null && selectedIndex >= 0) ? entries[selectedIndex]?.name : '...'}
                 <img src='/bible-app/icons/drop.svg' alt='Arrow Down'/>
             </span>
@@ -85,7 +99,7 @@ const Select: React.FC<SelectProps> = ({ entries, setSelected, icon, forcedIndex
                         style={{
                             ...floatingStyles,
                             overflowY: "auto",
-                            background: "#161819",
+                            background: "--colour-button-background",
                             minWidth: 100,
                             borderRadius: 8,
                             outline: 0,

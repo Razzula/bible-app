@@ -1,11 +1,11 @@
 :root {
-    --select-background-color-default: #161819;
-    --error-background-color: #430c11;
+    --select-background-color-default: var(--colour-button-background);
+    --error-background-color: var(--colour-error-background);
 }
 
 body {
-    background-color: #101212;
-    color: #ffffff;
+    background-color: var(--colour-primary-background);
+    color: var(--colour-text-primary);
 }
 
 .input-group {
@@ -19,18 +19,18 @@ body {
 .popover-body,
 input[type]:focus,
 .tabbar {
-    background-color: #161819;
+    background-color: var(--colour-button-background);
     border-color: #464c4e;
-    color: #ffffff;
+    color: var(--colour-text-primary);
     border-width: 1px;
     border-radius: 4px;
 }
 
 .sidebar,
 .tab {
-    background-color: #292a2d;
+    background-color: var(--colour-secondary-background);
     border-color: #464c4e;
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .btn:disabled,
@@ -40,15 +40,15 @@ input[type]:focus,
 }
 
 .popover {
-    --bs-popover-bg: #2d3133;
+    --bs-popover-bg: var(--colour-button-background);
 }
 
 .alert-danger {
-    background-color: --error-background-color;
+    background-color: var(--error-background-color);
     border: 2px solid #bc1e2e;
     color: #df7a83;
 }
 
 .tab-close-button {
-    color: #9d9c9e;
+    color: var(--colour-text-secondary);
 }

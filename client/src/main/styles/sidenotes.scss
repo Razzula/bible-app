@@ -5,17 +5,14 @@ article {
     max-width: 900px;
     padding: 0 10px;
     position: relative;
-    --sidenoteAnchorColor: var(--highlight-display, #463406); //F8E4B1
-    --sidenoteAnchorColorHover: var(--highlight-display, #684c06); //F7CF69B6
-    --sidenoteAnchorColorSelected: var(--highlight-display, #715307); //F5C955
+    --sidenoteAnchorColor: var(--colour-highlight);
+    --sidenoteAnchorColorHover: var(--colour-highlight-hover);
+    --sidenoteAnchorColorSelected: var(--colour-highlight-select);
 }
 
 .base {
-    background-color: #181a1b; //181a1b
+    background-color: var(--colour-primary-surface);
     padding: 20px 50px 50px 50px;
-    // ::selection {
-    //     background-color: #715307;
-    // }
     margin-bottom: 20px;
 }
 

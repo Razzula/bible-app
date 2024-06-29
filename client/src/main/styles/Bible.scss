@@ -4,7 +4,7 @@
     margin-right: 5px;
     font-size: 12px;
     user-select: none;
-    color: #9c9386;
+    color: var(--colour-text-secondary);
     vertical-align: sub;
     font-weight: 500;
     display: var(--label-display, inline) !important;
@@ -106,11 +106,11 @@ span.sls {
     font-style: italic;
 }
 
-span.add {
-    //additional content not in original manuscripts
-    font-style: italic;
-    color: #6e6c68;
-}
+// span.add {
+//     //additional content not in original manuscripts
+//     font-style: italic;
+//     color: #6e6c68;
+// }
 
 span.sc,
 span.nd,
@@ -184,7 +184,7 @@ span.text {
 }
 
 .notice {
-    color: #9c9386;
+    color: var(--colour-text-secondary);
     font-size: .875rem;
     text-align: center;
 }

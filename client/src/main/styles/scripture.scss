@@ -39,7 +39,7 @@
             font-family: serif;
             font-size: 28px;
             user-select: none;
-            color: #9c9386;
+            color: var(--colour-text-secondary);
             padding: 0px !important;
 
             justify-content: center;
@@ -58,15 +58,15 @@
 
 
     .stack {
-        border-bottom: 1px dotted #ffffff22;
+        border-bottom: 1px dotted var(--colour-secondary-border);
     }
 
     .stack.selected {
-        color: #ffff00 !important;
+        color: var(--colour-accent-splash) !important;
     }
 
     .stack:hover {
-        outline: 1px dotted #ffffff55;
+        outline: 1px dotted var(--colour-primary-border);
         cursor: pointer;
     }
 
@@ -84,7 +84,7 @@
     margin-right: 5px;
     font-size: 12px;
     user-select: none;
-    color: #9c9386;
+    color: var(--colour-text-secondary);
     vertical-align: sub;
     font-weight: 500;
 }
@@ -101,7 +101,7 @@
 }
 
 .infoPanel {
-    background-color: #181a1b;
+    background-color: var(--colour-primary-surface);
     margin: 8px;
     margin-right: 18px;
     padding: 20px;

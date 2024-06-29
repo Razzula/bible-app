@@ -6,6 +6,7 @@ import '../styles/dark.scss';
 import '../styles/App.scss';
 import { isElectronApp } from '../utils/general';
 import FileManager from '../utils/FileManager';
+import { ThemeProvider } from './ThemeContext';
 
 /**
  * A React component to display the main application.
@@ -25,7 +26,9 @@ function App(): JSX.Element {
 
     // GENERATE JSX
     return (
-        <Page />
+        <ThemeProvider>
+            <Page />
+        </ThemeProvider>
     );
 }
 

@@ -1,5 +1,4 @@
 import { isElectronApp } from "./general";
-import FileManager from './FileManager';
 
 type Settings = {
     defaultTranslation: string;
@@ -34,14 +33,21 @@ class SettingsManager {
 
     private settings: any = {};
 
-    private defaultSettings(): Settings {
+    public defaultSettings(): Settings {
         return {
             defaultTranslation: 'WEBBE',
-            theme: 'dark',
+            theme: 'Mixed',
         };
     }
 
     public getSetting(key: string): string {
+        return this.settings[key];
+    }
+
+    public async awaitSetting(key: string): Promise<string> {
+        if (!this.settings[key]) {
+            await this.loadSettings();
+        }
         return this.settings[key];
     }
 

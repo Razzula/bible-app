@@ -1,5 +1,6 @@
 .tox.tox-tinymce {
-    background-color: #ffffff !important;
+    background-color: var(--colour-editor-surface-primary-prefer-light) !important;
+    color: var(--colour-editor-text-prefer-light) !important;
     border-radius: 0 !important;
 }
 
@@ -22,8 +23,8 @@
 .mock-editor {
     font-family: ArialMT, Helvetica Neue, Arial, Liberation Sans, FreeSans, sans-serif;
     font-size: 14px;
-    color: #000000;
-    background-color: #edf2fa;
+    color: var(--colour-editor-text-prefer-light);
+    background-color: var(--colour-editor-surface-secondary-prefer-light);
     padding: 17px;
     word-wrap: break-word;
 }

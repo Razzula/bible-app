@@ -1,5 +1,5 @@
 .sidepanel {
-    background-color: #202020;
+    background-color: var(--colour-tertiary-background);
     width: 240px;
     flex: 0 0 auto;
     height: 100vh;
@@ -9,36 +9,34 @@
 
 .accordion {
     background-color: transparent;
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .accordion-item {
     background-color: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .accordion-header {
     background-color: transparent;
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .accordion-button {
     background-color: transparent;
     color: #464c4e;
     padding: 5px;
-
-    // --bs-accordion-btn-icon-active: --bs-accordion-btn-icon;
 }
 
 .accordion-button:focus {
     box-shadow: none;
     background-color: transparent;
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .accordion-button::after {
-    color: #ffffff;
+    color: var(--colour-text-primary);
 }
 
 .accordion-body {
@@ -55,7 +53,7 @@
 .button-grid {
     display: grid;
     grid-template-columns: auto auto auto auto auto;
-    background-color: #161819;
+    background-color: var(--colour-button-background);
     padding: 5px;
     border-radius: 4px;
 

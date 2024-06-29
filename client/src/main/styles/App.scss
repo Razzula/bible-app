@@ -1,3 +1,76 @@
+:root { // DARK
+    --colour-primary-background: #101212;
+    --colour-primary-surface: #181a1b;
+    --colour-primary-border: #656667;
+
+    --colour-secondary-background: #292a2d;
+    --colour-secondary-surface: #555555;
+    --colour-secondary-border: #373939;
+
+    --colour-tertiary-background: #202020;
+    --colour-tertiary-surface: #444444;
+
+    --colour-button-background: #161819;
+    --colour-button-surface: #52525e;
+
+    --colour-accent-surface: #e8cf4a;
+    --colour-accent-splash: #ffdb15;
+
+    --colour-text-primary: #ffffff;
+    --colour-text-secondary: #9c9386;
+
+    --colour-highlight: #463406;
+    --colour-highlight-hover: #684c06;
+    --colour-highlight-select: #715307;
+
+    --colour-warn-background: #fff3cd;
+    --colour-warn-text: #664d03;
+    --colour-error-background: #430c11;
+    --colour-error-border: #bc1e2e;
+}
+
+body.primary-light { // LIGHT
+    --colour-primary-background: #d8d8d8;
+    --colour-primary-surface: #ffffff;
+
+    --colour-secondary-background: #e0e1e1;
+    --colour-secondary-surface: #f1f3f4;
+
+    --colour-tertiary-background: #e6e6e6;
+    --colour-tertiary-surface: #e0e1e1;
+
+    --colour-button-background: #eeeeef;
+    --colour-button-surface: #83a9e2;
+
+    --colour-accent-surface: #2460d1;
+    --colour-accent-splash: #0053ec;
+
+    --colour-text-primary: #000000;
+    --colour-text-secondary: #9d9c9e;
+
+    --colour-highlight: #f8e4b1;
+    --colour-highlight-hover: #f7cf69b6;
+    --colour-highlight-select: #f5c955;
+
+    --colour-warn-background: #fff3cd;
+    --colour-warn-text: #664d03;
+    --colour-error-background: #430c11;
+    --colour-error-border: #bc1e2e;
+}
+
+:root { // LIGHT
+    --colour-editor-surface-primary-prefer-light: #ffffff;
+    --colour-editor-surface-secondary-prefer-light: #f8f8f8;
+    --colour-editor-text-prefer-light: #000000;
+}
+
+body.secondary-dark { // DARK
+    --colour-editor-surface-primary-prefer-light: #1e2122;
+    --colour-editor-surface-secondary-prefer-light: #1e2122;
+    --colour-editor-text-prefer-light: #e8e6e3;
+}
+
+
 .scroll {
     overflow-y: auto;
     padding: 8px;
@@ -46,7 +119,7 @@ Window {
 }
 
 .landing-content {
-    background-color: #181a1b;
+    background-color: var(--colour-primary-surface);
     padding: 50px 50px 50px 50px;
     margin-bottom: 20px;
 

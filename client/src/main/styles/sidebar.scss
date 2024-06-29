@@ -18,8 +18,8 @@
 }
 
 .sidebar-button {
-    background-color: #555555;
-    color: #ffffff;
+    background-color: var(--colour-secondary-surface);
+    color: var(--colour-text-primary);
     border: none;
     padding: 2px;
     margin: 2px 0;
@@ -30,5 +30,5 @@
 }
 
 .sidebar-button.selected {
-    border-left: 5px solid #e8cf4a;
+    border-left: 5px solid var(--colour-accent-surface);
 }
