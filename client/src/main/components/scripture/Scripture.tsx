@@ -175,6 +175,16 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
             };
         });
 
+        // noteGroupsList.push({
+        //     key: 'None', name: 'None',
+        //     element: <div className='select-option'>
+        //         <span className='flex-left'>
+        //             <img src='/bible-app/icons/new.svg' alt='Create New'/>
+        //             Create New
+        //         </span>
+        //     </div>,
+        // });
+
         setNoteGroupsList(noteGroupsList);
         setSelectedNoteGroup(noteGroupsList.length > 0 ? noteGroupsList[0].key ?? undefined : undefined);
     }
@@ -221,7 +231,7 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
                                 entries={noteGroupsList}
                                 forcedIndex={noteGroupsList.findIndex((noteGroup) => noteGroup?.key === selectedNoteGroup)}
                                 setSelected={setSelectedNoteGroup}
-                                icon='directory'
+                                icon={selectedNoteGroup === 'None' ? 'directory' : 'directoryOpen'}
                             />
                         </TooltipTrigger>
                         <TooltipContent>Note Group</TooltipContent>
@@ -262,7 +272,7 @@ function Scripture({ id, queryToLoad, createNewTab }: ScriptureProps): JSX.Eleme
                                 entries={noteGroupsList}
                                 forcedIndex={noteGroupsList.findIndex((noteGroup) => noteGroup?.key === selectedNoteGroup)}
                                 setSelected={setSelectedNoteGroup}
-                                icon='directory'
+                                icon={selectedNoteGroup === 'None' ? 'directory' : 'directoryOpen'}
                             />
                         </TooltipTrigger>
                         <TooltipContent>Note Group</TooltipContent>
