@@ -1,8 +1,3 @@
-:root {
-    --select-background-color-default: var(--colour-button-background);
-    --error-background-color: var(--colour-error-background);
-}
-
 body {
     background-color: var(--colour-primary-background);
     color: var(--colour-text-primary);
@@ -44,7 +39,7 @@ input[type]:focus,
 }
 
 .alert-danger {
-    background-color: var(--error-background-color);
+    background-color: var(--colour-error-background);
     border: 2px solid #bc1e2e;
     color: #df7a83;
 }

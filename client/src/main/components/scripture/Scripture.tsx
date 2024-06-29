@@ -310,7 +310,7 @@ export type ScriptureSearchHeaderProps = {
 export function ScriptureSearchHeader({handleBackClick, handleForwardClick, historyStacks, searchQuery, handleSearchBarChange, handleSearch, translationsList, selectedTranslation, updateSelectedTranslation, searchError}: ScriptureSearchHeaderProps): JSX.Element {
 
         const searchStyle: any = {
-        'backgroundColor': searchError ? 'var(--error-background-color)' : 'var(--select-background-color-default)'
+        'backgroundColor': searchError ? 'var(--colour-error-background)' : 'var(--colour-button-background)'
     };
 
     return (
