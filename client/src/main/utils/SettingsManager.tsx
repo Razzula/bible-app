@@ -36,7 +36,7 @@ class SettingsManager {
     public defaultSettings(): Settings {
         return {
             defaultTranslation: 'WEBBE',
-            theme: 'Mixed',
+            theme: 'mixed1',
         };
     }
 

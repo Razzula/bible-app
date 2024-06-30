@@ -292,7 +292,7 @@ export function InterlinearPassage({ contents, usfm }: PassageProps): JSX.Elemen
 
 
     return (
-        <div className='base'>
+        <div className='base canon'>
             <div className={`interlinear ${usfm.testament === 'old' ? 'hebrew' : 'greek'}`}>
                 {formattedContent}
             </div>

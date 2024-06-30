@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import SettingsManager from '../utils/SettingsManager';
 
-export type Theme = 'Light' | 'Dark' | 'Mixed' | undefined;
+export type Theme = 'light' | 'dark' | 'mixed1' | 'mixed2' | undefined;
 
 interface ThemeContextProps {
     theme: Theme;
@@ -21,10 +21,32 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        console.warn('Theme:', theme);
-        const primary = theme === 'Light' ? 'primary-light' : 'primary-dark';
-        const secondary = theme === 'Dark' ? 'secondary-dark' : 'secondary-light';
-        document.body.className = `${primary} ${secondary}`
+        if (theme) {
+            const primary = theme === 'light' ? 'primary-light' : 'primary-dark';
+            const secondary = (function () {
+                switch (theme) {
+                    case 'light':
+                    case 'mixed1':
+                        return 'secondary-light';
+                    case 'dark':
+                    case 'mixed2':
+                        return 'secondary-dark';
+                }
+            })();
+            const tertiary = (function () {
+                switch (theme) {
+                    case 'light':
+                        return 'tertiary-light';
+                    case 'mixed1':
+                    case 'mixed2':
+                        return 'tertiary-dark';
+                    case 'dark':
+                        return 'tertiary-darkest';
+                }
+            })();
+
+            document.body.className = `${primary} ${secondary} ${tertiary}`
+        }
     }, [theme]);
 
     return (

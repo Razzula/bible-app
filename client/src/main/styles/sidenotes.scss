@@ -14,6 +14,12 @@ article {
     background-color: var(--colour-primary-surface);
     padding: 20px 50px 50px 50px;
     margin-bottom: 20px;
+
+    &.canon {
+        background-color: var(--colour-scripture-surafce-prefer-light) !important;
+        color: var(--colour-scripture-text-prefer-light) !important;
+
+    }
 }
 
 .sidenote {

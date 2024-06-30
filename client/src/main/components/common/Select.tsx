@@ -24,10 +24,10 @@ function Select({ entries, setSelected, icon, forcedIndex }: SelectProps): JSX.E
 
     useEffect(() => {
         if (selectedIndex !== null && entries[selectedIndex]?.icon) {
-            setSelectedIcon(<img style={{paddingRight: 10}} src={`/bible-app/icons/${entries[selectedIndex].icon}.svg`} alt={entries[selectedIndex].name}/>);
+            setSelectedIcon(<img style={{paddingRight: 10, maxWidth: 128}} src={`/bible-app/icons/${entries[selectedIndex].icon}.svg`} alt={entries[selectedIndex].name}/>);
         }
         else if (icon) {
-            setSelectedIcon(<img style={{paddingRight: 10}} src={`/bible-app/icons/${icon}.svg`} alt='Icon'/>);
+            setSelectedIcon(<img style={{paddingRight: 10, maxWidth: 128}} src={`/bible-app/icons/${icon}.svg`} alt='Icon'/>);
         }
         else {
             setSelectedIcon(null);

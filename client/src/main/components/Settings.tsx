@@ -23,18 +23,20 @@ function Settings() {
     const theme = settings.getSetting('theme');
 
     const themesList = [
-        {name: 'Light', options: [
+        {name: 'light', description: 'True Light.', options: [
             // we have some fun 'coats of many colours' for the themes
             // { name: 'Light of the World', reference: 'John 8:12' },
             { name: 'Morning Star', reference: 'Revelation 22:16' },
             // { name: 'City on a Hill', reference: 'Matthew 5:14-16' },
             // { name: 'Footlamp', reference: 'Psalm 119:105' },
         ]},
-        {name: 'Mixed', options: [
+        {name: 'mixed1', description: 'Dark; with Light primary elements.', options: [
             { name: 'Pillar of Fire', reference: 'Exodus 13:21' },
-            // { name: 'Starry Heavens', reference: 'Psalm 8:3' },
         ]},
-        {name: 'Dark', options: [
+        {name: 'mixed2', description: 'Dark; with some Light secondary elements.', options: [
+            { name: 'Starry Heavens', reference: 'Psalm 8:3' },
+        ]},
+        {name: 'dark', description: 'True Dark.', options: [
             { name: 'Night Watch', reference: 'Psalm 63:6-8' },
             // { name: 'Midnight Prayer', reference: 'Acts 16:25-26' },
         ]},
@@ -44,15 +46,18 @@ function Settings() {
         return {
             name: coat.name,
             key: theme.name,
-            icon: `themes/${theme.name.toLowerCase()}`,
+            icon: `themes/${coat.name}`, //`themes/${theme.name.toLowerCase()}`,
             element:
                 <BibleReference key={theme.name} text={coat.reference} usfm={usfm ? usfm[0] : null} loadPassage={function (usfm: object, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
                     throw new Error("Function not implemented.");
                 } } currentBook='' translation={defaultTranslation} allowClickPropagation={false} >
                     <div className='select-option'>
                         <span className='flex-left'>
-                            <img src={`/bible-app/icons/themes/${coat.name}.svg`} alt={`${theme.name} Theme`}/>
-                            {coat.name}
+                            <img src={`/bible-app/icons/themes/${coat.name}.svg`} width='128' alt={`${theme.name} Theme`}/>
+                            <div className='column'>
+                                <span>{coat.name}</span>
+                                <span className='translit'>{theme.description}</span>
+                            </div>
 
                             {theme.name === 'Light' ?
                                 <Tooltip placement='top'>

@@ -40,7 +40,7 @@ function NoteEditor({ sidenoteID, tokens, docID, initialNoteContents, currentBoo
 
     const isSelected = useSelector((state: State) => isSidenoteSelected(state, docID, sidenoteID));
     const isSaved = (currentNoteContents === committedNoteContents);
-    const backgroundColour = (isSaved ? '#0f8710' : '#861010');
+    const backgroundColour = (isSaved ? 'var(--colour-editor-surface-secondary-prefer-light)' : '#861010');
 
     const store: Store = useStore();
 

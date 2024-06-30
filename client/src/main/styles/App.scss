@@ -19,10 +19,6 @@
     --colour-text-primary: #ffffff;
     --colour-text-secondary: #9c9386;
 
-    --colour-highlight: #463406;
-    --colour-highlight-hover: #684c06;
-    --colour-highlight-select: #715307;
-
     --colour-warn-background: #fff3cd;
     --colour-warn-text: #664d03;
     --colour-error-background: #430c11;
@@ -48,10 +44,6 @@ body.primary-light { // LIGHT
     --colour-text-primary: #000000;
     --colour-text-secondary: #9d9c9e;
 
-    --colour-highlight: #f8e4b1;
-    --colour-highlight-hover: #f7cf69b6;
-    --colour-highlight-select: #f5c955;
-
     --colour-warn-background: #fff3cd;
     --colour-warn-text: #664d03;
     --colour-error-background: #430c11;
@@ -59,33 +51,40 @@ body.primary-light { // LIGHT
 }
 
 :root { // LIGHT
-    --colour-editor-surface-primary-prefer-light: #ffffff;
-    --colour-editor-surface-secondary-prefer-light: #ffefb5;
-    --colour-editor-text-prefer-light: #000000;
+    --colour-scripture-surafce-prefer-light: #f7f7f7;
+    --colour-scripture-text-prefer-light: #000000;
+
+    --colour-highlight: #f8e4b1;
+    --colour-highlight-hover: #f7cf69b6;
+    --colour-highlight-select: #f5c955;
 }
 
 body.secondary-dark { // DARK
-    --colour-editor-surface-primary-prefer-light: #1e2122;
-    --colour-editor-surface-secondary-prefer-light: #1e2122;
-    --colour-editor-text-prefer-light: #e8e6e3;
+    --colour-scripture-surafce-prefer-light: #181a1b;
+    --colour-scripture-text-prefer-light: #ffffff;
+
+    --colour-highlight: #463406;
+    --colour-highlight-hover: #684c06;
+    --colour-highlight-select: #715307;
 }
 
-// :root { // TEMP
-//     // --colour-editor-surface-primary-prefer-light: #1e2122;
-//     // --colour-editor-surface-secondary-prefer-light: #1e2122;
-//     // --colour-editor-text-prefer-light: #e8e6e3;
+:root { // LIGHT
+    --colour-editor-surface-primary-prefer-light: #fff7d1;
+    --colour-editor-surface-secondary-prefer-light: #fff2ab;
+    --colour-editor-text-prefer-light: #000000;
+}
 
-//     --colour-primary-surface: #ffffff;
+body.tertiary-dark {
+    --colour-editor-surface-primary-prefer-light: #fff7d1;
+    --colour-editor-surface-secondary-prefer-light: #fff2ab;
+    --colour-editor-text-prefer-light: #000000;
+}
 
-//     --colour-highlight: #f8e4b1;
-//     --colour-highlight-hover: #f7cf69b6;
-//     --colour-highlight-select: #f5c955;
-// }
-
-// .base {
-//     color: #000000 !important;
-// }
-
+body.tertiary-darkest { // DARK
+    --colour-editor-surface-primary-prefer-light: #1e2122;
+    --colour-editor-surface-secondary-prefer-light: #0f8710;
+    --colour-editor-text-prefer-light: #e8e6e3;
+}
 
 .scroll {
     overflow-y: auto;

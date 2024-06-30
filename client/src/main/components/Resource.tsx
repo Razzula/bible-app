@@ -152,6 +152,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                             );
                             delete fileContents.disclaimer;
                         }
+                        debugger;
                         elements.push(
                             <div className='passage'>
                                 <Passage
@@ -159,6 +160,7 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                                     usfm={{book: currentManifest.usfm, initialChapter: 0}}
                                     translation={settings.getSetting('defaultTranslation')}
                                     ignoreFootnotes={true}
+                                    apocryphal={true}
                                 />
                             </div>
                         );

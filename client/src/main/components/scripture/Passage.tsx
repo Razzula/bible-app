@@ -35,6 +35,7 @@ export type PassageProps = {
     translation: string;
     docID?: string;
     selectedNoteGroup?: string;
+    apocryphal?: boolean;
 }
 
 type Note = {
@@ -51,7 +52,7 @@ type Note = {
  *
  * @returns {JSX.Element} A JSX Element of a `span` containing the scripture.
 */
-function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, translation, docID, selectedNoteGroup, createNewTab }: PassageProps): JSX.Element {
+function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, translation, docID, selectedNoteGroup, createNewTab, apocryphal=false }: PassageProps): JSX.Element {
     // TODO: (BIBLE-98) create a lightwight version of the Passage component, which only renders the passage, without any notes or interactions (this will be used by the references)
     // furthermore, redux should not be used in this component, as these will be mounted in the references, which are not connected to the store
 
@@ -460,7 +461,7 @@ function Passage({ contents, usfm, ignoreFootnotes, renderMode, loadPassage, tra
 
     return (
         <>
-            <AnchorBase anchor={baseAnchor} className="base">
+            <AnchorBase anchor={baseAnchor} className={apocryphal ? 'base' : 'base canon'}>
                 {/* <button onClick={() => expandPassage(-1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button><br/> */}
                 {passage}
                 {/* <button onClick={() => expandPassage(1)} hidden={historyStacks[0].length === 0} className='btn btn-default ellipsis'>...</button> */}
