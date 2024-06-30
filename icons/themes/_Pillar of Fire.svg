@@ -1,0 +1,65 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Define a vertical bar clipPath -->
+    <clipPath id="verticalCut">
+      <rect x="0" y="0" width="60" height="200" fill="white" />
+      <rect x="140" y="0" width="80" height="200" fill="white" />
+    </clipPath>
+    
+    <!-- Radial gradient for the dark background -->
+    <radialGradient id="skyGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:darkblue;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:black;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Linear gradients for flames and smoke -->
+    <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:yellow;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:orange;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:red;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:darkred;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="smokeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:lightgrey;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:grey;stop-opacity:0.5" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Dark background with vertical cut -->
+  <g id="starrySky" clip-path="url(#verticalCut)">
+    <circle cx="100" cy="100" r="100" fill="url(#skyGradient)"/>
+  </g>
+
+      <defs>
+    <radialGradient id="starGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:white;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:yellow;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <g id="northStar">
+    <!-- Central glow -->
+    <circle cx="100" cy="100" r="80" fill="url(#starGradient)" />
+    <circle cx="100" cy="100" r="60" fill="url(#starGradient)" />
+    <!-- Star core -->
+    <circle cx="100" cy="100" r="10" fill="white" />
+  </g>
+  
+  <!-- Flames and smoke -->
+  <g id="pillarOfFire">
+    <path
+      d="M100,10 Q110,40 100,70 Q90,100 100,130 Q110,160 80,190 Q70,160 90,130 Q110,100 90,70 Q110,40 100,10"
+      fill="url(#flameGradient)" />
+    <path
+      d="M100,10 Q120,40 100,70 Q80,100 100,130 Q120,160 110,190 Q90,160 110,130 Q130,100 110,70 Q120,40 100,10"
+      fill="url(#flameGradient)" />
+  </g>
+  
+  <g id="smoke">
+    <path
+      d="M80,10 Q90,30 70,50 Q60,70 80,90 Q100,110 70,130 Q60,150 80,170 Q100,190 90,210 Q70,190 90,170 Q110,150 90,130 Q110,110 90,90 Q110,70 90,50 Q110,30 80,10"
+      fill="url(#smokeGradient)" />
+    <path
+      d="M120,10 Q130,30 110,50 Q100,70 120,90 Q140,110 110,130 Q100,150 120,170 Q140,190 110,210 Q100,190 110,170 Q130,150 110,130 Q130,110 110,90 Q130,70 110,50 Q130,30 120,10"
+      fill="url(#smokeGradient)" />
+  </g>
+</svg>
