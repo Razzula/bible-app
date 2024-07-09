@@ -11,7 +11,7 @@
 }
 .scripture-interlinear {
     .scroll {
-        max-height: calc(100vh - 32px - 32px - 16px - 38px - 8px) !important; // allow room for tabbar and input-group
+        max-height: calc(100vh - 32px - 32px - 16px - 38px - 38px - 8px) !important; // allow room for tabbar and input-group
             // tabbar (32px),
             // banner {
             //      input-group { padding-top (32px), content (38px), padding-bottom (16px) },
@@ -87,11 +87,13 @@
     color: var(--colour-text-secondary);
     vertical-align: sub;
     font-weight: 500;
+
+    display: var(--interlinear-extra-display);
 }
 
-// .english {
-
-// }
+.english {
+    display: var(--interlinear-nonnative-display);
+}
 
 .stack {
     display: flex;

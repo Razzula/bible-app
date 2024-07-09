@@ -22,6 +22,8 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 import SettingsManager from '../utils/SettingsManager';
 import { locateStrongsReferences } from '../utils/strongsReferences';
 import { count } from 'console';
+import CheckIcon from './common/CheckIcon';
+import { relative } from 'path';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -46,6 +48,9 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
     const [infoPanel, setInfoPanel] = useState<JSX.Element | null>(null);
 
     const [currentBook, setCurrentBook] = useState<string>('');
+
+    const [showEnglish, setShowEnglish] = useState(true)
+    const [showAdditionalInfo, setShowAdditionalInfo] = useState(true)
 
     const fileManager = FileManager.getInstance();
     const settings = SettingsManager.getInstance();
@@ -168,6 +173,11 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
         return getAuthorOfText(text);
     }
 
+    const containerStyle: any = {
+        '--interlinear-nonnative-display': showEnglish ? 'inline' : 'none',
+        '--interlinear-extra-display': showAdditionalInfo ? 'inline-block' : 'none',
+    };
+
     return (
         <div className='scripture-interlinear'>
 
@@ -182,12 +192,18 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
                         translationsList={translationsList} selectedTranslation={selectedTranslation} updateSelectedTranslation={updateSelectedTranslation}
                         searchError={searchError}
                     />
+
+                    {/* SUB CONTROLS */}
+                    <div style={{ maxHeight: 38, paddingLeft: 32, position: 'relative', top: 32 }}>
+                        <CheckIcon iconName='interlinearInfo' text={`${showAdditionalInfo ? 'Hide' : 'Show'} Additional Information`} handleClick={() => setShowAdditionalInfo(!showAdditionalInfo)} stateDriver={showAdditionalInfo} />
+                        <CheckIcon iconName='english' text={`${showEnglish ? 'Hide' : 'Show'} English`} handleClick={() => setShowEnglish(!showEnglish)} stateDriver={showEnglish} />
+                    </div>
                 </div>
 
             </div>
 
             <div className='flex'>
-                <div className='scroll'>
+                <div className='scroll' style={containerStyle as any}>
                     <div className='interlinear-contents'>
                         {/* BIBLE */}
                         {passages}

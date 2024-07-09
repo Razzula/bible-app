@@ -152,7 +152,6 @@ function Resource({ rootResourcePath, createNewTab }: ResourceProps): JSX.Elemen
                             );
                             delete fileContents.disclaimer;
                         }
-                        debugger;
                         elements.push(
                             <div className='passage'>
                                 <Passage
