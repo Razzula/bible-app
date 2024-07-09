@@ -13,7 +13,7 @@ type usfm = {
     apocryphal?: boolean,
 };
 type book = string | string[];
-type manifest = { usfm: string, 'full-title'?: string, title: string };
+type manifest = { usfm: string, 'full-title'?: string, title: string, author?: string | string[] };
 
 const booksArray: { canon: book[], apocrypha: book[] } = books;
 const manifestArray: manifest[] = manifest;
@@ -398,4 +398,8 @@ export function getReferenceText(referenceData: Array<any>): string {
 
     return referenceText;
 
+}
+
+export function getAuthorOfText(bookName: string): string | string[] | undefined {
+    return manifestArray.find((book: manifest) => book.usfm === bookName)?.author;
 }

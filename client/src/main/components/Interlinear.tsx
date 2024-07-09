@@ -7,7 +7,7 @@ import { loadPassageUsingString, loadPassageUsingUSFM, loadTranslationList } fro
 import '../styles/scripture.scss';
 import '../styles/common.scss'
 import { WindowTypes } from '../utils/enums';
-import { getReferenceText, getUSFM } from '../utils/bibleReferences';
+import { getAuthorOfText, getReferenceText, getUSFM } from '../utils/bibleReferences';
 import { PassageProps } from './scripture/Passage';
 
 import licenses from '../../../public/licenses.json';
@@ -21,6 +21,7 @@ import { BibleReference } from './scripture/Footnote';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import SettingsManager from '../utils/SettingsManager';
 import { locateStrongsReferences } from '../utils/strongsReferences';
+import { count } from 'console';
 
 type InterlinearProps = {
     queryToLoad?: string;
@@ -161,6 +162,10 @@ function Interlinear({ queryToLoad, createNewTab }: InterlinearProps): JSX.Eleme
                 setHistoryStacks(historyStacks);
             }
         }
+    }
+
+    function getAuthor(text: string): string | string[] | undefined {
+        return getAuthorOfText(text);
     }
 
     return (
@@ -313,6 +318,7 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
 
     const fileManager = FileManager.getInstance();
     const [concordanceData, setConcordanceData]: [any, Function] = useState();
+    const [occurences, setOccurences]: [any, Function] = useState();
 
     useEffect(() => {
         setConcordanceData(undefined);
@@ -320,6 +326,68 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
             setConcordanceData(concordance);
         });
     }, [strongsNumber]);
+
+    useEffect(() => {
+        if (concordanceData) {
+            let occurences: any[] = [];
+
+            const primaryOccurences: any[] = [];
+            const secondaryOccurences: any[] = [];
+            const tertiaryOccurences: any[] = [];
+            const currentAuthor = currentBook ? getAuthorOfText(currentBook): undefined;
+            let count: number = 0;
+
+            let bookCursor: { book?: string, author?: string | string[] } = { book: undefined, author: undefined };
+
+            for (let count = 0; count < concordanceData?.occurences?.length; count++) {
+                const occurence = concordanceData?.occurences[count];
+                const bookName = occurence.split('.')[0];
+                if (bookName !== bookCursor.book) {
+                    // simple caching to avoid multiple calls to getAuthorOfText
+                    bookCursor.book = bookName;
+                    bookCursor.author = getAuthorOfText(bookName);
+                }
+
+                if (bookCursor.book === currentBook) {
+                    primaryOccurences.push(occurence);
+                }
+                else if (bookCursor.author && bookCursor.author === currentAuthor) {
+                    // TODO: handle multiple authors (I Samuel, II Samuel, etc.)
+                    // TODO: handle the authors of the Pslams and Proverbs
+                    secondaryOccurences.push(occurence);
+                }
+                else {
+                    tertiaryOccurences.push(occurence);
+                }
+
+                if (liteMode && count >= 10) {
+                    tertiaryOccurences.push('...');
+                    break;
+                }
+            }
+
+            if (primaryOccurences.length > 0) {
+                if (!liteMode) {
+                    occurences.push(<b>in this book <span className='label'>({primaryOccurences.length})</span></b>);
+                }
+                occurences.push(generateOccurenceList(primaryOccurences));
+            }
+            if (secondaryOccurences.length > 0) {
+                if (!liteMode) {
+                    occurences.push(<b>by this author <span className='label'>({secondaryOccurences.length})</span></b>);
+                }
+                occurences.push(generateOccurenceList(secondaryOccurences));
+            }
+            if (tertiaryOccurences.length > 0) {
+                if (!liteMode) {
+                    occurences.push(<b>elsewhere in Scripture <span className='label'>({tertiaryOccurences.length})</span></b>);
+                }
+                occurences.push(generateOccurenceList(tertiaryOccurences));
+            }
+
+            setOccurences(liteMode ? occurences.slice(0, 9) : occurences);
+        }
+    }, [concordanceData]);
 
     if (!concordanceData) {
         return (
@@ -330,9 +398,30 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
         );
     }
 
-    const occurences = liteMode ? concordanceData?.occurences?.slice(0, 9) : concordanceData?.occurences;
-    if (liteMode && occurences?.length < concordanceData?.occurences?.length) {
-        occurences.push('...');
+    // const occurences = liteMode ? concordanceData?.occurences?.slice(0, 9) : concordanceData?.occurences;
+    // if (liteMode && occurences?.length < concordanceData?.occurences?.length) {
+    //     occurences.push('...');
+    // }
+
+    function generateOccurenceList(occurences: string[]): JSX.Element {
+        return <ul>
+            {occurences.map((occurence: any, index: number) => {
+                const reference = getUSFM(occurence);
+                if (!reference || !reference[0]) {
+                    return <li key={index}>{occurence}</li>;
+                }
+                return (
+                    <li key={index}>
+                        <BibleReference
+                            text={getReferenceText(reference[0])} usfm={reference[0]}
+                            loadPassage={function (usfm: any, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
+                                createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
+                            }}
+                            currentBook={currentBook ?? ''} translation={translation} />
+                    </li>
+                );
+            })}
+        </ul>
     }
 
     const derive = locateStrongsReferences(concordanceData?.derive).map((d: any, i: number) => {
@@ -369,24 +458,7 @@ export function ConcordancePanel({ strongsNumber, createNewTab, currentBook, tra
             { occurences ?
                 <div className='infoPanel-section'>
                     <h4>Occurrences <span className='label'>({concordanceData?.occurences?.length})</span></h4>
-                    <ul>
-                        {occurences.map((occurence: any, index: number) => {
-                            const reference = getUSFM(occurence);
-                            if (!reference || !reference[0]) {
-                                return <li key={index}>{occurence}</li>;
-                            }
-                            return (
-                                <li key={index}>
-                                    <BibleReference
-                                        text={getReferenceText(reference[0])} usfm={reference[0]}
-                                        loadPassage={function (usfm: any, isFootnote: boolean, openInNewTab?: boolean | undefined): void {
-                                            createNewTab(WindowTypes.Scripture, getReferenceText(usfm));
-                                        }}
-                                        currentBook={currentBook ?? ''} translation={translation} />
-                                </li>
-                            );
-                        })}
-                    </ul>
+                    {occurences}
                 </div>
                 : null
             }
